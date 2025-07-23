@@ -71,6 +71,13 @@ contract Utils {
             return 365 days;
         revert("Invalid duration");
     }
+    function generateDsaIdFromCommitments(
+    uint256 _providerCommitment,
+    uint256 _recipientCommitment
+) external pure returns (bytes20) {
+    return ripemd160(abi.encodePacked(_providerCommitment, _recipientCommitment));
+}
+
 
     constructor() {}
 }

@@ -98,8 +98,18 @@ Generate Proof
 For A
 snarkjs groth16 prove build/PatientIdProof_final.zkey build/witnessA.wtns build/proofA.json build/publicA.json
 
+
+
 For B
 snarkjs groth16 prove build/PatientIdProof_final.zkey build/witnessB.wtns build/proofB.json build/publicB.json
+
+
+### Using Full Prove
+
+snarkjs groth16 fullprove inputA.json build/PatientIdProof_js/PatientIdProof.wasm build/PatientIdProof_final.zkey build/proofA.json build/publicA.json
+
+snarkjs groth16 fullprove inputB.json build/PatientIdProof_js/PatientIdProof.wasm build/PatientIdProof_final.zkey build/proofB.json build/publicB.json
+
 
 Verify Proof
 For A
@@ -107,11 +117,10 @@ snarkjs groth16 verify build/verification_key.json build/publicA.json build/proo
 For B
 snarkjs groth16 verify build/verification_key.json build/publicB.json build/proofB.json
 
-1.3) Generate Witness - node build/PatientIdProof_js/generate_witness.js build/PatientIdProof_js/PatientIdProof.wasm input.json build/witness.wtns
-2) Generate Proof - snarkjs groth16 prove build/PatientIdProof_final.zkey build/witness.wtns build/proof.json build/public.json
-3) Verify Proof - snarkjs groth16 verify build/verification_key.json build/public.json build/proof.json
-The verification uses only the publicly shared values
-4) Export Verifier - snarkjs zkey export solidityverifier build/PatientIdProof_final.zkey contracts/PatientIdVerifier.sol
+
+4) Export Verifier - 
+snarkjs zkey export solidityverifier build/PatientIdProof_final.zkey contracts/ABVerifier.sol
 
 Export Verfication key
 snarkjs zkey export verificationkey build/PatientIdProof_final.zkey verification_key.json
+
