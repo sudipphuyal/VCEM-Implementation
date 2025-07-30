@@ -42,9 +42,18 @@ describe("DataSharingAgreementZKP", function () {
     // Parse ZK proofs from build folder
     proofA = parseProof(path.join("build", "proofA.json"));
     publicA = JSON.parse(fs.readFileSync(path.join("build", "publicA.json"), "utf-8")).map(BigInt);
-
+    console.log("Public A:", publicA);
+    console.log("Proof A.a:", proofA.a, " Proof A.b:", proofA.b," ProofA.c", proofA.c);
     proofB = parseProof(path.join("build", "proofB.json"));
     publicB = JSON.parse(fs.readFileSync(path.join("build", "publicB.json"), "utf-8")).map(BigInt);
+  });
+  it("should verify proof", async () => {
+    const result = await verifier.verifyProof(
+      proofA.a,
+      proofA.b,
+      proofA.c,
+      publicA
+    )
   });
 
   it("should create a DSA with a valid proof", async () => {

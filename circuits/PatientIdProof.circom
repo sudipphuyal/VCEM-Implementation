@@ -20,3 +20,4 @@ template PatientIdProof() {
 }
 
 component main = PatientIdProof();
+
