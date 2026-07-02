@@ -3,22 +3,21 @@ pragma circom 2.0.0;
 include "circuits/poseidon.circom";
 
 template PatientIdProof() {
-    // === Private Input ===
-    signal input patientId;
-    // === Public Input (Hash to verify against) ===
-    signal output patientHash;
+    signal input party1;
+    signal input party2;
+    signal input secret;
 
-    // signal output out;
-   //  signal hashOutput;
-    component poseidon = Poseidon(1);
-    poseidon.inputs[0] <== patientId;
-    // Compute Poseidon Hash of patientId
-    //hashOutput <== Poseidon([patientId]);
+    signal output commitment;
 
-    // Enforce that hash(patientId) == patientHash
-     patientHash <== poseidon.out;
-   
-     //out <== patientHash;
+    component hash = Poseidon(3);
+    hash.inputs[0] <== party1;  // patientId
+    hash.inputs[1] <== party2;  // healthcareProfessionalId
+    hash.inputs[2] <== secret;  // sharedData   
+
+
+     commitment <== hash.out;
+ 
 }
 
 component main = PatientIdProof();
+
