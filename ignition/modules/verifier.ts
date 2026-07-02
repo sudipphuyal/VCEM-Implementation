@@ -1,5 +1,4 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import { ethers } from "hardhat";
 
 const deployVerifierModule = buildModule("deployVerifierModule", (m) => {
   const utilsAddress = process.env.UTILS_ADDRESS;
@@ -16,15 +15,11 @@ const deployVerifierModule = buildModule("deployVerifierModule", (m) => {
     );
   }
 
-  const deployer = m.deployer; // Get the deployer account
-  console.log("Deploying contracts with the account:", deployer.address);
-
   // Deploy the VerifierImplementation contract
   const Verifier = m.contract("VerifierImplementation", [
     utilsAddress,
     registriesAddress,
   ]);
-  console.log("Verifier contract deployed at:", Verifier.address);
 
   return {
     Verifier,

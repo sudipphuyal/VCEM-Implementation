@@ -18,4 +18,20 @@ ignition/deployments
 
 .DS_Store
 
+.env
 .env.local
+evidence/*
+!evidence/vcem/
+!evidence/vcem/*.json
+!evidence/vcem/*.csv
+benchmarks/raw/
+
+# Generated ZKP/local proof outputs
+build/
+*.zkey
+*.ptau
+proof*.json
+public*.json
+private_input.json
+input*.json
+verification_key.json

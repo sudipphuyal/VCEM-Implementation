@@ -26,18 +26,30 @@ task("clean", "Cleans the cache and deletes all artifacts", async (_, hre) => {
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.27",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
-        details: {
-          yul: true,
+    compilers: [
+      {
+        version: "0.8.20",
+        settings: {
+          optimizer: { enabled: true, runs: 200 },
+          viaIR: true,
+          evmVersion: "berlin",
         },
       },
-      viaIR: true,
-      evmVersion: "berlin",
-    },
+      {
+        version: "0.8.27",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+            details: {
+              yul: true,
+            },
+          },
+          viaIR: true,
+          evmVersion: "berlin",
+        },
+      },
+    ],
   },
   networks: {
     localhost: {

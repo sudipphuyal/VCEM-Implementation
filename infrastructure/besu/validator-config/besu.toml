@@ -1,0 +1,6 @@
+network="vcem-local"
+sync-mode="FULL"
+data-storage-format="BONSAI"
+rpc-http-enabled=false
+host-allowlist=["*"]
+min-gas-price=0

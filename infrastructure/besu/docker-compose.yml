@@ -1,0 +1,62 @@
+services:
+  validator1:
+    image: hyperledger/besu:24.12.0
+    command: ["--config-file=/config/besu.toml", "--genesis-file=/config/genesis.json", "--data-path=/data", "--p2p-port=30303"]
+    volumes:
+      - ./genesis.json:/config/genesis.json:ro
+      - ./validator-config/besu.toml:/config/besu.toml:ro
+      - validator1-data:/data
+    networks: [vcem-besu]
+    healthcheck:
+      test: ["CMD", "besu", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  validator2:
+    image: hyperledger/besu:24.12.0
+    command: ["--config-file=/config/besu.toml", "--genesis-file=/config/genesis.json", "--data-path=/data", "--p2p-port=30304"]
+    volumes:
+      - ./genesis.json:/config/genesis.json:ro
+      - ./validator-config/besu.toml:/config/besu.toml:ro
+      - validator2-data:/data
+    networks: [vcem-besu]
+  validator3:
+    image: hyperledger/besu:24.12.0
+    command: ["--config-file=/config/besu.toml", "--genesis-file=/config/genesis.json", "--data-path=/data", "--p2p-port=30305"]
+    volumes:
+      - ./genesis.json:/config/genesis.json:ro
+      - ./validator-config/besu.toml:/config/besu.toml:ro
+      - validator3-data:/data
+    networks: [vcem-besu]
+  validator4:
+    image: hyperledger/besu:24.12.0
+    command: ["--config-file=/config/besu.toml", "--genesis-file=/config/genesis.json", "--data-path=/data", "--p2p-port=30306"]
+    volumes:
+      - ./genesis.json:/config/genesis.json:ro
+      - ./validator-config/besu.toml:/config/besu.toml:ro
+      - validator4-data:/data
+    networks: [vcem-besu]
+  rpc:
+    image: hyperledger/besu:24.12.0
+    command: ["--config-file=/config/rpc.toml", "--genesis-file=/config/genesis.json", "--data-path=/data"]
+    ports:
+      - "127.0.0.1:8545:8545"
+    volumes:
+      - ./genesis.json:/config/genesis.json:ro
+      - ./validator-config/rpc.toml:/config/rpc.toml:ro
+      - rpc-data:/data
+    networks: [vcem-besu]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- --post-data='{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' --header='Content-Type: application/json' http://127.0.0.1:8545 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+networks:
+  vcem-besu:
+    driver: bridge
+volumes:
+  validator1-data:
+  validator2-data:
+  validator3-data:
+  validator4-data:
+  rpc-data:
