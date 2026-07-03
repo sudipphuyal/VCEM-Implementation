@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { pseudonymize } from "../pseudonymization/pseudonymize";
 import { Purpose, canonicalScopeHash } from "../policy/model";
-import { FixtureConsent, auditEventFromAccess, purposeMaskFromFhir } from "./mapper";
+import { FixtureConsent, auditEventFromAccess, flattenSupportedProvision, purposeMaskFromFhir } from "./mapper";
 
 export type VcemConsentOperation = "create" | "update" | "revoke";
 
@@ -16,20 +16,24 @@ export type VcemConsentCall = {
   actorIds: string[];
   dataHash: string;
   sourceDateTime?: string;
+  dataReferences: string[];
+  period?: { start?: string; end?: string };
 };
 
 export function validateSupportedConsent(consent: FixtureConsent) {
   if (consent.resourceType !== "Consent") throw new Error("FHIR resource must be Consent");
   if (!consent.patient?.reference) throw new Error("Consent.patient is required");
-  if (consent.provision?.["provision" as keyof typeof consent.provision]) {
-    throw new Error("nested Consent.provision is not supported by this fixture adapter");
-  }
-  const actorRefs = consent.performer?.map((actor) => actor.reference).filter(Boolean) ?? [];
+  if (consent.dateTime && Number.isNaN(Date.parse(consent.dateTime))) throw new Error("Consent.dateTime must be an ISO timestamp");
+  if (!["active", "draft", "inactive", "rejected"].includes(consent.status)) throw new Error(`unsupported Consent.status: ${consent.status}`);
+  const flattened = flattenSupportedProvision(consent);
+  const topActors = consent.performer?.map((actor) => actor.reference).filter(Boolean) ?? [];
+  const actorRefs = [...topActors, ...flattened.actorReferences];
   if (consent.status !== "inactive" && consent.status !== "rejected" && actorRefs.length === 0) {
-    throw new Error("at least one Consent.performer is required for active/update consent");
+    throw new Error("at least one Consent.performer or supported provision.actor is required");
   }
+  if (flattened.dataReferences.length === 0) throw new Error("at least one Consent.provision.data or Consent.subject reference is required");
   const purposeMask = purposeMaskFromFhir(consent);
-  if (purposeMask === 0 && consent.status === "active") {
+  if (purposeMask === 0 && consent.status !== "inactive" && consent.status !== "rejected") {
     throw new Error("at least one supported Consent.provision.purpose is required");
   }
 }
@@ -41,21 +45,25 @@ export function consentOperationFromStatus(status: string): VcemConsentOperation
   throw new Error(`unsupported Consent.status: ${status}`);
 }
 
+export function canonicalDataHash(dataReferences: string[]) {
+  return ethers.sha256(ethers.toUtf8Bytes(JSON.stringify({ fhirDataReferences: [...dataReferences].sort() })));
+}
+
 export function consentToVcemCall(consent: FixtureConsent, secret: string, operationOverride?: VcemConsentOperation): VcemConsentCall {
   validateSupportedConsent(consent);
   const operation = operationOverride ?? consentOperationFromStatus(consent.status);
+  const flattened = flattenSupportedProvision(consent);
   const participantId = pseudonymize("fhir:patient", consent.patient!.reference!, secret);
-  const actorIds = (consent.performer ?? [])
-    .map((actor) => actor.reference)
-    .filter((value): value is string => !!value)
-    .map((reference) => pseudonymize("fhir:actor", reference, secret));
-  const dataReference = consent.provision?.data?.[0]?.reference?.reference ?? "DocumentReference/unknown";
+  const actorRefs = [
+    ...(consent.performer?.map((actor) => actor.reference).filter((value): value is string => !!value) ?? []),
+    ...flattened.actorReferences,
+  ];
+  const actorIds = [...new Set(actorRefs)].map((reference) => pseudonymize("fhir:actor", reference, secret));
   const scopeHash = canonicalScopeHash({
     resourceType: "Consent",
-    dataReference,
-    period: consent.provision?.["period" as keyof typeof consent.provision] ?? null,
+    dataReferences: [...flattened.dataReferences].sort(),
+    period: flattened.period ?? null,
   });
-  const dataHash = ethers.sha256(ethers.toUtf8Bytes(`fhir-data:${dataReference}`));
   return {
     operation,
     participantId,
@@ -64,10 +72,25 @@ export function consentToVcemCall(consent: FixtureConsent, secret: string, opera
       scopeHash,
       zkConsentCommitment: ethers.ZeroHash,
     },
-    actorIds,
-    dataHash,
+    actorIds: operation === "revoke" ? [] : actorIds,
+    dataHash: canonicalDataHash(flattened.dataReferences),
     sourceDateTime: consent.dateTime,
+    dataReferences: flattened.dataReferences,
+    period: flattened.period,
   };
+}
+
+export async function executeVcemConsentLifecycle(consentContract: any, participantSigner: any, consent: FixtureConsent, secret: string) {
+  const call = consentToVcemCall(consent, secret);
+  if (call.operation === "create") {
+    await consentContract.connect(participantSigner).createConsent(call.participantId, call.policy, call.actorIds);
+  } else if (call.operation === "update") {
+    await consentContract.connect(participantSigner).updateConsent(call.participantId, call.policy, call.actorIds);
+  } else {
+    await consentContract.connect(participantSigner).revokeConsent(call.participantId);
+  }
+  const version = await consentContract.getCurrentConsentVersion(call.participantId);
+  return { call, version };
 }
 
 export function accessAuthorizedToAuditEvent(access: {
@@ -79,19 +102,7 @@ export function accessAuthorizedToAuditEvent(access: {
   consentVersion: string | number | bigint;
   purpose: string | number | bigint;
   timestamp: number;
+  outcome?: "0" | "4";
 }) {
-  const event = auditEventFromAccess(access);
-  return {
-    ...event,
-    purposeOfEvent: [{ coding: [{ system: "urn:vcem:purpose", code: String(access.purpose) }] }],
-    entity: [
-      ...event.entity,
-      {
-        detail: [
-          { type: "vcemConsentVersion", valueString: String(access.consentVersion) },
-          { type: "vcemConsentHash", valueString: access.consentHash },
-        ],
-      },
-    ],
-  };
+  return auditEventFromAccess(access);
 }

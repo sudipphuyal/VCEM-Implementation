@@ -26,6 +26,11 @@ ignition/deployments
 evidence/*
 benchmarks/raw/
 
+# Generated Besu network secrets and runtime files
+infrastructure/besu/generated/
+infrastructure/besu/validators/
+infrastructure/besu/rpc/
+
 # Generated ZKP/local proof outputs
 build/
 *.zkey

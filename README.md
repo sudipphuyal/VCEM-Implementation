@@ -8,6 +8,41 @@ npx hardhat compile
 
 npx hardhat test
 
+## Local VCEM Besu Network
+
+The reproducible local Besu topology is generated from `infrastructure/besu`:
+
+```bash
+npm run besu:generate-network
+npm run besu:up
+npm run besu:status
+npm run besu:verify
+npm run compile
+npm run besu:deploy-vcem
+npm run audit:verify-bytecode
+```
+
+The network contains four IBFT 2.0 validators, one non-validator RPC node, a two-second block period, static peers, persistent Docker volumes, localhost-bound RPC, and metrics endpoints. Generated validator keys, RPC keys, deployer keys, and generated genesis material are ignored by Git.
+
+Deployment writes `deployments/vcem-manifest.json` with chain ID, topology, validator addresses, VCEM contract addresses, bytecode hashes, ABI version, Git commit, and timestamp.
+
+## VCEM FHIR fixture lifecycle tests
+
+The FHIR adapter uses anonymized R4 Consent fixtures to execute real VCEM consent lifecycle calls:
+
+```bash
+npm run test:fhir
+```
+
+Covered fixture flow:
+
+- `active` Consent -> `VCEMConsent.createConsent`
+- `draft` Consent -> `VCEMConsent.updateConsent`
+- `inactive` / `rejected` Consent -> `VCEMConsent.revokeConsent`
+- real `AccessAuthorized` event -> anonymized FHIR `AuditEvent`
+
+This is fixture-based alignment only, not live FHIR-server integration.
+
 ## RPC calls
 
 curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["latest", false],"id":1}' http://134.209.19.66:8545
@@ -123,4 +158,3 @@ snarkjs zkey export solidityverifier build/PatientIdProof_final.zkey contracts/A
 
 Export Verfication key
 snarkjs zkey export verificationkey build/PatientIdProof_final.zkey verification_key.json
-

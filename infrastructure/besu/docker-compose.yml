@@ -1,59 +1,152 @@
+name: vcem-besu
+
+x-besu-common: &besu-common
+  image: hyperledger/besu:24.12.0
+  restart: unless-stopped
+  networks:
+    - vcem-besu
+  healthcheck:
+    test:
+      - CMD-SHELL
+      - >
+        bash -lc 'exec 3<>/dev/tcp/127.0.0.1/8545;
+        printf "POST / HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: 63\r\n\r\n{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}" >&3;
+        grep -q result <&3'
+    interval: 10s
+    timeout: 5s
+    retries: 12
+    start_period: 20s
+
 services:
   validator1:
-    image: hyperledger/besu:24.12.0
-    command: ["--config-file=/config/besu.toml", "--genesis-file=/config/genesis.json", "--data-path=/data", "--p2p-port=30303"]
+    <<: *besu-common
+    hostname: validator1
+    networks:
+      vcem-besu:
+        ipv4_address: 172.28.0.11
+    command:
+      - --config-file=/config/validator.toml
+      - --genesis-file=/config/genesis.json
+      - --data-path=/data
+      - --node-private-key-file=/keys/key
+      - --p2p-host=172.28.0.11
+      - --p2p-port=30303
+      - --static-nodes-file=/config/static-nodes.json
     volumes:
-      - ./genesis.json:/config/genesis.json:ro
-      - ./validator-config/besu.toml:/config/besu.toml:ro
+      - ./generated/genesis.json:/config/genesis.json:ro
+      - ./generated/static-nodes.json:/config/static-nodes.json:ro
+      - ./config/validator.toml:/config/validator.toml:ro
+      - ./validators/validator1/key:/keys/key:ro
       - validator1-data:/data
-    networks: [vcem-besu]
-    healthcheck:
-      test: ["CMD", "besu", "--version"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    ports:
+      - "127.0.0.1:9545:9545"
+
   validator2:
-    image: hyperledger/besu:24.12.0
-    command: ["--config-file=/config/besu.toml", "--genesis-file=/config/genesis.json", "--data-path=/data", "--p2p-port=30304"]
+    <<: *besu-common
+    hostname: validator2
+    networks:
+      vcem-besu:
+        ipv4_address: 172.28.0.12
+    command:
+      - --config-file=/config/validator.toml
+      - --genesis-file=/config/genesis.json
+      - --data-path=/data
+      - --node-private-key-file=/keys/key
+      - --p2p-host=172.28.0.12
+      - --p2p-port=30303
+      - --static-nodes-file=/config/static-nodes.json
     volumes:
-      - ./genesis.json:/config/genesis.json:ro
-      - ./validator-config/besu.toml:/config/besu.toml:ro
+      - ./generated/genesis.json:/config/genesis.json:ro
+      - ./generated/static-nodes.json:/config/static-nodes.json:ro
+      - ./config/validator.toml:/config/validator.toml:ro
+      - ./validators/validator2/key:/keys/key:ro
       - validator2-data:/data
-    networks: [vcem-besu]
+    ports:
+      - "127.0.0.1:9546:9545"
+
   validator3:
-    image: hyperledger/besu:24.12.0
-    command: ["--config-file=/config/besu.toml", "--genesis-file=/config/genesis.json", "--data-path=/data", "--p2p-port=30305"]
+    <<: *besu-common
+    hostname: validator3
+    networks:
+      vcem-besu:
+        ipv4_address: 172.28.0.13
+    command:
+      - --config-file=/config/validator.toml
+      - --genesis-file=/config/genesis.json
+      - --data-path=/data
+      - --node-private-key-file=/keys/key
+      - --p2p-host=172.28.0.13
+      - --p2p-port=30303
+      - --static-nodes-file=/config/static-nodes.json
     volumes:
-      - ./genesis.json:/config/genesis.json:ro
-      - ./validator-config/besu.toml:/config/besu.toml:ro
+      - ./generated/genesis.json:/config/genesis.json:ro
+      - ./generated/static-nodes.json:/config/static-nodes.json:ro
+      - ./config/validator.toml:/config/validator.toml:ro
+      - ./validators/validator3/key:/keys/key:ro
       - validator3-data:/data
-    networks: [vcem-besu]
+    ports:
+      - "127.0.0.1:9547:9545"
+
   validator4:
-    image: hyperledger/besu:24.12.0
-    command: ["--config-file=/config/besu.toml", "--genesis-file=/config/genesis.json", "--data-path=/data", "--p2p-port=30306"]
+    <<: *besu-common
+    hostname: validator4
+    networks:
+      vcem-besu:
+        ipv4_address: 172.28.0.14
+    command:
+      - --config-file=/config/validator.toml
+      - --genesis-file=/config/genesis.json
+      - --data-path=/data
+      - --node-private-key-file=/keys/key
+      - --p2p-host=172.28.0.14
+      - --p2p-port=30303
+      - --static-nodes-file=/config/static-nodes.json
     volumes:
-      - ./genesis.json:/config/genesis.json:ro
-      - ./validator-config/besu.toml:/config/besu.toml:ro
+      - ./generated/genesis.json:/config/genesis.json:ro
+      - ./generated/static-nodes.json:/config/static-nodes.json:ro
+      - ./config/validator.toml:/config/validator.toml:ro
+      - ./validators/validator4/key:/keys/key:ro
       - validator4-data:/data
-    networks: [vcem-besu]
+    ports:
+      - "127.0.0.1:9548:9545"
+
   rpc:
-    image: hyperledger/besu:24.12.0
-    command: ["--config-file=/config/rpc.toml", "--genesis-file=/config/genesis.json", "--data-path=/data"]
+    <<: *besu-common
+    hostname: rpc
+    networks:
+      vcem-besu:
+        ipv4_address: 172.28.0.15
+    command:
+      - --config-file=/config/rpc.toml
+      - --genesis-file=/config/genesis.json
+      - --data-path=/data
+      - --node-private-key-file=/keys/key
+      - --p2p-host=172.28.0.15
+      - --p2p-port=30303
+      - --static-nodes-file=/config/static-nodes.json
+    volumes:
+      - ./generated/genesis.json:/config/genesis.json:ro
+      - ./generated/static-nodes.json:/config/static-nodes.json:ro
+      - ./config/rpc.toml:/config/rpc.toml:ro
+      - ./rpc/key:/keys/key:ro
+      - rpc-data:/data
     ports:
       - "127.0.0.1:8545:8545"
-    volumes:
-      - ./genesis.json:/config/genesis.json:ro
-      - ./validator-config/rpc.toml:/config/rpc.toml:ro
-      - rpc-data:/data
-    networks: [vcem-besu]
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- --post-data='{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}' --header='Content-Type: application/json' http://127.0.0.1:8545 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      - "127.0.0.1:9549:9545"
+    depends_on:
+      - validator1
+      - validator2
+      - validator3
+      - validator4
+
 networks:
   vcem-besu:
     driver: bridge
+    internal: false
+    ipam:
+      config:
+        - subnet: 172.28.0.0/24
+
 volumes:
   validator1-data:
   validator2-data:

@@ -1,0 +1,71 @@
+{
+  "chainId": "20260703",
+  "networkName": "vcem-besu-local",
+  "consensus": "IBFT 2.0",
+  "blockPeriodSeconds": 2,
+  "validatorAddresses": [
+    "0xA3b6bE9f147B8F742D39Fb089848f038E7b2b1e3",
+    "0xa6d8e468ec30CF30F9edAEeb21a6e35F501b189b",
+    "0x137ab06b39e089bDbA3e1b0eA4Db4C034e167049",
+    "0x4f69993152730B7302E4435a658328166e99f2e2"
+  ],
+  "topology": {
+    "validators": [
+      {
+        "name": "validator1",
+        "address": "0xA3b6bE9f147B8F742D39Fb089848f038E7b2b1e3",
+        "enode": "enode://ceae29fdb2a3598d0d30128ecc3fe157e2ea9293034327358514ba1e3de3875062b038c6748efea062afe1807eb8f8a819736d5304a2f90f8349a4bd3d5b1511@172.28.0.11:30303",
+        "ip": "172.28.0.11"
+      },
+      {
+        "name": "validator2",
+        "address": "0xa6d8e468ec30CF30F9edAEeb21a6e35F501b189b",
+        "enode": "enode://16b1ff259fa45afbf791f0de666417dcc1d20d452b203f62cf5db2619085a9eacbf53beb7fa9e7f657a65a84b5946367abc19948e72174c84589160d1a1ac6df@172.28.0.12:30303",
+        "ip": "172.28.0.12"
+      },
+      {
+        "name": "validator3",
+        "address": "0x137ab06b39e089bDbA3e1b0eA4Db4C034e167049",
+        "enode": "enode://222ee4cfd6963ad614e65106417f50bb6c8ded11cfa10bf6a730c975bc67915ee3688398a8c42ee0dce09f5edfdd4edcbea0290b441f7bd4500c540ba07237df@172.28.0.13:30303",
+        "ip": "172.28.0.13"
+      },
+      {
+        "name": "validator4",
+        "address": "0x4f69993152730B7302E4435a658328166e99f2e2",
+        "enode": "enode://b5d261ff99f78d525c5668597d8321806600bf06882a52e4c1ca36b60c5631e936612fe9454c65186668d9680d891e4890a3e50318af2e12ee2fc505da1c2aad@172.28.0.14:30303",
+        "ip": "172.28.0.14"
+      }
+    ],
+    "rpc": [
+      {
+        "name": "rpc",
+        "address": "0xB426d2a89d04d854eC0810AA4E55b5766ae39754",
+        "enode": "enode://03e16ee079d06edd99920b1fbae0e48bb6f44d78bc8328bf22bef51eaf6c0d53d9cb584eaf364a283a287ab6dc915e1c980a2d80b0a499f2975990c571c992ea@172.28.0.15:30303",
+        "ip": "172.28.0.15"
+      }
+    ]
+  },
+  "addresses": {
+    "VCEMRegistry": "0xF64A63D4C23b890E4E77929E9D4f79bf950Ac3ab",
+    "VCEMConsent": "0xdaD06edF20baDD02767A0Cd082563a3Fc473F6db",
+    "VCEMAudit": "0xb7E9E45039d192F7A315De6662061D6d3d73f6d0"
+  },
+  "deploymentTransactions": {
+    "VCEMRegistry": "0x2183696bb40b27bd9b8526bb3d4132571960bdadf14ded6a2dbd0ffcca3b24b9",
+    "VCEMConsent": "0xfd68c206737ded55c702fdf88ccb782cb61eb43b2ba29e2f2c3e9d82f37ab6b3",
+    "VCEMAudit": "0xf26eb27f9042796b0e839729a25e75849d7eb22ae87a203375b8d1489e943b42"
+  },
+  "abiVersion": "vcem-v1",
+  "localRuntimeBytecodeHashes": {
+    "VCEMRegistry": "0x0ae4ca0ea97be66b21afd1f7887b3df97f06c6fedeffdbb5e3aeda40cd66998a",
+    "VCEMConsent": "0xa0baf68c826b93168b2192f7c30883359ad5fc7f00fd907bdb18cfbe3760a11d",
+    "VCEMAudit": "0x2e3ffa3dcaaf7c932101a45e27a1933fa27281faf990fcafefc8fdae50a2cb38"
+  },
+  "deployedRuntimeBytecodeHashes": {
+    "VCEMRegistry": "0x0ae4ca0ea97be66b21afd1f7887b3df97f06c6fedeffdbb5e3aeda40cd66998a",
+    "VCEMConsent": "0xb5ba367b2e3a4549739d1f556530f32f17b3fe0f4fe5a6298dc8c58b395c21b4",
+    "VCEMAudit": "0xf66adaaa4e09f7f6b9d944ac0703e799da84d57ae74049bc47969211c6f48481"
+  },
+  "deploymentTimestamp": "2026-07-03T10:50:49.806Z",
+  "gitCommit": "bef01bcc3bf8232d648cf638a141748c4879df84"
+}

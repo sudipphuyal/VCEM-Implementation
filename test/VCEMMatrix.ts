@@ -19,10 +19,52 @@ const Purpose = {
   UNSUPPORTED: 16,
 };
 
+const ACCESS_AUTHORIZED_TOPIC = ethers.id(
+  "AccessAuthorized(bytes32,bytes32,bytes32,bytes32,bytes32,uint8,uint64,bytes32,bytes32,uint64)"
+);
+
 type Lifecycle = "active-initial" | "modified-active" | "revoked";
 type ActorConfig = "authorized" | "unauthorized" | "removed-after-modification" | "newly-added" | "revoked-or-mismatched";
 type PurposeName = "treatment" | "research" | "public-health" | "other-disallowed";
 type RequestKind = "nominal" | "adversarial";
+type Scenario =
+  | "nominal-control"
+  | "valid-policy-disallowed-purpose"
+  | "malformed-purpose"
+  | "invalid-scope"
+  | "tampered-data-hash"
+  | "tampered-signature"
+  | "expired-request"
+  | "replayed-request"
+  | "unauthorized-active-researcher"
+  | "active-role-mismatched-actor"
+  | "revoked-actor"
+  | "actor-removed-after-update"
+  | "actor-added-after-update"
+  | "stale-consent-hash"
+  | "stale-actor-root"
+  | "post-revocation-access";
+
+type MatrixRow = {
+  caseId: string;
+  lifecycleCondition: string;
+  consentVersion: string;
+  actorConfiguration: string;
+  requestedPurpose: string;
+  scopeCondition: string;
+  requestType: RequestKind;
+  adversarialScenario: Scenario;
+  expectedOutcome: "authorized" | "denied";
+  actualOutcome: "authorized" | "denied";
+  exactDenialReason: string;
+  requestId: string;
+  transactionHash: string;
+  blockNumber: string;
+  transactionIndex: string;
+  logIndex: string;
+  consentHash: string;
+  pass: boolean;
+};
 
 function id(label: string) {
   return ethers.keccak256(ethers.toUtf8Bytes(label));
@@ -30,6 +72,23 @@ function id(label: string) {
 
 function hash(label: string) {
   return ethers.sha256(ethers.toUtf8Bytes(label));
+}
+
+function purposeValue(name: PurposeName) {
+  if (name === "treatment") return Purpose.TREAT;
+  if (name === "research") return Purpose.RESEARCH;
+  if (name === "public-health") return Purpose.PUBHLTH;
+  return Purpose.OTHER;
+}
+
+function purposeAllowed(name: PurposeName) {
+  return name !== "other-disallowed";
+}
+
+function normalizeDenial(err: any) {
+  const message = err?.shortMessage || err?.message || "reverted";
+  const match = String(message).match(/'(VCEM[^']+)'|"([^"]*VCEM[^"]*)"/);
+  return match?.[1] ?? match?.[2] ?? String(message);
 }
 
 async function signAccessRequest(audit: any, signer: any, request: any) {
@@ -105,17 +164,6 @@ async function deploy() {
   };
 }
 
-function purposeValue(name: PurposeName) {
-  if (name === "treatment") return Purpose.TREAT;
-  if (name === "research") return Purpose.RESEARCH;
-  if (name === "public-health") return Purpose.PUBHLTH;
-  return Purpose.OTHER;
-}
-
-function purposeAllowed(name: PurposeName) {
-  return name !== "other-disallowed";
-}
-
 async function setupCase(env: any, lifecycle: Lifecycle, actorConfig: ActorConfig) {
   const scopeHash = hash("scope:matrix:vitals");
   const initialActors =
@@ -126,12 +174,15 @@ async function setupCase(env: any, lifecycle: Lifecycle, actorConfig: ActorConfi
         : actorConfig === "revoked-or-mismatched"
           ? [env.ids.revokedActor]
           : [env.ids.authorized];
-  const policy = {
-    purposeMask: Purpose.TREAT | Purpose.RESEARCH | Purpose.PUBHLTH,
-    scopeHash,
-    zkConsentCommitment: hash("zk:matrix:initial"),
-  };
-  await env.consent.connect(env.participant).createConsent(env.ids.participant, policy, initialActors);
+  await env.consent.connect(env.participant).createConsent(
+    env.ids.participant,
+    {
+      purposeMask: Purpose.TREAT | Purpose.RESEARCH | Purpose.PUBHLTH,
+      scopeHash,
+      zkConsentCommitment: hash("zk:matrix:initial"),
+    },
+    initialActors
+  );
 
   if (lifecycle === "modified-active") {
     const modifiedActors =
@@ -178,17 +229,182 @@ function expectedNominal(lifecycle: Lifecycle, actorConfig: ActorConfig, purpose
   return true;
 }
 
-function adversarialOverride(caseId: number, kindIndex: number, request: any, currentHash: string) {
-  const selector = caseId % 9;
-  if (selector === 0) return { request: { ...request, expectedConsentHash: hash("stale:consent") }, label: "stale-consent-hash" };
-  if (selector === 1) return { request: { ...request, scopeHash: hash("scope:matrix:wrong") }, label: "invalid-scope" };
-  if (selector === 2) return { request: { ...request, requestedPurpose: 3 }, label: "malformed-purpose" };
-  if (selector === 3) return { request: { ...request, requestExpiry: 1 }, label: "expired-request" };
-  if (selector === 4) return { request: { ...request, dataHash: hash("tampered:data") }, label: "tampered-data-hash" };
-  if (selector === 5) return { request: { ...request, expectedConsentHash: currentHash, requestId: request.requestId }, label: "replay-control" };
-  if (selector === 6) return { request: { ...request, requestedPurpose: Purpose.UNSUPPORTED }, label: "unsupported-purpose" };
-  if (selector === 7) return { request, label: "tampered-signature" };
-  return { request: { ...request, scopeHash: hash("scope:matrix:disallowed") }, label: "disallowed-scope" };
+function nominalDenial(lifecycle: Lifecycle, actorConfig: ActorConfig, purpose: PurposeName) {
+  if (actorConfig === "revoked-or-mismatched") return "VCEMAudit: inactive requestor";
+  if (lifecycle === "revoked") return "VCEMAudit: consent inactive";
+  if (actorConfig === "unauthorized" || (actorConfig === "newly-added" && lifecycle === "active-initial")) {
+    return "VCEMAudit: actor denied";
+  }
+  if (actorConfig === "removed-after-modification" && lifecycle === "modified-active") return "VCEMAudit: actor denied";
+  if (!purposeAllowed(purpose)) return "VCEMAudit: purpose denied";
+  return "";
+}
+
+function preferredScenario(lifecycle: Lifecycle, actorConfig: ActorConfig, purpose: PurposeName, validSequence: number, caseNumber: number): Scenario {
+  if (lifecycle === "revoked") return "post-revocation-access";
+  if (actorConfig === "unauthorized") return "unauthorized-active-researcher";
+  if (actorConfig === "revoked-or-mismatched") return caseNumber % 2 === 0 ? "revoked-actor" : "active-role-mismatched-actor";
+  if (actorConfig === "removed-after-modification" && lifecycle === "modified-active") return "actor-removed-after-update";
+  if (actorConfig === "newly-added" && lifecycle === "active-initial") return "actor-added-after-update";
+  if (!purposeAllowed(purpose)) return "valid-policy-disallowed-purpose";
+
+  const scenarios: Scenario[] = [
+    "stale-consent-hash",
+    "stale-actor-root",
+    "invalid-scope",
+    "tampered-data-hash",
+    "tampered-signature",
+    "expired-request",
+    "replayed-request",
+    "malformed-purpose",
+  ];
+  return scenarios[validSequence % scenarios.length];
+}
+
+async function baseRequest(env: any, caseNumber: number, requestKind: RequestKind, actor: any, scopeHash: string, purpose: PurposeName, consentHash: string) {
+  const latest = await ethers.provider.getBlock("latest");
+  return {
+    participantId: env.ids.participant,
+    requestorId: actor.id,
+    dataHash: hash(`matrix:data:${caseNumber}:${requestKind}`),
+    scopeHash,
+    requestedPurpose: purposeValue(purpose),
+    requestId: hash(`matrix:request:${caseNumber}:${requestKind}`),
+    clientTimestamp: latest!.timestamp,
+    requestExpiry: latest!.timestamp + 3600,
+    expectedConsentHash: consentHash,
+  };
+}
+
+async function applyScenario(env: any, scenario: Scenario, request: any, scopeHash: string, caseNumber: number) {
+  const requestActor = actorFor(env, "authorized");
+  if (scenario === "stale-consent-hash") {
+    return {
+      request: { ...request, requestorId: requestActor.id, expectedConsentHash: hash("stale:consent") },
+      signer: requestActor.signer,
+      expectedReason: "VCEMAudit: outdated consent hash",
+      registerData: true,
+    };
+  }
+  if (scenario === "stale-actor-root") {
+    const staleHash = request.expectedConsentHash;
+    await env.consent.connect(env.participant).updateConsent(
+      env.ids.participant,
+      {
+        purposeMask: Purpose.TREAT | Purpose.RESEARCH | Purpose.PUBHLTH,
+        scopeHash,
+        zkConsentCommitment: hash(`zk:matrix:stale-actor-root:${caseNumber}`),
+      },
+      [env.ids.newlyAdded]
+    );
+    return {
+      request: { ...request, requestorId: requestActor.id, expectedConsentHash: staleHash },
+      signer: requestActor.signer,
+      expectedReason: "VCEMAudit: outdated consent hash",
+      registerData: true,
+    };
+  }
+  if (scenario === "invalid-scope") {
+    return {
+      request: { ...request, requestorId: requestActor.id, scopeHash: hash("scope:matrix:wrong") },
+      signer: requestActor.signer,
+      expectedReason: "VCEMAudit: scope denied",
+      registerData: false,
+    };
+  }
+  if (scenario === "tampered-data-hash") {
+    return {
+      request: { ...request, requestorId: requestActor.id, dataHash: hash("matrix:tampered:data") },
+      signer: requestActor.signer,
+      expectedReason: "VCEMAudit: data hash denied",
+      registerData: false,
+    };
+  }
+  if (scenario === "tampered-signature") {
+    return {
+      request: { ...request, requestorId: requestActor.id },
+      signer: env.unauthorized,
+      expectedReason: "VCEMAudit: invalid signature",
+      registerData: true,
+    };
+  }
+  if (scenario === "expired-request") {
+    return {
+      request: { ...request, requestorId: requestActor.id, requestExpiry: 1 },
+      signer: requestActor.signer,
+      expectedReason: "VCEMAudit: expired request",
+      registerData: true,
+    };
+  }
+  if (scenario === "replayed-request") {
+    return {
+      request: { ...request, requestorId: requestActor.id },
+      signer: requestActor.signer,
+      expectedReason: "VCEMAudit: replayed request",
+      registerData: true,
+      preAuthorizeReplay: true,
+    };
+  }
+  if (scenario === "malformed-purpose") {
+    return {
+      request: { ...request, requestorId: requestActor.id, requestedPurpose: 3 },
+      signer: requestActor.signer,
+      expectedReason: "VCEMAudit: invalid purpose",
+      registerData: true,
+    };
+  }
+  if (scenario === "active-role-mismatched-actor") {
+    return {
+      request: { ...request, requestorId: env.ids.custodian },
+      signer: env.custodian,
+      expectedReason: "VCEMAudit: inactive requestor",
+      registerData: true,
+    };
+  }
+  if (scenario === "revoked-actor") {
+    return {
+      request: { ...request, requestorId: env.ids.revokedActor },
+      signer: env.revokedActor,
+      expectedReason: "VCEMAudit: inactive requestor",
+      registerData: true,
+    };
+  }
+  return {
+    request,
+    signer: requestActor.signer,
+    expectedReason: nominalDenial("active-initial", "authorized", "research"),
+    registerData: true,
+  };
+}
+
+async function runAccess(env: any, request: any, signer: any, registerData: boolean, preAuthorizeReplay = false) {
+  if (registerData) {
+    await env.audit.connect(env.custodian).registerDataHash(request.participantId, request.scopeHash, request.dataHash);
+  }
+  if (preAuthorizeReplay) {
+    await env.audit.connect(env.gateway).authorizeAndLogAccess(request, await signAccessRequest(env.audit, signer, request));
+  }
+  const signature = await signAccessRequest(env.audit, signer, request);
+  const tx = await env.audit.connect(env.gateway).authorizeAndLogAccess(request, signature);
+  const receipt = await tx.wait();
+  const eventLog = receipt?.logs.find((entry: any) => entry.fragment?.name === "AccessAuthorized");
+  return {
+    transactionHash: receipt?.hash ?? tx.hash,
+    blockNumber: receipt?.blockNumber?.toString() ?? "",
+    transactionIndex: receipt?.index?.toString() ?? "",
+    logIndex: eventLog?.index?.toString() ?? "",
+  };
+}
+
+function writeRows(fileBase: string, rows: MatrixRow[]) {
+  const outDir = path.join(process.cwd(), "artifacts", "vcem-matrix");
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(path.join(outDir, `${fileBase}.json`), JSON.stringify(rows, null, 2));
+  const header = Object.keys(rows[0]);
+  fs.writeFileSync(
+    path.join(outDir, `${fileBase}.csv`),
+    [header.join(","), ...rows.map((row) => header.map((field) => JSON.stringify((row as any)[field] ?? "")).join(","))].join("\n")
+  );
 }
 
 describe("VCEM correctness matrix", function () {
@@ -203,8 +419,9 @@ describe("VCEM correctness matrix", function () {
       "newly-added",
       "revoked-or-mismatched",
     ];
-    const rows: any[] = [];
+    const rows: MatrixRow[] = [];
     let caseNumber = 0;
+    let validSequence = 0;
 
     for (const lifecycle of lifecycles) {
       for (const purpose of purposes) {
@@ -214,81 +431,229 @@ describe("VCEM correctness matrix", function () {
           const scopeHash = await setupCase(env, lifecycle, actorConfig);
           const current = await env.consent.getCurrentConsentVersion(env.ids.participant);
           const actor = actorFor(env, actorConfig);
-          const latest = await ethers.provider.getBlock("latest");
-          const baseRequest = {
-            participantId: env.ids.participant,
-            requestorId: actor.id,
-            dataHash: hash(`matrix:data:${caseNumber}`),
-            scopeHash,
-            requestedPurpose: purposeValue(purpose),
-            requestId: hash(`matrix:request:${caseNumber}:nominal`),
-            clientTimestamp: latest!.timestamp,
-            requestExpiry: latest!.timestamp + 3600,
-            expectedConsentHash: current.consentHash,
-          };
-          await env.audit.connect(env.custodian).registerDataHash(baseRequest.participantId, baseRequest.scopeHash, baseRequest.dataHash);
-
-          for (const requestKind of ["nominal", "adversarial"] as RequestKind[]) {
-            const adversarial = requestKind === "adversarial" ? adversarialOverride(caseNumber, rows.length, baseRequest, current.consentHash) : undefined;
-            const request = adversarial?.request ?? baseRequest;
-            const expected = requestKind === "nominal" ? expectedNominal(lifecycle, actorConfig, purpose) : false;
-            let actual = false;
-            let denialReason = "";
-            let transactionHash = "";
-            let blockNumber = "";
-            let transactionIndex = "";
-            try {
-              if (adversarial?.label === "replay-control") {
-                const first = await env.audit.connect(env.gateway).authorizeAndLogAccess(baseRequest, await signAccessRequest(env.audit, actor.signer, baseRequest));
-                await first.wait();
-              }
-              const signature =
-                adversarial?.label === "tampered-signature"
-                  ? await signAccessRequest(env.audit, env.unauthorized, request)
-                  : await signAccessRequest(env.audit, actor.signer, request);
-              const tx = await env.audit.connect(env.gateway).authorizeAndLogAccess(request, signature);
-              const receipt = await tx.wait();
-              transactionHash = receipt?.hash ?? tx.hash;
-              blockNumber = receipt?.blockNumber?.toString() ?? "";
-              transactionIndex = receipt?.index?.toString() ?? "";
-              actual = true;
-            } catch (err: any) {
-              denialReason = err?.shortMessage || err?.message || "reverted";
-            }
-            rows.push({
-              caseId: `VCEM-${String(caseNumber).padStart(2, "0")}`,
-              lifecycleCondition: lifecycle,
-              policyVersion: current.version.toString(),
-              actorId: actor.id,
-              actorConfiguration: actorConfig,
-              actorRoleState: actorConfig === "revoked-or-mismatched" ? "revoked" : actorConfig === "unauthorized" ? "active-unauthorized" : "active-researcher",
-              requestedPurpose: purpose,
-              scopeCondition: request.scopeHash === scopeHash ? "valid" : "invalid",
-              requestType: requestKind,
-              adversarialScenario: adversarial?.label ?? "",
-              expectedOutcome: expected ? "authorized" : "denied",
-              actualOutcome: actual ? "authorized" : "denied",
-              denialReason,
-              requestId: request.requestId,
-              transactionHash,
-              blockNumber,
-              transactionIndex,
-              consentHash: current.consentHash,
-              pass: actual === expected,
-            });
+          const nominalRequest = await baseRequest(env, caseNumber, "nominal", actor, scopeHash, purpose, current.consentHash);
+          const nominalExpected = expectedNominal(lifecycle, actorConfig, purpose);
+          let nominalActual = false;
+          let nominalReason = "";
+          let nominalTx = { transactionHash: "", blockNumber: "", transactionIndex: "", logIndex: "" };
+          try {
+            nominalTx = await runAccess(env, nominalRequest, actor.signer, true);
+            nominalActual = true;
+          } catch (err: any) {
+            nominalReason = normalizeDenial(err);
           }
+          rows.push({
+            caseId: `VCEM-${String(caseNumber).padStart(2, "0")}`,
+            lifecycleCondition: lifecycle,
+            consentVersion: current.version.toString(),
+            actorConfiguration: actorConfig,
+            requestedPurpose: purpose,
+            scopeCondition: nominalRequest.scopeHash === scopeHash ? "valid" : "invalid",
+            requestType: "nominal",
+            adversarialScenario: "nominal-control",
+            expectedOutcome: nominalExpected ? "authorized" : "denied",
+            actualOutcome: nominalActual ? "authorized" : "denied",
+            exactDenialReason: nominalReason,
+            requestId: nominalRequest.requestId,
+            ...nominalTx,
+            consentHash: current.consentHash,
+            pass: nominalActual === nominalExpected && (nominalExpected || nominalReason === nominalDenial(lifecycle, actorConfig, purpose)),
+          });
+
+          const adversarialScenario = preferredScenario(lifecycle, actorConfig, purpose, validSequence, caseNumber);
+          if (nominalExpected) validSequence++;
+          const adversarialRequest = await baseRequest(env, caseNumber, "adversarial", actor, scopeHash, purpose, current.consentHash);
+          const override =
+            adversarialScenario === "post-revocation-access"
+              ? {
+                  request: { ...adversarialRequest, requestorId: env.ids.authorized },
+                  signer: env.authorized,
+                  expectedReason: "VCEMAudit: consent inactive",
+                  registerData: true,
+                }
+              : adversarialScenario === "unauthorized-active-researcher" ||
+            adversarialScenario === "actor-removed-after-update" ||
+            adversarialScenario === "actor-added-after-update" ||
+            adversarialScenario === "valid-policy-disallowed-purpose"
+              ? {
+                  request: adversarialRequest,
+                  signer: actor.signer,
+                  expectedReason: nominalDenial(lifecycle, actorConfig, purpose),
+                  registerData: true,
+                }
+              : await applyScenario(env, adversarialScenario, adversarialRequest, scopeHash, caseNumber);
+
+          let actual = false;
+          let denialReason = "";
+          let txData = { transactionHash: "", blockNumber: "", transactionIndex: "", logIndex: "" };
+          try {
+            txData = await runAccess(env, override.request, override.signer, override.registerData, override.preAuthorizeReplay);
+            actual = true;
+          } catch (err: any) {
+            denialReason = normalizeDenial(err);
+          }
+          rows.push({
+            caseId: `VCEM-${String(caseNumber).padStart(2, "0")}`,
+            lifecycleCondition: lifecycle,
+            consentVersion: current.version.toString(),
+            actorConfiguration: actorConfig,
+            requestedPurpose: purpose,
+            scopeCondition: override.request.scopeHash === scopeHash ? "valid" : "invalid",
+            requestType: "adversarial",
+            adversarialScenario,
+            expectedOutcome: "denied",
+            actualOutcome: actual ? "authorized" : "denied",
+            exactDenialReason: denialReason,
+            requestId: override.request.requestId,
+            ...txData,
+            consentHash: current.consentHash,
+            pass: !actual && denialReason === override.expectedReason,
+          });
         }
       }
     }
 
     expect(caseNumber).to.equal(60);
     expect(rows).to.have.length(120);
-    expect(rows.every((row) => row.pass)).to.equal(true);
+    expect(new Set(rows.map((row) => `${row.requestType}:${row.requestId}`)).size).to.equal(120);
+    expect(rows.every((row) => row.pass), JSON.stringify(rows.filter((row) => !row.pass), null, 2)).to.equal(true);
 
-    const outDir = path.join(process.cwd(), "artifacts", "vcem-matrix");
-    fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(path.join(outDir, "vcem-correctness-matrix.json"), JSON.stringify(rows, null, 2));
-    const header = Object.keys(rows[0]);
-    fs.writeFileSync(path.join(outDir, "vcem-correctness-matrix.csv"), [header.join(","), ...rows.map((row) => header.map((field) => JSON.stringify(row[field] ?? "")).join(","))].join("\n"));
+    const scenarios = new Set(rows.map((row) => row.adversarialScenario));
+    for (const scenario of [
+      "valid-policy-disallowed-purpose",
+      "malformed-purpose",
+      "invalid-scope",
+      "tampered-data-hash",
+      "tampered-signature",
+      "expired-request",
+      "replayed-request",
+      "unauthorized-active-researcher",
+      "active-role-mismatched-actor",
+      "revoked-actor",
+      "actor-removed-after-update",
+      "actor-added-after-update",
+      "stale-consent-hash",
+      "stale-actor-root",
+      "post-revocation-access",
+    ]) {
+      expect(scenarios.has(scenario as Scenario), `missing scenario ${scenario}`).to.equal(true);
+    }
+
+    writeRows("vcem-correctness-matrix", rows);
+  });
+
+  it("records deterministic access-versus-consent-update ordering evidence", async function () {
+    this.timeout(120000);
+    const rows: MatrixRow[] = [];
+    const env = await deploy();
+    const scopeHash = await setupCase(env, "active-initial", "authorized");
+    const v1 = await env.consent.getCurrentConsentVersion(env.ids.participant);
+    const latest = await ethers.provider.getBlock("latest");
+    const accessBeforeUpdate = {
+      participantId: env.ids.participant,
+      requestorId: env.ids.authorized,
+      dataHash: hash("concurrency:data:before"),
+      scopeHash,
+      requestedPurpose: Purpose.RESEARCH,
+      requestId: hash("concurrency:access-before-update"),
+      clientTimestamp: latest!.timestamp,
+      requestExpiry: latest!.timestamp + 3600,
+      expectedConsentHash: v1.consentHash,
+    };
+    await env.audit.connect(env.custodian).registerDataHash(accessBeforeUpdate.participantId, scopeHash, accessBeforeUpdate.dataHash);
+
+    await ethers.provider.send("evm_setAutomine", [false]);
+    try {
+      const accessData = await env.audit
+        .connect(env.gateway)
+        .authorizeAndLogAccess.populateTransaction(accessBeforeUpdate, await signAccessRequest(env.audit, env.authorized, accessBeforeUpdate));
+      const updateData = await env.consent.connect(env.participant).updateConsent.populateTransaction(
+        env.ids.participant,
+        {
+          purposeMask: Purpose.TREAT | Purpose.RESEARCH | Purpose.PUBHLTH,
+          scopeHash,
+          zkConsentCommitment: hash("zk:concurrency:update-after-access"),
+        },
+        [env.ids.newlyAdded]
+      );
+      const accessHash = await ethers.provider.send("eth_sendTransaction", [
+        { from: env.gateway.address, to: await env.audit.getAddress(), data: accessData.data },
+      ]);
+      const updateHash = await ethers.provider.send("eth_sendTransaction", [
+        { from: env.participant.address, to: await env.consent.getAddress(), data: updateData.data },
+      ]);
+      await ethers.provider.send("evm_mine", []);
+      const accessReceipt = await ethers.provider.getTransactionReceipt(accessHash);
+      const updateReceipt = await ethers.provider.getTransactionReceipt(updateHash);
+      const accessLog = accessReceipt?.logs.find((entry: any) => entry.topics[0] === ACCESS_AUTHORIZED_TOPIC);
+      rows.push({
+        caseId: "VCEM-CONCURRENCY-01",
+        lifecycleCondition: "access-before-update-same-block",
+        consentVersion: "1",
+        actorConfiguration: "authorized",
+        requestedPurpose: "research",
+        scopeCondition: "valid",
+        requestType: "nominal",
+        adversarialScenario: "nominal-control",
+        expectedOutcome: "authorized",
+        actualOutcome: "authorized",
+        exactDenialReason: "",
+        requestId: accessBeforeUpdate.requestId,
+        transactionHash: accessReceipt?.hash ?? accessHash,
+        blockNumber: accessReceipt?.blockNumber?.toString() ?? "",
+        transactionIndex: accessReceipt?.index?.toString() ?? "",
+        logIndex: accessLog?.index?.toString() ?? "",
+        consentHash: v1.consentHash,
+        pass: (accessReceipt?.index ?? 0) < (updateReceipt?.index ?? 999),
+      });
+    } finally {
+      await ethers.provider.send("evm_setAutomine", [true]);
+    }
+
+    const v2 = await env.consent.getCurrentConsentVersion(env.ids.participant);
+    const afterUpdateRequest = {
+      participantId: env.ids.participant,
+      requestorId: env.ids.authorized,
+      dataHash: hash("concurrency:data:after"),
+      scopeHash,
+      requestedPurpose: Purpose.RESEARCH,
+      requestId: hash("concurrency:update-before-access"),
+      clientTimestamp: latest!.timestamp,
+      requestExpiry: latest!.timestamp + 3600,
+      expectedConsentHash: v1.consentHash,
+    };
+    await env.audit.connect(env.custodian).registerDataHash(afterUpdateRequest.participantId, scopeHash, afterUpdateRequest.dataHash);
+
+    let denialReason = "";
+    try {
+      await env.audit
+        .connect(env.gateway)
+        .authorizeAndLogAccess(afterUpdateRequest, await signAccessRequest(env.audit, env.authorized, afterUpdateRequest));
+    } catch (err: any) {
+      denialReason = normalizeDenial(err);
+    }
+    rows.push({
+      caseId: "VCEM-CONCURRENCY-02",
+      lifecycleCondition: "update-before-access-next-block",
+      consentVersion: v2.version.toString(),
+      actorConfiguration: "authorized-removed-by-update",
+      requestedPurpose: "research",
+      scopeCondition: "valid",
+      requestType: "adversarial",
+      adversarialScenario: "stale-consent-hash",
+      expectedOutcome: "denied",
+      actualOutcome: denialReason ? "denied" : "authorized",
+      exactDenialReason: denialReason,
+      requestId: afterUpdateRequest.requestId,
+      transactionHash: "",
+      blockNumber: "",
+      transactionIndex: "",
+      logIndex: "",
+      consentHash: v2.consentHash,
+      pass: denialReason === "VCEMAudit: outdated consent hash",
+    });
+
+    expect(rows.every((row) => row.pass), JSON.stringify(rows, null, 2)).to.equal(true);
+    writeRows("vcem-concurrency-ordering", rows);
   });
 });

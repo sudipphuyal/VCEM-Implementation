@@ -12,7 +12,7 @@ The repository contains:
 - TypeScript pseudonymization, FHIR, policy, data-proxy, and audit-verifier modules;
 - Besu Docker scaffolding;
 - benchmark scaffolding;
-- VCEM unit tests and a 60-case/120-outcome matrix test;
+- VCEM unit tests and one authoritative 60-case/120-outcome matrix test with separate concurrency ordering evidence;
 - CI and static-analysis config stubs.
 
 The working tree was clean at baseline.
@@ -23,10 +23,12 @@ The working tree was clean at baseline.
 | --- | --- | --- |
 | `npm ls --depth=0` | Pass | Dependencies are installed. |
 | `npm run lint` | Pass | TypeScript typecheck passes. |
-| `npm run compile` | Pass | Hardhat warns Node.js `v23.11.0` is unsupported. |
-| `npm test` | Pass | Supported default suite: 58 passing after the final alignment changes. |
+| `npm run compile` | Pass | Uses locally pinned `solc` `0.8.20` and aliased `solc-0-8-27`; Hardhat warns Node.js `v23.11.0` is unsupported. |
+| `npx hardhat compile --force` | Pass | Recompiled 17 Solidity files using local soljson builds. |
+| `npm test` | Pass | Supported default suite excludes legacy ZKP and includes VCEM matrix/concurrency tests. |
 | `npm run test:vcem` | Pass | 6 passing. |
-| `npm run test:legacy:zkp` | Fail | 1 passing, 3 failing due legacy proof/verifier mismatch. |
+| `npm run test:vcem:matrix` | Pass | 60 policy cases, 120 outcomes, plus deterministic access/update ordering evidence. |
+| `npm run test:legacy:zkp` | Fail | Intentionally unsupported legacy path: 1 passing, 3 failing due stale proof/verifier mismatch. |
 | `npm audit --audit-level=low` | Fail with findings | 59 vulnerabilities: 19 low, 24 moderate, 12 high, 4 critical. |
 | `npm run slither` | Fail | `slither` is not installed. |
 
@@ -47,7 +49,7 @@ None in the supported compile path. Hardhat reports an unsupported Node.js versi
 - `npm audit` reports 59 dependency vulnerabilities. Several suggested remediations require breaking Hardhat/Ethers upgrades.
 - Slither is configured but unavailable in the local environment.
 - Legacy DSA/RSA contracts retain plaintext prototype metadata and delete-on-revoke behavior; they are isolated from VCEM claims.
-- Legacy ZKP proof artifacts are stale or mismatched.
+- Legacy ZKP proof artifacts are stale or mismatched and are not VCEM authorization proof evidence.
 
 ## Claims Already Supported
 
@@ -55,7 +57,7 @@ None in the supported compile path. Hardhat reports an unsupported Node.js versi
 - Runtime access authorization checks active consent, actor, purpose, scope, data hash, request expiry, EIP-712 signature, and replay status.
 - Authorized access events store consent version, consent hash, and actor root.
 - Actor roots are derived from the enforced actor set.
-- VCEM unit tests and matrix evidence support independently verifiable per-access consent-state binding in Hardhat.
+- VCEM unit tests and the authoritative matrix evidence support independently verifiable per-access consent-state binding in Hardhat.
 
 ## Claims Not Supported Yet
 
@@ -76,7 +78,7 @@ None in the supported compile path. Hardhat reports an unsupported Node.js versi
 | Audit verifier completeness | `scripts/auditVerify.ts`, missing `services/audit-verifier`, docs/tests |
 | FHIR contract-call mapping | `services/fhir-adapter/*`, `services/policy/model.ts`, `fixtures/fhir/*`, `test/FHIRAdapter.ts`, docs |
 | Besu generation/validation | `infrastructure/besu/*`, `package.json`, docs |
-| Matrix authority | `test/VCEM.ts`, `test/VCEMMatrix.ts`, `docs/vcem-test-matrix.md` |
+| Matrix authority | `test/VCEMMatrix.ts`, `artifacts/vcem-matrix/*`, `docs/vcem-test-matrix.md` |
 | Benchmark execution | `benchmarks/*`, missing API/proxy workload commands |
-| Offline compiler | `package.json`, `hardhat.config.ts` |
+| Offline compiler | `package.json`, `package-lock.json`, `hardhat.config.ts` |
 | Legacy ZKP | `contracts/DataSharingAgreementZKP.sol`, `contracts/ABVerifier.sol`, `test/*ZKP*`, `circuits/*`, docs |

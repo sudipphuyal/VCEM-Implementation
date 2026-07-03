@@ -25,14 +25,19 @@ task("clean", "Cleans the cache and deletes all artifacts", async (_, hre) => {
   }
 });
 
+const localSolcBuilds: Record<string, { packageName: string; longVersion: string }> = {
+  "0.8.20": { packageName: "solc", longVersion: "0.8.20+commit.a1b79de6" },
+  "0.8.27": { packageName: "solc-0-8-27", longVersion: "0.8.27+commit.40a35a09" },
+};
+
 subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD, async (args: { solcVersion: string }, _hre, runSuper) => {
-  if (args.solcVersion === "0.8.20") {
-    const compilerPath = require.resolve("solc/soljson.js");
+  const localBuild = localSolcBuilds[args.solcVersion];
+  if (localBuild) {
     return {
-      compilerPath,
+      compilerPath: require.resolve(`${localBuild.packageName}/soljson.js`),
       isSolcJs: true,
-      version: "0.8.20",
-      longVersion: "0.8.20+commit.a1b79de6",
+      version: args.solcVersion,
+      longVersion: localBuild.longVersion,
     };
   }
   return runSuper();

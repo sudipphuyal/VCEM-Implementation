@@ -14,6 +14,11 @@ export type ProxyConfig = {
   keys: Record<string, string>;
 };
 
+/**
+ * @deprecated Legacy fixture helper. This function is intentionally not used by
+ * production API code because a transaction hash plus expected data hash is too
+ * close to a reusable bearer token. Use PolicyDataProxy instead.
+ */
 export async function retrieveAuthorizedArtifact(config: ProxyConfig, transactionHash: string, expectedDataHash: string) {
   const provider = new ethers.JsonRpcProvider(config.rpcUrl);
   const receipt = await provider.getTransactionReceipt(transactionHash);

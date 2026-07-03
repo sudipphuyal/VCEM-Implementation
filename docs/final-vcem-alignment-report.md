@@ -48,12 +48,12 @@ Plaintext data is returned only after receipt verification and is not stored in 
 
 ## Audit Verifier Coverage
 
-The audit verifier reconstructs consent versions, recomputes consent hashes, validates previous-hash continuity, recomputes actor roots, checks latest consent at access block, validates purpose/scope/data-hash binding, and detects replayed request IDs in observed events.
+The audit verifier reconstructs consent versions, recomputes consent hashes, validates previous-hash continuity, recomputes actor roots, validates immutable version-specific actor membership, replays registry lifecycle events for historical wallet/role state, checks latest active consent at the exact access event position, decodes `authorizeAndLogAccess` calldata, recovers the EIP-712 signer, validates purpose/scope/data-hash binding, request expiry, expected consent hash, and detects replayed request IDs in observed events.
 
 Remaining verifier limitations:
 
-- historical EIP-712 signature recovery from transaction calldata is not complete;
-- historical wallet-to-requestor mapping at block height is limited by current registry event coverage;
+- denied access verification is limited to emitted denial evidence and gateway-signed denial transactions;
+- historical wallet-to-requestor mapping at block height is limited by current `VCEMRegistry` event coverage;
 - live Besu audit reports require deployed addresses and RPC access.
 
 ## FHIR Mapping Coverage
