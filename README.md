@@ -191,6 +191,302 @@ HARDHAT_DISABLE_DOWNLOADS=true npm run compile
 
 VCEM contracts compile with Solidity 0.8.20. Retained legacy contracts use Solidity 0.8.27 where required. Hardhat is configured to resolve local `soljson` compiler packages instead of downloading compilers at runtime.
 
+## Reproduce All Outcomes and Test Reports
+
+This is the recommended end-to-end order for reproducing the implementation evidence. Run from the repository root.
+
+Create a local folder for terminal logs:
+
+```bash
+mkdir -p reports/execution-logs
+```
+
+### Step 1: Install Dependencies
+
+```bash
+npm ci 2>&1 | tee reports/execution-logs/01-npm-ci.log
+```
+
+Expected result:
+
+- dependencies install from `package-lock.json`;
+- no source files should be edited by this command.
+
+### Step 2: Offline Solidity Compile
+
+```bash
+HARDHAT_DISABLE_DOWNLOADS=true npm run compile 2>&1 | tee reports/execution-logs/02-offline-compile.log
+```
+
+Expected result:
+
+- Hardhat compiles without downloading Solidity compilers;
+- VCEM contracts use Solidity 0.8.20;
+- retained legacy contracts use the pinned local 0.8.27 compiler where required.
+
+Primary evidence:
+
+- `artifacts/contracts/vcem/VCEMRegistry.sol/VCEMRegistry.json`
+- `artifacts/contracts/vcem/VCEMConsent.sol/VCEMConsent.json`
+- `artifacts/contracts/vcem/VCEMAudit.sol/VCEMAudit.json`
+- `reports/execution-logs/02-offline-compile.log`
+
+### Step 3: Run the Default Supported Test Suite
+
+```bash
+npm test 2>&1 | tee reports/execution-logs/03-npm-test.log
+```
+
+Expected result from the last recorded local run:
+
+- 85 passing tests.
+
+This suite covers:
+
+- retained legacy non-ZKP contracts;
+- authenticated API/data-proxy tests;
+- FHIR adapter tests;
+- VCEM unit tests;
+- VCEM matrix tests;
+- audit-verifier tests.
+
+Primary evidence:
+
+- `reports/execution-logs/03-npm-test.log`
+
+### Step 4: Run Focused VCEM Evidence Tests
+
+```bash
+npm run test:vcem 2>&1 | tee reports/execution-logs/04-vcem-unit.log
+npm run test:vcem:matrix 2>&1 | tee reports/execution-logs/05-vcem-matrix.log
+npm run test:audit-verifier 2>&1 | tee reports/execution-logs/06-audit-verifier.log
+npm run test:fhir 2>&1 | tee reports/execution-logs/07-fhir.log
+npm run test:api 2>&1 | tee reports/execution-logs/08-api-proxy.log
+npm run test:property 2>&1 | tee reports/execution-logs/09-property.log
+```
+
+Expected result from the last recorded local run:
+
+- `npm run test:vcem:matrix`: 2 passing;
+- `npm run test:audit-verifier`: 17 passing;
+- `npm run test:fhir`: 6 passing;
+- `npm run test:property`: 2 passing.
+
+Generated VCEM matrix evidence:
+
+- `artifacts/vcem-matrix/vcem-correctness-matrix.json`
+- `artifacts/vcem-matrix/vcem-correctness-matrix.csv`
+- `artifacts/vcem-matrix/vcem-concurrency-ordering.json`
+- `artifacts/vcem-matrix/vcem-concurrency-ordering.csv`
+
+The matrix files are the main machine-readable evidence for the 60 policy permutations, 120 outcomes, exact denial reasons, request IDs, transaction hashes, block numbers, transaction indexes, log indexes, consent hashes, and pass/fail status.
+
+### Step 5: Run Legacy Experimental ZKP Tests
+
+```bash
+npm run test:legacy:zkp 2>&1 | tee reports/execution-logs/10-legacy-zkp.log
+```
+
+Expected result from the last recorded local run:
+
+- command exits successfully;
+- proof-dependent checks may be pending/skipped if local proof artifacts are absent or mismatched with the generated verifier.
+
+Important interpretation:
+
+- this command is not VCEM authorization proof evidence;
+- do not describe it as formal verification or a complete ZKP authorization proof.
+
+### Step 6: Run Security and Static-Analysis Checks
+
+```bash
+npm run secret:scan 2>&1 | tee reports/execution-logs/11-secret-scan.log
+npm run solhint 2>&1 | tee reports/execution-logs/12-solhint.log
+npm run security:audit 2>&1 | tee reports/execution-logs/13-npm-audit.log
+npm run besu:config:validate 2>&1 | tee reports/execution-logs/14-besu-config-validate.log
+```
+
+Expected result from the last recorded local run:
+
+- `npm run secret:scan`: pass;
+- `npm run solhint`: pass with warnings;
+- `npm run security:audit`: fails because unresolved high/critical dependency findings remain;
+- `npm run besu:config:validate`: pass.
+
+Important interpretation:
+
+- Solhint is executed static analysis.
+- npm audit is executed dependency security analysis.
+- The dependency-audit failure is an unresolved risk, not a clean security sign-off.
+- Slither is configured, but local Slither execution requires installing the Slither binary.
+
+Optional Slither command:
+
+```bash
+npm run slither 2>&1 | tee reports/execution-logs/15-slither.log
+```
+
+Expected behavior without local Slither installed:
+
+- fails with `slither: command not found`.
+
+If Slither is installed, keep `reports/execution-logs/15-slither.log` as the static-analysis report.
+
+### Step 7: Run Coverage and Gas Reports
+
+```bash
+npm run coverage 2>&1 | tee reports/execution-logs/16-coverage.log
+npm run gas 2>&1 | tee reports/execution-logs/17-gas.log
+```
+
+Expected result from the last recorded local run:
+
+- `npm run coverage`: pass, 87 passing / 4 pending, 77.66% statement coverage;
+- `npm run gas`: pass, 6 VCEM tests passing with gas report.
+
+Generated coverage evidence:
+
+- `coverage/index.html`
+- `coverage/lcov.info`
+- `coverage/coverage-final.json`
+- `coverage.json`
+- `reports/execution-logs/16-coverage.log`
+
+Generated gas evidence:
+
+- `reports/execution-logs/17-gas.log`
+
+### Step 8: Optional Local Besu Network and Deployment
+
+Docker is required for this section.
+
+```bash
+npm run besu:generate-network 2>&1 | tee reports/execution-logs/18-besu-generate.log
+npm run besu:up 2>&1 | tee reports/execution-logs/19-besu-up.log
+npm run besu:status 2>&1 | tee reports/execution-logs/20-besu-status.log
+npm run besu:verify 2>&1 | tee reports/execution-logs/21-besu-verify.log
+HARDHAT_DISABLE_DOWNLOADS=true npm run compile 2>&1 | tee reports/execution-logs/22-besu-compile.log
+npm run besu:deploy-vcem 2>&1 | tee reports/execution-logs/23-besu-deploy-vcem.log
+npm run audit:verify-bytecode 2>&1 | tee reports/execution-logs/24-bytecode-verify.log
+```
+
+Generated Besu/deployment evidence:
+
+- `infrastructure/besu/generated/genesis.json`
+- `infrastructure/besu/generated/static-nodes.json`
+- `infrastructure/besu/generated/network-manifest.json`
+- `deployments/vcem-manifest.json`
+- `reports/execution-logs/21-besu-verify.log`
+- `reports/execution-logs/23-besu-deploy-vcem.log`
+- `reports/execution-logs/24-bytecode-verify.log`
+
+Stop the local network:
+
+```bash
+npm run besu:down
+```
+
+Remove generated local keys, containers, and volumes:
+
+```bash
+npm run besu:clean
+```
+
+### Step 9: Optional Independent Audit Verification Against Deployed Contracts
+
+Run this after deploying VCEM contracts to a local Besu network or another RPC endpoint.
+
+```bash
+npm run audit:verify -- --mode full \
+  --rpc=http://127.0.0.1:8545 \
+  --registry=<VCEMRegistry> \
+  --consent=<VCEMConsent> \
+  --audit=<VCEMAudit> \
+  2>&1 | tee reports/execution-logs/25-audit-verify-full.log
+```
+
+Sampled mode:
+
+```bash
+npm run audit:verify -- --mode sample --sample-size 100 --seed 42 \
+  --rpc=http://127.0.0.1:8545 \
+  --registry=<VCEMRegistry> \
+  --consent=<VCEMConsent> \
+  --audit=<VCEMAudit> \
+  2>&1 | tee reports/execution-logs/26-audit-verify-sample.log
+```
+
+Generated audit-verifier evidence:
+
+- `evidence/audit/audit-report.json`
+- `evidence/audit/audit-report.csv`
+- `reports/execution-logs/25-audit-verify-full.log`
+- `reports/execution-logs/26-audit-verify-sample.log`
+
+### Step 10: Optional Benchmarks
+
+Benchmarks require k6, PostgreSQL, the API/proxy services, and for VCEM benchmark runs a deployed VCEM environment with signed fixtures.
+
+```bash
+npm run benchmark:seed 2>&1 | tee reports/execution-logs/27-benchmark-seed.log
+npm run benchmark:baseline 2>&1 | tee reports/execution-logs/28-benchmark-baseline.log
+npm run benchmark:vcem 2>&1 | tee reports/execution-logs/29-benchmark-vcem.log
+npm run benchmark:analyze 2>&1 | tee reports/execution-logs/30-benchmark-analyze.log
+```
+
+Generated benchmark evidence:
+
+- `benchmarks/raw/fixtures/benchmark-fixtures.json`
+- `benchmarks/raw/baseline/<users>u/run-<n>/metadata.json`
+- `benchmarks/raw/vcem/<users>u/run-<n>/metadata.json`
+- `benchmarks/analysis/summary.json`
+- `benchmarks/analysis/summary.csv`
+- `benchmarks/reports/benchmark-report.md`
+
+Interpretation rule:
+
+- use benchmark results only when the relevant metadata says `status: executed`;
+- do not cite `not executed` benchmark metadata as performance evidence.
+
+### Step 11: Paper/Reviewer Report
+
+A Word report summarizing smart contract validation, static analysis, and formal-verification status is available at:
+
+```text
+reports/reviewer2-smart-contract-verification-report.docx
+```
+
+It states that:
+
+- Solhint static analysis was executed;
+- Slither is configured but needs a local Slither binary for local execution;
+- no completed formal verification proof currently exists;
+- bytecode verification tooling exists but requires a live deployment manifest and RPC run for deployed evidence.
+
+### What to Include in the Paper
+
+Safe claims:
+
+- offline reproducible Solidity compile was executed;
+- VCEM unit/integration tests were executed;
+- the 60-case/120-outcome VCEM matrix was executed;
+- audit-verifier tamper-detection tests were executed;
+- fixture-based FHIR lifecycle tests were executed;
+- Solhint static analysis was executed;
+- coverage and gas reports were executed;
+- dependency audit was executed and currently reports unresolved findings.
+
+Do not claim unless you execute and archive evidence:
+
+- legal GDPR compliance;
+- production clinical deployment;
+- live FHIR-server integration;
+- completed formal verification;
+- completed Slither local findings;
+- benchmark performance results;
+- live deployed bytecode verification;
+- complete ZKP-based VCEM authorization proof.
+
 ## Core VCEM Flow
 
 1. Register pseudonymous participant, researcher, custodian, gateway, and auditor identities in `VCEMRegistry`.
