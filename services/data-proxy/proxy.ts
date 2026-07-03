@@ -4,7 +4,7 @@ import path from "path";
 import { decryptArtifact, EncryptedArtifact } from "./crypto";
 
 const accessAuthorizedTopic = ethers.id(
-  "AccessAuthorized(bytes32,bytes32,bytes32,bytes32,bytes32,bytes32,uint8,uint64)"
+  "AccessAuthorized(bytes32,bytes32,bytes32,bytes32,bytes32,uint8,uint64,bytes32,bytes32,uint64)"
 );
 
 export type ProxyConfig = {
@@ -29,7 +29,7 @@ export async function retrieveAuthorizedArtifact(config: ProxyConfig, transactio
   }
 
   const decoded = ethers.AbiCoder.defaultAbiCoder().decode(
-    ["bytes32", "bytes32", "bytes32", "bytes32", "uint8", "uint64"],
+    ["bytes32", "bytes32", "uint8", "uint64", "bytes32", "bytes32", "uint64"],
     log.data
   );
   const dataHash = decoded[0] as string;

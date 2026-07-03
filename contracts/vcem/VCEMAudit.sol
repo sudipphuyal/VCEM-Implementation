@@ -29,20 +29,38 @@ contract VCEMAudit {
         bytes32 indexed requestorId,
         bytes32 dataHash,
         bytes32 scopeHash,
+        uint8 requestedPurpose,
+        uint64 consentVersion,
         bytes32 consentHash,
-        uint8 purpose,
+        bytes32 actorsRoot,
         uint64 timestamp
     );
+
+    enum DenialReason {
+        NONE,
+        NO_ACTIVE_CONSENT,
+        CONSENT_REVOKED,
+        STALE_CONSENT_HASH,
+        INVALID_SIGNATURE,
+        EXPIRED_REQUEST,
+        REPLAYED_REQUEST,
+        UNAUTHORIZED_ACTOR,
+        INVALID_PURPOSE,
+        PURPOSE_NOT_ALLOWED,
+        INVALID_SCOPE,
+        SCOPE_NOT_ALLOWED,
+        UNKNOWN_DATA_HASH,
+        REQUESTOR_REVOKED
+    }
+
     event AccessDenied(
         bytes32 indexed requestId,
         bytes32 indexed participantId,
         bytes32 indexed requestorId,
-        bytes32 dataHash,
-        bytes32 scopeHash,
+        DenialReason reasonCode,
         bytes32 expectedConsentHash,
-        uint8 purpose,
-        uint64 timestamp,
-        bytes32 reasonHash
+        bytes32 activeConsentHash,
+        uint64 timestamp
     );
     event DataHashRegistered(bytes32 indexed participantId, bytes32 indexed scopeHash, bytes32 dataHash, address operator);
     event Paused(address operator);
@@ -95,7 +113,7 @@ contract VCEMAudit {
     ) external onlyGateway whenNotPaused nonReentrant returns (bytes32) {
         require(request.requestId != bytes32(0), "VCEMAudit: empty request");
         require(request.dataHash != bytes32(0), "VCEMAudit: empty data hash");
-        require(registeredDataHash[request.participantId][request.scopeHash] == request.dataHash, "VCEMAudit: data hash denied");
+        require(VCEMTypes.isSingleValidPurpose(request.requestedPurpose), "VCEMAudit: invalid purpose");
         require(block.timestamp <= request.requestExpiry, "VCEMAudit: expired request");
         require(!usedRequestIds[request.requestId], "VCEMAudit: replayed request");
 
@@ -110,6 +128,7 @@ contract VCEMAudit {
         require(consent.isActorAuthorized(request.participantId, activeConsent.version, request.requestorId), "VCEMAudit: actor denied");
         require(consent.isPurposeAuthorized(request.participantId, activeConsent.version, request.requestedPurpose), "VCEMAudit: purpose denied");
         require(consent.isScopeAuthorized(request.participantId, activeConsent.version, request.scopeHash), "VCEMAudit: scope denied");
+        require(registeredDataHash[request.participantId][request.scopeHash] == request.dataHash, "VCEMAudit: data hash denied");
 
         usedRequestIds[request.requestId] = true;
         _accessEvents[request.requestId] = VCEMTypes.AccessEvent({
@@ -118,7 +137,9 @@ contract VCEMAudit {
             requestorId: request.requestorId,
             dataHash: request.dataHash,
             scopeHash: request.scopeHash,
+            consentVersion: activeConsent.version,
             consentHash: activeConsent.consentHash,
+            actorsRoot: activeConsent.actorsRoot,
             purpose: request.requestedPurpose,
             timestamp: uint64(block.timestamp),
             authorized: true
@@ -131,26 +152,27 @@ contract VCEMAudit {
             request.requestorId,
             request.dataHash,
             request.scopeHash,
-            activeConsent.consentHash,
             request.requestedPurpose,
+            activeConsent.version,
+            activeConsent.consentHash,
+            activeConsent.actorsRoot,
             uint64(block.timestamp)
         );
 
         return activeConsent.consentHash;
     }
 
-    function logDeniedAccess(AccessRequest calldata request, bytes32 reasonHash) external onlyGateway whenNotPaused {
+    function logDeniedAccess(AccessRequest calldata request, DenialReason reasonCode, bytes32 activeConsentHash) external onlyGateway whenNotPaused {
         require(request.requestId != bytes32(0), "VCEMAudit: empty request");
+        require(reasonCode != DenialReason.NONE, "VCEMAudit: empty reason");
         emit AccessDenied(
             request.requestId,
             request.participantId,
             request.requestorId,
-            request.dataHash,
-            request.scopeHash,
+            reasonCode,
             request.expectedConsentHash,
-            request.requestedPurpose,
-            uint64(block.timestamp),
-            reasonHash
+            activeConsentHash,
+            uint64(block.timestamp)
         );
     }
 

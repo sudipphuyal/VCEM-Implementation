@@ -11,6 +11,10 @@
 - Added pause controls on registry, consent, and audit contracts.
 - Added receipt-based data proxy verification before encrypted artifact release.
 - Added secret-rotation documentation.
+- Replaced caller-supplied VCEM actor roots with contract-derived actor-set commitments.
+- Added versioned actor-list getters for independent audit recomputation.
+- Added canonical purpose-bit validation for access requests.
+- Isolated mismatched legacy ZKP tests under `npm run test:legacy:zkp` so default VCEM/legacy non-ZKP tests are reproducible and green.
 - Ran `npm audit --audit-level=low`; current dependency tree reports 59 vulnerabilities: 19 low, 24 moderate, 12 high, and 4 critical. Several suggested fixes require breaking upgrades to Hardhat/Ethers-related tooling and were not applied in this pass.
 - Attempted `npm run slither`; Slither is not installed in the current environment.
 

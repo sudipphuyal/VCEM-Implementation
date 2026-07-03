@@ -3,6 +3,7 @@ pragma solidity 0.8.20;
 
 import {VCEMTypes} from "./VCEMTypes.sol";
 import {IVCEMRegistry} from "./interfaces/IVCEMRegistry.sol";
+import {CanonicalHash} from "./libraries/CanonicalHash.sol";
 
 contract VCEMConsent {
     IVCEMRegistry public immutable registry;
@@ -11,6 +12,7 @@ contract VCEMConsent {
     mapping(bytes32 => uint64) private _currentVersion;
     mapping(bytes32 => mapping(uint64 => VCEMTypes.ConsentVersion)) private _versions;
     mapping(bytes32 => mapping(uint64 => mapping(bytes32 => bool))) private _authorizedActors;
+    mapping(bytes32 => mapping(uint64 => bytes32[])) private _versionActors;
     mapping(bytes32 => bytes32[]) private _participantHistory;
 
     event ConsentRecorded(
@@ -42,10 +44,14 @@ contract VCEMConsent {
         uint64 indexed version,
         bytes32 previousConsentHash,
         bytes32 consentHash,
+        uint8 purposeMask,
+        bytes32 scopeHash,
         bytes32 actorsRoot,
+        bytes32 zkConsentCommitment,
         VCEMTypes.ConsentStatus status,
         uint64 timestamp
     );
+    event ConsentActorsRecorded(bytes32 indexed participantId, uint64 indexed version, bytes32[] actorIds, bytes32 actorsRoot);
     event Paused(address operator);
     event Unpaused(address operator);
 
@@ -87,7 +93,7 @@ contract VCEMConsent {
         uint64 current = _currentVersion[participantId];
         require(current != 0, "VCEMConsent: no consent");
         require(_versions[participantId][current].status == VCEMTypes.ConsentStatus.ACTIVE, "VCEMConsent: not active");
-        _versions[participantId][current].status = VCEMTypes.ConsentStatus.UPDATED;
+        _versions[participantId][current].status = VCEMTypes.ConsentStatus.SUPERSEDED;
         return _recordVersion(participantId, policy, authorizedActors, VCEMTypes.ConsentStatus.ACTIVE, false);
     }
 
@@ -96,12 +102,11 @@ contract VCEMConsent {
         require(current != 0, "VCEMConsent: no consent");
         VCEMTypes.ConsentVersion storage previous = _versions[participantId][current];
         require(previous.status == VCEMTypes.ConsentStatus.ACTIVE, "VCEMConsent: not active");
-        previous.status = VCEMTypes.ConsentStatus.UPDATED;
+        previous.status = VCEMTypes.ConsentStatus.SUPERSEDED;
 
         VCEMTypes.ConsentPolicy memory policy = VCEMTypes.ConsentPolicy({
             purposeMask: previous.purposeMask,
             scopeHash: previous.scopeHash,
-            actorsRoot: previous.actorsRoot,
             zkConsentCommitment: previous.zkConsentCommitment
         });
 
@@ -137,8 +142,8 @@ contract VCEMConsent {
     }
 
     function isPurposeAuthorized(bytes32 participantId, uint64 version, uint8 purpose) external view returns (bool) {
-        require(purpose < 8, "VCEMConsent: invalid purpose");
-        return (_versions[participantId][version].purposeMask & uint8(1 << purpose)) != 0;
+        require(VCEMTypes.isSingleValidPurpose(purpose), "VCEMConsent: invalid purpose");
+        return (_versions[participantId][version].purposeMask & purpose) != 0;
     }
 
     function isScopeAuthorized(bytes32 participantId, uint64 version, bytes32 scopeHash) external view returns (bool) {
@@ -148,13 +153,41 @@ contract VCEMConsent {
     function computeConsentHash(
         bytes32 previousConsentHash,
         bytes32 participantId,
+        uint64 version,
+        VCEMTypes.ConsentStatus status,
         uint8 purposeMask,
         bytes32 scopeHash,
         bytes32 actorsRoot,
-        uint64 timestamp,
-        uint64 version
+        bytes32 zkConsentCommitment,
+        uint64 timestamp
     ) public pure returns (bytes32) {
-        return sha256(abi.encode(previousConsentHash, participantId, purposeMask, scopeHash, actorsRoot, timestamp, version));
+        return CanonicalHash.consentHash(
+            previousConsentHash,
+            participantId,
+            version,
+            status,
+            purposeMask,
+            scopeHash,
+            actorsRoot,
+            zkConsentCommitment,
+            timestamp
+        );
+    }
+
+    function computeActorSetRoot(bytes32[] calldata actorIds) external pure returns (bytes32) {
+        bytes32[] memory sorted = new bytes32[](actorIds.length);
+        for (uint256 i = 0; i < actorIds.length; i++) {
+            sorted[i] = actorIds[i];
+        }
+        return CanonicalHash.actorSetRoot(CanonicalHash.sortActors(sorted));
+    }
+
+    function getConsentActorCount(bytes32 participantId, uint64 version) external view returns (uint256) {
+        return _versionActors[participantId][version].length;
+    }
+
+    function getConsentActorAt(bytes32 participantId, uint64 version, uint256 index) external view returns (bytes32) {
+        return _versionActors[participantId][version][index];
     }
 
     function pause() external onlyAdmin {
@@ -175,8 +208,21 @@ contract VCEMConsent {
         bool isCreate
     ) internal returns (bytes32) {
         require(policy.scopeHash != bytes32(0), "VCEMConsent: empty scope");
-        require(policy.actorsRoot != bytes32(0), "VCEMConsent: empty actors root");
-        require(policy.purposeMask != 0, "VCEMConsent: empty purpose");
+        require(VCEMTypes.isValidPurposeMask(policy.purposeMask), "VCEMConsent: invalid purpose mask");
+
+        bytes32[] memory sortedActors;
+        bytes32 actorsRoot;
+        if (status == VCEMTypes.ConsentStatus.REVOKED) {
+            sortedActors = new bytes32[](0);
+            actorsRoot = CanonicalHash.actorSetRoot(sortedActors);
+        } else {
+            sortedActors = new bytes32[](authorizedActors.length);
+            for (uint256 i = 0; i < authorizedActors.length; i++) {
+                sortedActors[i] = authorizedActors[i];
+            }
+            sortedActors = CanonicalHash.sortActors(sortedActors);
+            actorsRoot = CanonicalHash.actorSetRoot(sortedActors);
+        }
 
         uint64 version = _currentVersion[participantId] + 1;
         bytes32 previousHash = version == 1 ? bytes32(0) : _versions[participantId][version - 1].consentHash;
@@ -184,11 +230,13 @@ contract VCEMConsent {
         bytes32 consentHash = computeConsentHash(
             previousHash,
             participantId,
+            version,
+            status,
             policy.purposeMask,
             policy.scopeHash,
-            policy.actorsRoot,
-            timestamp,
-            version
+            actorsRoot,
+            policy.zkConsentCommitment,
+            timestamp
         );
 
         _versions[participantId][version] = VCEMTypes.ConsentVersion({
@@ -196,7 +244,7 @@ contract VCEMConsent {
             status: status,
             purposeMask: policy.purposeMask,
             scopeHash: policy.scopeHash,
-            actorsRoot: policy.actorsRoot,
+            actorsRoot: actorsRoot,
             previousConsentHash: previousHash,
             consentHash: consentHash,
             zkConsentCommitment: policy.zkConsentCommitment,
@@ -204,9 +252,9 @@ contract VCEMConsent {
             revokedAt: status == VCEMTypes.ConsentStatus.REVOKED ? timestamp : 0
         });
 
-        for (uint256 i = 0; i < authorizedActors.length; i++) {
-            require(authorizedActors[i] != bytes32(0), "VCEMConsent: empty actor");
-            _authorizedActors[participantId][version][authorizedActors[i]] = true;
+        for (uint256 i = 0; i < sortedActors.length; i++) {
+            _versionActors[participantId][version].push(sortedActors[i]);
+            _authorizedActors[participantId][version][sortedActors[i]] = true;
         }
 
         _currentVersion[participantId] = version;
@@ -220,13 +268,26 @@ contract VCEMConsent {
                 consentHash,
                 policy.purposeMask,
                 policy.scopeHash,
-                policy.actorsRoot,
+                actorsRoot,
                 policy.zkConsentCommitment,
                 status,
                 timestamp
             );
+            emit ConsentActorsRecorded(participantId, version, sortedActors, actorsRoot);
         } else if (status == VCEMTypes.ConsentStatus.REVOKED) {
-            emit ConsentRevoked(participantId, version, previousHash, consentHash, policy.actorsRoot, status, timestamp);
+            emit ConsentRevoked(
+                participantId,
+                version,
+                previousHash,
+                consentHash,
+                policy.purposeMask,
+                policy.scopeHash,
+                actorsRoot,
+                policy.zkConsentCommitment,
+                status,
+                timestamp
+            );
+            emit ConsentActorsRecorded(participantId, version, sortedActors, actorsRoot);
         } else {
             emit ConsentUpdated(
                 participantId,
@@ -235,11 +296,12 @@ contract VCEMConsent {
                 consentHash,
                 policy.purposeMask,
                 policy.scopeHash,
-                policy.actorsRoot,
+                actorsRoot,
                 policy.zkConsentCommitment,
                 status,
                 timestamp
             );
+            emit ConsentActorsRecorded(participantId, version, sortedActors, actorsRoot);
         }
 
         return consentHash;

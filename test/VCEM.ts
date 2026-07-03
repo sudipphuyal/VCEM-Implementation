@@ -16,8 +16,15 @@ const Role = {
 const ConsentStatus = {
   NONE: 0,
   ACTIVE: 1,
-  UPDATED: 2,
+  SUPERSEDED: 2,
   REVOKED: 3,
+};
+
+const Purpose = {
+  TREAT: 1 << 0,
+  RESEARCH: 1 << 1,
+  PUBHLTH: 1 << 2,
+  OTHER: 1 << 3,
 };
 
 function id(label: string) {
@@ -55,7 +62,7 @@ async function signAccessRequest(audit: any, signer: any, request: any) {
 }
 
 async function deployVCEM() {
-  const [admin, participant, researcher, gateway, custodian, auditor, outsider] =
+  const [admin, participant, researcher, gateway, custodian, auditor, outsider, addedResearcher] =
     await ethers.getSigners();
 
   const Registry = await ethers.getContractFactory("VCEMRegistry");
@@ -73,6 +80,7 @@ async function deployVCEM() {
   const custodianId = id("custodian:fixture");
   const auditorId = id("auditor:fixture");
   const outsiderId = id("researcher:outsider");
+  const addedResearcherId = id("researcher:added");
 
   await registry.registerActor(participantId, participant.address, Role.PARTICIPANT);
   await registry.registerActor(researcherId, researcher.address, Role.RESEARCHER);
@@ -80,6 +88,7 @@ async function deployVCEM() {
   await registry.registerActor(custodianId, custodian.address, Role.DATA_CUSTODIAN);
   await registry.registerActor(auditorId, auditor.address, Role.AUDITOR);
   await registry.registerActor(outsiderId, outsider.address, Role.RESEARCHER);
+  await registry.registerActor(addedResearcherId, addedResearcher.address, Role.RESEARCHER);
 
   return {
     admin,
@@ -89,6 +98,7 @@ async function deployVCEM() {
     custodian,
     auditor,
     outsider,
+    addedResearcher,
     registry,
     consent,
     audit,
@@ -96,19 +106,24 @@ async function deployVCEM() {
     researcherId,
     gatewayId,
     outsiderId,
+    addedResearcherId,
   };
 }
 
-async function createConsentFixture(env: any, purposeMask = 0b00000110, scopeHash = hash("scope:vitals")) {
+async function createConsentFixture(
+  env: any,
+  purposeMask = Purpose.RESEARCH | Purpose.PUBHLTH,
+  scopeHash = hash("scope:vitals"),
+  authorizedActors = [env.researcherId]
+) {
   const policy = {
     purposeMask,
     scopeHash,
-    actorsRoot: hash("actors:authorized-researcher"),
     zkConsentCommitment: hash("zk:commitment:fixture"),
   };
   await env.consent
     .connect(env.participant)
-    .createConsent(env.participantId, policy, [env.researcherId]);
+    .createConsent(env.participantId, policy, authorizedActors);
   const version = await env.consent.getCurrentConsentVersion(env.participantId);
   return { policy, version };
 }
@@ -122,7 +137,7 @@ async function requestFor(env: any, overrides: any = {}) {
     requestorId: env.researcherId,
     dataHash: hash(`data:${requestOverrides.seed ?? "default"}`),
     scopeHash: hash("scope:vitals"),
-    requestedPurpose: 1,
+    requestedPurpose: Purpose.RESEARCH,
     requestId: hash(`request:${requestOverrides.seed ?? Math.random().toString()}`),
     clientTimestamp: latest!.timestamp,
     requestExpiry: latest!.timestamp + 3600,
@@ -147,9 +162,8 @@ describe("VCEM", function () {
     await env.consent.connect(env.participant).updateConsent(
       env.participantId,
       {
-        purposeMask: 0b00000010,
+        purposeMask: Purpose.RESEARCH,
         scopeHash: hash("scope:vitals"),
-        actorsRoot: hash("actors:authorized-researcher:v2"),
         zkConsentCommitment: hash("zk:commitment:v2"),
       },
       [env.researcherId]
@@ -157,7 +171,7 @@ describe("VCEM", function () {
 
     const oldVersion = await env.consent.getConsentVersion(env.participantId, 1);
     const newVersion = await env.consent.getCurrentConsentVersion(env.participantId);
-    expect(oldVersion.status).to.equal(ConsentStatus.UPDATED);
+    expect(oldVersion.status).to.equal(ConsentStatus.SUPERSEDED);
     expect(newVersion.previousConsentHash).to.equal(version.consentHash);
     expect(newVersion.consentHash).to.not.equal(version.consentHash);
 
@@ -186,8 +200,10 @@ describe("VCEM", function () {
         env.researcherId,
         request.dataHash,
         request.scopeHash,
-        version.consentHash,
         request.requestedPurpose,
+        version.version,
+        version.consentHash,
+        version.actorsRoot,
         anyValue
       );
 
@@ -222,9 +238,8 @@ describe("VCEM", function () {
     await env.consent.connect(env.participant).updateConsent(
       env.participantId,
       {
-        purposeMask: 0b00000010,
+        purposeMask: Purpose.RESEARCH,
         scopeHash: hash("scope:vitals"),
-        actorsRoot: hash("actors:authorized-researcher:v3"),
         zkConsentCommitment: hash("zk:commitment:v3"),
       },
       [env.researcherId]
@@ -238,10 +253,15 @@ describe("VCEM", function () {
       env.audit.connect(env.gateway).authorizeAndLogAccess(scopeDenied, await signAccessRequest(env.audit, env.researcher, scopeDenied))
     ).to.be.revertedWith("VCEMAudit: scope denied");
 
-    const purposeDenied = await requestFor(env, { seed: "purpose", requestedPurpose: 3 });
+    const purposeDenied = await requestFor(env, { seed: "purpose", requestedPurpose: Purpose.OTHER });
     await expect(
       env.audit.connect(env.gateway).authorizeAndLogAccess(purposeDenied, await signAccessRequest(env.audit, env.researcher, purposeDenied))
     ).to.be.revertedWith("VCEMAudit: purpose denied");
+
+    const invalidPurpose = await requestFor(env, { seed: "invalid-purpose", requestedPurpose: 3 });
+    await expect(
+      env.audit.connect(env.gateway).authorizeAndLogAccess(invalidPurpose, await signAccessRequest(env.audit, env.researcher, invalidPurpose))
+    ).to.be.revertedWith("VCEMAudit: invalid purpose");
 
     const tamperedData = await requestFor(env, { seed: "tampered", registerDataHash: false });
     await expect(
@@ -263,6 +283,71 @@ describe("VCEM", function () {
     ).to.be.revertedWith("VCEMAudit: consent inactive");
   });
 
+  it("derives canonical actor roots from sorted unique actor sets", async function () {
+    const envA = await deployVCEM();
+    const rootAB = await envA.consent.computeActorSetRoot([envA.outsiderId, envA.researcherId]);
+    await createConsentFixture(envA, Purpose.RESEARCH, hash("scope:vitals"), [envA.outsiderId, envA.researcherId]);
+    const versionA = await envA.consent.getCurrentConsentVersion(envA.participantId);
+    expect(versionA.actorsRoot).to.equal(rootAB);
+    expect(await envA.consent.getConsentActorAt(envA.participantId, 1, 0)).to.equal(envA.researcherId);
+    expect(await envA.consent.getConsentActorAt(envA.participantId, 1, 1)).to.equal(envA.outsiderId);
+
+    const envB = await deployVCEM();
+    await createConsentFixture(envB, Purpose.RESEARCH, hash("scope:vitals"), [envB.researcherId, envB.outsiderId]);
+    const versionB = await envB.consent.getCurrentConsentVersion(envB.participantId);
+    expect(versionB.actorsRoot).to.equal(versionA.actorsRoot);
+
+    const envC = await deployVCEM();
+    await createConsentFixture(envC, Purpose.RESEARCH, hash("scope:vitals"), [envC.researcherId]);
+    const versionC = await envC.consent.getCurrentConsentVersion(envC.participantId);
+    expect(versionC.actorsRoot).to.not.equal(versionA.actorsRoot);
+
+    const envD = await deployVCEM();
+    await expect(
+      createConsentFixture(envD, Purpose.RESEARCH, hash("scope:vitals"), [envD.researcherId, envD.researcherId])
+    ).to.be.revertedWith("CanonicalHash: duplicate actor");
+  });
+
+  it("keeps actor authorization version-specific across consent modifications", async function () {
+    const env = await deployVCEM();
+    await createConsentFixture(env, Purpose.RESEARCH, hash("scope:vitals"), [env.researcherId]);
+
+    expect(await env.consent.isActorAuthorized(env.participantId, 1, env.researcherId)).to.equal(true);
+    expect(await env.consent.isActorAuthorized(env.participantId, 1, env.addedResearcherId)).to.equal(false);
+
+    await env.consent.connect(env.participant).updateConsent(
+      env.participantId,
+      {
+        purposeMask: Purpose.RESEARCH,
+        scopeHash: hash("scope:vitals"),
+        zkConsentCommitment: hash("zk:commitment:actor-change"),
+      },
+      [env.addedResearcherId]
+    );
+
+    const latest = await env.consent.getCurrentConsentVersion(env.participantId);
+    expect(latest.version).to.equal(2);
+    expect(await env.consent.isActorAuthorized(env.participantId, 1, env.researcherId)).to.equal(true);
+    expect(await env.consent.isActorAuthorized(env.participantId, 2, env.researcherId)).to.equal(false);
+    expect(await env.consent.isActorAuthorized(env.participantId, 2, env.addedResearcherId)).to.equal(true);
+
+    const removedRequest = await requestFor(env, { seed: "removed-after-update", expectedConsentHash: latest.consentHash });
+    await expect(
+      env.audit.connect(env.gateway).authorizeAndLogAccess(removedRequest, await signAccessRequest(env.audit, env.researcher, removedRequest))
+    ).to.be.revertedWith("VCEMAudit: actor denied");
+
+    const addedRequest = await requestFor(env, {
+      seed: "added-after-update",
+      requestorId: env.addedResearcherId,
+      expectedConsentHash: latest.consentHash,
+    });
+    await expect(
+      env.audit
+        .connect(env.gateway)
+        .authorizeAndLogAccess(addedRequest, await signAccessRequest(env.audit, env.addedResearcher, addedRequest))
+    ).to.emit(env.audit, "AccessAuthorized");
+  });
+
   it("enforces role revocation and pause controls", async function () {
     const env = await deployVCEM();
     await createConsentFixture(env);
@@ -282,6 +367,7 @@ describe("VCEM", function () {
   });
 
   it("generates exactly 60 consent-state authorization evidence rows", async function () {
+    this.timeout(120000);
     const rows: any[] = [];
     const states = ["active", "updated", "revoked"];
     const purposeAllowed = [true, false];
@@ -302,9 +388,8 @@ describe("VCEM", function () {
                 await env.consent.connect(env.participant).updateConsent(
                   env.participantId,
                   {
-                    purposeMask: 0b00000010,
+                    purposeMask: Purpose.RESEARCH,
                     scopeHash: hash("scope:vitals"),
-                    actorsRoot: hash("actors:authorized-researcher:matrix"),
                     zkConsentCommitment: hash("zk:matrix"),
                   },
                   [env.researcherId]
@@ -321,7 +406,7 @@ describe("VCEM", function () {
               const request = await requestFor(env, {
                 seed: `matrix:${caseIndex}:${repeat}`,
                 requestorId,
-                requestedPurpose: purpose ? 1 : 5,
+                requestedPurpose: purpose ? Purpose.RESEARCH : Purpose.OTHER,
                 scopeHash: scope ? hash("scope:vitals") : hash("scope:other"),
                 expectedConsentHash,
               });

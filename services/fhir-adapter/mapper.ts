@@ -14,9 +14,10 @@ export type FixtureConsent = {
 export function purposeMaskFromFhir(consent: FixtureConsent): number {
   const codes = consent.provision?.purpose?.map((purpose) => purpose.code) ?? [];
   let mask = 0;
-  if (codes.includes("TREAT")) mask |= 1 << 0;
-  if (codes.includes("HRESCH")) mask |= 1 << 1;
-  if (codes.includes("PATRQT")) mask |= 1 << 2;
+  if (codes.includes("TREAT")) mask |= Purpose.TREAT;
+  if (codes.includes("HRESCH")) mask |= Purpose.RESEARCH;
+  if (codes.includes("PUBHLTH")) mask |= Purpose.PUBHLTH;
+  if (codes.includes("PATRQT")) mask |= Purpose.OTHER;
   return mask;
 }
 
@@ -47,3 +48,4 @@ export function auditEventFromAccess(access: {
     ],
   };
 }
+import { Purpose } from "../policy/model";

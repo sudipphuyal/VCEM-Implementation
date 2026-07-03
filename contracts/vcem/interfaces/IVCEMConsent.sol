@@ -10,4 +10,6 @@ interface IVCEMConsent {
     function isActorAuthorized(bytes32 participantId, uint64 version, bytes32 actorId) external view returns (bool);
     function isPurposeAuthorized(bytes32 participantId, uint64 version, uint8 purpose) external view returns (bool);
     function isScopeAuthorized(bytes32 participantId, uint64 version, bytes32 scopeHash) external view returns (bool);
+    function getConsentActorCount(bytes32 participantId, uint64 version) external view returns (uint256);
+    function getConsentActorAt(bytes32 participantId, uint64 version, uint256 index) external view returns (bytes32);
 }

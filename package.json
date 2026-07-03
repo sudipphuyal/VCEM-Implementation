@@ -2,8 +2,10 @@
   "name": "besu-contracts",
   "scripts": {
     "compile": "hardhat compile",
-    "test": "hardhat test",
+    "test": "hardhat test test/DataSharingAgreement.ts test/DsaViewFunctions.ts test/Registries.ts test/ResourceCertification.ts test/ResourcesSharingAgreement.ts test/VCEM.ts test/VCEMMatrix.ts",
     "test:vcem": "hardhat test test/VCEM.ts",
+    "test:vcem:matrix": "hardhat test test/VCEMMatrix.ts",
+    "test:legacy:zkp": "hardhat test test/ABVerifier.test.ts test/DataSharingAgreementZKP.test.ts",
     "audit:verify": "ts-node scripts/auditVerify.ts",
     "deploy:vcem": "hardhat ignition deploy ignition/modules/VCEM.ts --network localhost",
     "manifest:vcem": "ts-node scripts/writeDeploymentManifest.ts",

@@ -1,0 +1,5 @@
+{
+  "filter_paths": "node_modules|artifacts|cache|typechain-types",
+  "solc_remaps": [],
+  "exclude_dependencies": true
+}

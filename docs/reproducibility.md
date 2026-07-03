@@ -5,8 +5,10 @@
 1. Copy `.env.example` to `.env` and fill local-only values.
 2. Install pinned dependencies with `npm ci`.
 3. Compile with `npm run compile`.
-4. Run tests with `npm test` or `npm run test:vcem`.
-5. Generate VCEM evidence with the matrix test.
+4. Run supported tests with `npm test`.
+5. Run VCEM unit tests with `npm run test:vcem`.
+6. Generate paper-aligned 120-outcome matrix evidence with `npm run test:vcem:matrix`.
+7. Run isolated experimental legacy ZKP tests with `npm run test:legacy:zkp`; they currently fail until proof artifacts are repaired.
 6. Run `npm run audit:verify -- --rpc=<rpc> --consent=<address> --audit=<address>`.
 
 ## Besu

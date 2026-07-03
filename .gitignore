@@ -3,7 +3,10 @@ node_modules
 
 # Hardhat files
 /cache
-/artifacts
+/artifacts/*
+!/artifacts/vcem-matrix/
+!/artifacts/vcem-matrix/*.json
+!/artifacts/vcem-matrix/*.csv
 
 # TypeChain files
 /typechain
