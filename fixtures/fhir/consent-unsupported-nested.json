@@ -1,0 +1,18 @@
+{
+  "resourceType": "Consent",
+  "status": "active",
+  "patient": { "reference": "Patient/anon-001" },
+  "performer": [
+    { "reference": "Practitioner/researcher-a" }
+  ],
+  "provision": {
+    "purpose": [
+      { "code": "HRESCH" }
+    ],
+    "provision": [
+      {
+        "type": "deny"
+      }
+    ]
+  }
+}

@@ -9,13 +9,15 @@ npm run test:vcem:matrix
 It defines exactly 60 policy cases from:
 
 - 3 lifecycle conditions: active initial consent, modified active consent, revoked consent;
-- 4 purpose conditions: treatment, research, public health, unsupported;
+- 4 purpose conditions: treatment, research, public health, and a valid `OTHER` purpose that is intentionally policy-disallowed in the nominal matrix cases;
 - 5 actor configurations: authorized, unauthorized, removed after modification, newly added, revoked or role-mismatched.
 
 Each case executes two requests:
 
 - nominal;
 - adversarial or invalid-control.
+
+The adversarial controls include malformed and unsupported purpose values separately from the valid but disallowed `OTHER` purpose.
 
 The result is exactly 120 outcomes. Evidence is written to:
 

@@ -24,9 +24,6 @@ ignition/deployments
 .env
 .env.local
 evidence/*
-!evidence/vcem/
-!evidence/vcem/*.json
-!evidence/vcem/*.csv
 benchmarks/raw/
 
 # Generated ZKP/local proof outputs

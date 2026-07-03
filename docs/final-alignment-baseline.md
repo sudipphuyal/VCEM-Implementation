@@ -24,8 +24,8 @@ The working tree was clean at baseline.
 | `npm ls --depth=0` | Pass | Dependencies are installed. |
 | `npm run lint` | Pass | TypeScript typecheck passes. |
 | `npm run compile` | Pass | Hardhat warns Node.js `v23.11.0` is unsupported. |
-| `npm test` | Pass | Supported default suite: 51 passing. |
-| `npm run test:vcem` | Pass | 7 passing. |
+| `npm test` | Pass | Supported default suite: 58 passing after the final alignment changes. |
+| `npm run test:vcem` | Pass | 6 passing. |
 | `npm run test:legacy:zkp` | Fail | 1 passing, 3 failing due legacy proof/verifier mismatch. |
 | `npm audit --audit-level=low` | Fail with findings | 59 vulnerabilities: 19 low, 24 moderate, 12 high, 4 critical. |
 | `npm run slither` | Fail | `slither` is not installed. |
@@ -60,9 +60,9 @@ None in the supported compile path. Hardhat reports an unsupported Node.js versi
 ## Claims Not Supported Yet
 
 - Immutable historical status needed correction at baseline: prior consent versions were mutated to `SUPERSEDED`, which changed a field included in the consent hash.
-- Authenticated one-time data delivery service is not complete.
+- Authenticated one-time data delivery is implemented as a TypeScript service layer with provider-backed receipt lookup and a durable JSON-file delivery ledger. No HTTP API is implemented.
 - Audit verifier does not yet validate signatures/expiry from calldata.
-- FHIR adapter is fixture-level and not yet converting fixtures into full contract calls.
+- FHIR adapter is fixture-level. It converts anonymized Consent fixtures into VCEM lifecycle call payloads and authorized access records into AuditEvent-shaped output; it is not live FHIR-server integration.
 - Besu five-node network is scaffolded, not generated and validated.
 - Benchmark scripts are not executable end-to-end against the authenticated API/proxy.
 - ZKP authorization proof is not implemented.
@@ -72,9 +72,9 @@ None in the supported compile path. Hardhat reports an unsupported Node.js versi
 | Gap | Affected files |
 | --- | --- |
 | Historical consent mutation | `contracts/vcem/VCEMConsent.sol`, `contracts/vcem/VCEMTypes.sol`, `scripts/auditVerify.ts`, `test/VCEM.ts`, docs |
-| Authenticated data proxy | `services/data-proxy/*`, missing `services/api`, `services/auth`, `services/storage`, tests |
+| Authenticated data proxy | `services/data-proxy/*`, `services/auth/*`, `services/storage/*`, `services/encryption/*`, `test/DataProxy.ts`, missing HTTP API |
 | Audit verifier completeness | `scripts/auditVerify.ts`, missing `services/audit-verifier`, docs/tests |
-| FHIR contract-call mapping | `services/fhir-adapter/*`, `services/policy/model.ts`, fixtures/docs/tests |
+| FHIR contract-call mapping | `services/fhir-adapter/*`, `services/policy/model.ts`, `fixtures/fhir/*`, `test/FHIRAdapter.ts`, docs |
 | Besu generation/validation | `infrastructure/besu/*`, `package.json`, docs |
 | Matrix authority | `test/VCEM.ts`, `test/VCEMMatrix.ts`, `docs/vcem-test-matrix.md` |
 | Benchmark execution | `benchmarks/*`, missing API/proxy workload commands |

@@ -10,4 +10,4 @@ Unsupported constructs are expected to be rejected by future adapter validation 
 - free-text data labels that could identify a subject;
 - multiple policy periods requiring temporal authorization logic.
 
-The adapter exists to demonstrate deterministic mapping from anonymized FHIR R4 fixture fields to VCEM pseudonymous IDs, purpose masks, scope hashes, actor IDs, and AuditEvent-shaped output.
+The adapter exists to demonstrate deterministic mapping from anonymized FHIR R4 fixture fields to VCEM lifecycle operations, pseudonymous IDs, purpose masks, scope hashes, actor IDs, data hashes, and AuditEvent-shaped output.

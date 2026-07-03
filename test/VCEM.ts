@@ -1,8 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import fs from "fs";
-import path from "path";
 
 const Role = {
   ADMIN: 1,
@@ -403,91 +401,4 @@ describe("VCEM", function () {
     ).to.be.revertedWith("VCEMAudit: paused");
   });
 
-  it("generates exactly 60 consent-state authorization evidence rows", async function () {
-    this.timeout(120000);
-    const rows: any[] = [];
-    const states = ["active", "updated", "revoked"];
-    const purposeAllowed = [true, false];
-    const actorAuthorized = [true, false];
-    const scopeValid = [true, false];
-
-    let caseIndex = 0;
-    for (const state of states) {
-      for (const purpose of purposeAllowed) {
-        for (const actor of actorAuthorized) {
-          for (const scope of scopeValid) {
-            for (const repeat of [0, 1, 2]) {
-              if (rows.length >= 60) break;
-              const env = await deployVCEM();
-              const initial = await createConsentFixture(env);
-              let expectedConsentHash = initial.version.consentHash;
-              if (state === "updated") {
-                await env.consent.connect(env.participant).updateConsent(
-                  env.participantId,
-                  {
-                    purposeMask: Purpose.RESEARCH,
-                    scopeHash: hash("scope:vitals"),
-                    zkConsentCommitment: hash("zk:matrix"),
-                  },
-                  [env.researcherId]
-                );
-                expectedConsentHash = (await env.consent.getCurrentConsentVersion(env.participantId)).consentHash;
-              }
-              if (state === "revoked") {
-                await env.consent.connect(env.participant).revokeConsent(env.participantId);
-                expectedConsentHash = (await env.consent.getCurrentConsentVersion(env.participantId)).consentHash;
-              }
-
-              const requestorId = actor ? env.researcherId : env.outsiderId;
-              const signer = actor ? env.researcher : env.outsider;
-              const request = await requestFor(env, {
-                seed: `matrix:${caseIndex}:${repeat}`,
-                requestorId,
-                requestedPurpose: purpose ? Purpose.RESEARCH : Purpose.OTHER,
-                scopeHash: scope ? hash("scope:vitals") : hash("scope:other"),
-                expectedConsentHash,
-              });
-              const expectedDecision = state !== "revoked" && purpose && actor && scope ? "authorized" : "denied";
-              let actualDecision = "denied";
-              let transactionHash = "";
-              let pass = false;
-              try {
-                const tx = await env.audit
-                  .connect(env.gateway)
-                  .authorizeAndLogAccess(request, await signAccessRequest(env.audit, signer, request));
-                const receipt = await tx.wait();
-                transactionHash = receipt?.hash ?? tx.hash;
-                actualDecision = "authorized";
-              } catch (_err) {
-                actualDecision = "denied";
-              }
-              pass = actualDecision === expectedDecision;
-              rows.push({
-                consentState: state,
-                consentVersion: String((await env.consent.getCurrentConsentVersion(env.participantId)).version),
-                purpose: purpose ? "allowed" : "disallowed",
-                actorRole: actor ? "authorized" : "unauthorized",
-                scopeResult: scope ? "valid" : "invalid",
-                expectedDecision,
-                actualDecision,
-                requestId: request.requestId,
-                transactionHash,
-                pass,
-              });
-              caseIndex++;
-            }
-          }
-        }
-      }
-    }
-
-    expect(rows).to.have.length(60);
-    expect(rows.every((row) => row.pass)).to.equal(true);
-    const outDir = path.join(process.cwd(), "evidence", "vcem");
-    fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(path.join(outDir, "consent-state-matrix.json"), JSON.stringify(rows, null, 2));
-    const header = Object.keys(rows[0]);
-    const csv = [header.join(","), ...rows.map((row) => header.map((key) => JSON.stringify(row[key] ?? "")).join(","))].join("\n");
-    fs.writeFileSync(path.join(outDir, "consent-state-matrix.csv"), csv);
-  });
 });

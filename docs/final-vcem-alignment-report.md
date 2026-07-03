@@ -13,6 +13,7 @@
 - `scripts/auditVerify.ts` now checks that an access event references the latest active consent version at the access block.
 - `scripts/verifyDeployedBytecode.ts` compares on-chain runtime bytecode to locally compiled deployed bytecode rather than comparing against a circular manifest hash.
 - `services/data-proxy/secureProxy.ts` adds authenticated, one-time release enforcement around `AccessAuthorized` receipts.
+- `services/fhir-adapter/vcemMapper.ts` maps anonymized Consent fixtures to VCEM lifecycle call payloads and authorized access records to AuditEvent-shaped output.
 - Hardhat is configured to use local `solc@0.8.20` for VCEM compiler builds.
 
 ## New Components Added
@@ -21,7 +22,10 @@
 - `services/storage/artifactStore.ts`
 - `services/encryption/keyProvider.ts`
 - `services/data-proxy/secureProxy.ts`
+- `services/fhir-adapter/vcemMapper.ts`
+- `fixtures/fhir/*.json`
 - `test/DataProxy.ts`
+- `test/FHIRAdapter.ts`
 - `docs/final-alignment-baseline.md`
 - `docs/final-alignment-plan.md`
 
@@ -54,7 +58,7 @@ Remaining verifier limitations:
 
 ## FHIR Mapping Coverage
 
-FHIR mapping remains fixture-level. Purpose constants are aligned with the TypeScript policy model. The repository does not implement live FHIR-server integration.
+FHIR mapping remains fixture-level. Active, modified, and revoked anonymized Consent fixtures map into VCEM lifecycle call payloads; unsupported nested provision semantics are rejected; authorized access data maps into an AuditEvent-shaped object. The repository does not implement live FHIR-server integration.
 
 ## Besu Deployment Validation
 

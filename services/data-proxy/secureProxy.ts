@@ -1,4 +1,6 @@
 import { ethers } from "ethers";
+import fs from "fs";
+import path from "path";
 import { decryptArtifact } from "./crypto";
 import { ArtifactStore } from "../storage/artifactStore";
 import { KeyProvider } from "../encryption/keyProvider";
@@ -75,6 +77,27 @@ export class DeliveryLedger {
   }
 }
 
+export class JsonFileDeliveryLedger extends DeliveryLedger {
+  constructor(private readonly filePath: string) {
+    super();
+    this.load();
+  }
+
+  override record(record: DeliveryRecord) {
+    super.record(record);
+    fs.mkdirSync(path.dirname(this.filePath), { recursive: true });
+    fs.writeFileSync(this.filePath, JSON.stringify(this.all(), null, 2));
+  }
+
+  private load() {
+    if (!fs.existsSync(this.filePath)) return;
+    const rows = JSON.parse(fs.readFileSync(this.filePath, "utf8")) as DeliveryRecord[];
+    for (const row of rows) {
+      super.record(row);
+    }
+  }
+}
+
 export class PolicyEnforcingDataProxy {
   constructor(
     private readonly artifactStore: ArtifactStore,
@@ -109,6 +132,37 @@ export class PolicyEnforcingDataProxy {
     });
 
     return plaintext;
+  }
+}
+
+export type ReceiptProvider = {
+  getTransactionReceipt(transactionHash: string): Promise<ReleaseRequest["receipt"] | null>;
+  getNetwork?: () => Promise<{ chainId: bigint }>;
+};
+
+export type ProviderBackedReleaseRequest = Omit<ReleaseRequest, "receipt" | "expectedChainId"> & {
+  transactionHash: string;
+  expectedChainId?: bigint;
+};
+
+export class ProviderBackedAccessService {
+  constructor(
+    private readonly provider: ReceiptProvider,
+    private readonly proxy: PolicyEnforcingDataProxy,
+    private readonly defaultChainId: bigint
+  ) {}
+
+  async releaseByTransactionHash(request: ProviderBackedReleaseRequest) {
+    const receipt = await this.provider.getTransactionReceipt(request.transactionHash);
+    if (!receipt) {
+      throw new Error("authorization transaction is missing or failed");
+    }
+    const network = this.provider.getNetwork ? await this.provider.getNetwork() : { chainId: this.defaultChainId };
+    return this.proxy.release({
+      ...request,
+      receipt,
+      expectedChainId: request.expectedChainId ?? network.chainId,
+    });
   }
 }
 

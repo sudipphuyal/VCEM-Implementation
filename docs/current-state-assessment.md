@@ -55,7 +55,7 @@ The repository has a tracked `.env`. Its contents were not read during assessmen
 
 ## APIs, Backend, Databases, and Off-chain Storage
 
-No API service, backend, database, data proxy, FHIR adapter, audit verifier, pseudonymization service, or benchmark harness exists in the current repository. These must be added as new modules.
+At initial assessment time, no API service, backend, database, data proxy, FHIR adapter, audit verifier, pseudonymization service, or benchmark harness existed in the repository. The current VCEM branch now adds TypeScript modules for pseudonymization, fixture FHIR mapping, audit verification scripts, data-proxy enforcement, Besu scaffolding, and benchmark scaffolding. A production API server and database-backed service remain out of scope.
 
 ## Tests and Tooling
 

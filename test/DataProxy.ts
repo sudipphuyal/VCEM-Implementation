@@ -3,7 +3,16 @@ import { ethers } from "hardhat";
 import { encryptArtifact, generateParticipantKey, EncryptedArtifact } from "../services/data-proxy/crypto";
 import { ArtifactStore } from "../services/storage/artifactStore";
 import { LocalKeyProvider } from "../services/encryption/keyProvider";
-import { ACCESS_AUTHORIZED_TOPIC, DeliveryLedger, PolicyEnforcingDataProxy } from "../services/data-proxy/secureProxy";
+import {
+  ACCESS_AUTHORIZED_TOPIC,
+  DeliveryLedger,
+  JsonFileDeliveryLedger,
+  PolicyEnforcingDataProxy,
+  ProviderBackedAccessService,
+} from "../services/data-proxy/secureProxy";
+import fs from "fs";
+import os from "os";
+import path from "path";
 
 class MemoryArtifactStore implements ArtifactStore {
   private artifacts = new Map<string, EncryptedArtifact>();
@@ -122,5 +131,43 @@ describe("PolicyEnforcingDataProxy", function () {
     await expect(() => proxy.release({ ...request, requestId: hash("proxy:erased-request"), receipt: makeReceipt({ ...request, requestId: hash("proxy:erased-request"), actorsRoot: hash("proxy:actors") }) })).to.throw(
       "participant key is unavailable or destroyed"
     );
+  });
+
+  it("uses provider-fetched receipts and a durable release ledger", async function () {
+    const { request, keyProvider, artifact } = await fixture();
+    const store = new MemoryArtifactStore();
+    store.write(artifact.dataHash, artifact);
+    const ledgerPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "vcem-ledger-")), "deliveries.json");
+    const durableLedger = new JsonFileDeliveryLedger(ledgerPath);
+    const proxy = new PolicyEnforcingDataProxy(store, keyProvider, durableLedger);
+    const provider = {
+      async getTransactionReceipt(transactionHash: string) {
+        return transactionHash === request.receipt.transactionHash ? request.receipt : null;
+      },
+      async getNetwork() {
+        return { chainId: 31337n };
+      },
+    };
+    const service = new ProviderBackedAccessService(provider, proxy, 31337n);
+    const plaintext = await service.releaseByTransactionHash({
+      ...request,
+      transactionHash: request.receipt.transactionHash,
+    });
+    expect(plaintext.toString()).to.equal("anonymized encrypted fixture");
+    expect(JSON.parse(fs.readFileSync(ledgerPath, "utf8"))).to.have.length(1);
+
+    const reloadedLedger = new JsonFileDeliveryLedger(ledgerPath);
+    const reloadedProxy = new PolicyEnforcingDataProxy(store, keyProvider, reloadedLedger);
+    const reloadedService = new ProviderBackedAccessService(provider, reloadedProxy, 31337n);
+    let replayError = "";
+    try {
+      await reloadedService.releaseByTransactionHash({
+        ...request,
+        transactionHash: request.receipt.transactionHash,
+      });
+    } catch (err: any) {
+      replayError = err.message;
+    }
+    expect(replayError).to.contain("request ID has already been delivered");
   });
 });

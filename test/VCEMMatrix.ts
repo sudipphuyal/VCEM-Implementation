@@ -21,7 +21,7 @@ const Purpose = {
 
 type Lifecycle = "active-initial" | "modified-active" | "revoked";
 type ActorConfig = "authorized" | "unauthorized" | "removed-after-modification" | "newly-added" | "revoked-or-mismatched";
-type PurposeName = "treatment" | "research" | "public-health" | "unsupported";
+type PurposeName = "treatment" | "research" | "public-health" | "other-disallowed";
 type RequestKind = "nominal" | "adversarial";
 
 function id(label: string) {
@@ -109,11 +109,11 @@ function purposeValue(name: PurposeName) {
   if (name === "treatment") return Purpose.TREAT;
   if (name === "research") return Purpose.RESEARCH;
   if (name === "public-health") return Purpose.PUBHLTH;
-  return Purpose.UNSUPPORTED;
+  return Purpose.OTHER;
 }
 
 function purposeAllowed(name: PurposeName) {
-  return name !== "unsupported";
+  return name !== "other-disallowed";
 }
 
 async function setupCase(env: any, lifecycle: Lifecycle, actorConfig: ActorConfig) {
@@ -179,7 +179,7 @@ function expectedNominal(lifecycle: Lifecycle, actorConfig: ActorConfig, purpose
 }
 
 function adversarialOverride(caseId: number, kindIndex: number, request: any, currentHash: string) {
-  const selector = (caseId + kindIndex) % 8;
+  const selector = caseId % 9;
   if (selector === 0) return { request: { ...request, expectedConsentHash: hash("stale:consent") }, label: "stale-consent-hash" };
   if (selector === 1) return { request: { ...request, scopeHash: hash("scope:matrix:wrong") }, label: "invalid-scope" };
   if (selector === 2) return { request: { ...request, requestedPurpose: 3 }, label: "malformed-purpose" };
@@ -187,6 +187,7 @@ function adversarialOverride(caseId: number, kindIndex: number, request: any, cu
   if (selector === 4) return { request: { ...request, dataHash: hash("tampered:data") }, label: "tampered-data-hash" };
   if (selector === 5) return { request: { ...request, expectedConsentHash: currentHash, requestId: request.requestId }, label: "replay-control" };
   if (selector === 6) return { request: { ...request, requestedPurpose: Purpose.UNSUPPORTED }, label: "unsupported-purpose" };
+  if (selector === 7) return { request, label: "tampered-signature" };
   return { request: { ...request, scopeHash: hash("scope:matrix:disallowed") }, label: "disallowed-scope" };
 }
 
@@ -194,7 +195,7 @@ describe("VCEM correctness matrix", function () {
   it("records exactly 60 policy cases and 120 nominal/adversarial outcomes", async function () {
     this.timeout(120000);
     const lifecycles: Lifecycle[] = ["active-initial", "modified-active", "revoked"];
-    const purposes: PurposeName[] = ["treatment", "research", "public-health", "unsupported"];
+    const purposes: PurposeName[] = ["treatment", "research", "public-health", "other-disallowed"];
     const actorConfigs: ActorConfig[] = [
       "authorized",
       "unauthorized",
@@ -234,6 +235,8 @@ describe("VCEM correctness matrix", function () {
             let actual = false;
             let denialReason = "";
             let transactionHash = "";
+            let blockNumber = "";
+            let transactionIndex = "";
             try {
               if (adversarial?.label === "replay-control") {
                 const first = await env.audit.connect(env.gateway).authorizeAndLogAccess(baseRequest, await signAccessRequest(env.audit, actor.signer, baseRequest));
@@ -246,6 +249,8 @@ describe("VCEM correctness matrix", function () {
               const tx = await env.audit.connect(env.gateway).authorizeAndLogAccess(request, signature);
               const receipt = await tx.wait();
               transactionHash = receipt?.hash ?? tx.hash;
+              blockNumber = receipt?.blockNumber?.toString() ?? "";
+              transactionIndex = receipt?.index?.toString() ?? "";
               actual = true;
             } catch (err: any) {
               denialReason = err?.shortMessage || err?.message || "reverted";
@@ -254,7 +259,9 @@ describe("VCEM correctness matrix", function () {
               caseId: `VCEM-${String(caseNumber).padStart(2, "0")}`,
               lifecycleCondition: lifecycle,
               policyVersion: current.version.toString(),
+              actorId: actor.id,
               actorConfiguration: actorConfig,
+              actorRoleState: actorConfig === "revoked-or-mismatched" ? "revoked" : actorConfig === "unauthorized" ? "active-unauthorized" : "active-researcher",
               requestedPurpose: purpose,
               scopeCondition: request.scopeHash === scopeHash ? "valid" : "invalid",
               requestType: requestKind,
@@ -264,6 +271,8 @@ describe("VCEM correctness matrix", function () {
               denialReason,
               requestId: request.requestId,
               transactionHash,
+              blockNumber,
+              transactionIndex,
               consentHash: current.consentHash,
               pass: actual === expected,
             });

@@ -2,6 +2,8 @@
 
 This repository includes fixture-based FHIR mapping only. It does not implement live production FHIR-server integration.
 
+`services/fhir-adapter/vcemMapper.ts` converts anonymized Consent fixtures into VCEM lifecycle call payloads for create/update/revoke demonstrations and converts authorized access metadata into an AuditEvent-shaped object.
+
 | FHIR field | VCEM mapping |
 | --- | --- |
 | `Consent.patient` | Pseudonymous `participantId` derived off-chain. |
@@ -21,8 +23,8 @@ This repository includes fixture-based FHIR mapping only. It does not implement 
 
 ## Example Consent
 
-See `services/fhir-adapter/fixtures/consent.anonymized.json`.
+See `fixtures/fhir/consent-active.json`, `fixtures/fhir/consent-modified.json`, and `fixtures/fhir/consent-revoked.json`.
 
 ## Example AuditEvent
 
-`services/fhir-adapter/mapper.ts` creates an anonymized AuditEvent-shaped object from an authorized access event.
+`services/fhir-adapter/vcemMapper.ts` creates an anonymized AuditEvent-shaped object from an authorized access event.
