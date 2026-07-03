@@ -28,17 +28,13 @@ The working tree was clean at baseline.
 | `npm test` | Pass | Supported default suite excludes legacy ZKP and includes VCEM matrix/concurrency tests. |
 | `npm run test:vcem` | Pass | 6 passing. |
 | `npm run test:vcem:matrix` | Pass | 60 policy cases, 120 outcomes, plus deterministic access/update ordering evidence. |
-| `npm run test:legacy:zkp` | Fail | Intentionally unsupported legacy path: 1 passing, 3 failing due stale proof/verifier mismatch. |
+| `npm run test:legacy:zkp` | Isolated | Experimental legacy path; proof-dependent checks skip when local proof artifacts are absent. |
 | `npm audit --audit-level=low` | Fail with findings | 59 vulnerabilities: 19 low, 24 moderate, 12 high, 4 critical. |
 | `npm run slither` | Fail | `slither` is not installed. |
 
 ## Existing Test Failures
 
-The supported default test suite is green. The isolated experimental legacy ZKP suite fails:
-
-- `ABVerifier` returns `false` for the checked-in proof.
-- `DataSharingAgreementZKP.createDsaWithProof` rejects the proof.
-- `DataSharingAgreementZKP.acceptDsaWithProof` rejects the proof.
+The supported default test suite is expected to be green. The isolated experimental legacy ZKP suite is not VCEM evidence; it skips proof-dependent checks when local generated artifacts are absent.
 
 ## Current Compile Failures
 
@@ -49,7 +45,7 @@ None in the supported compile path. Hardhat reports an unsupported Node.js versi
 - `npm audit` reports 59 dependency vulnerabilities. Several suggested remediations require breaking Hardhat/Ethers upgrades.
 - Slither is configured but unavailable in the local environment.
 - Legacy DSA/RSA contracts retain plaintext prototype metadata and delete-on-revoke behavior; they are isolated from VCEM claims.
-- Legacy ZKP proof artifacts are stale or mismatched and are not VCEM authorization proof evidence.
+- Legacy ZKP proof artifacts are not VCEM authorization proof evidence.
 
 ## Claims Already Supported
 

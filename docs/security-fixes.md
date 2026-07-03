@@ -18,7 +18,11 @@
 - Fixed historical consent immutability so fields included in old consent hashes are never mutated.
 - Added authenticated policy-enforcing data-proxy service with one-time request delivery ledger.
 - Added local `solc@0.8.20` for VCEM compiler reproducibility.
-- Ran `npm audit --audit-level=low`; current dependency tree reports 59 vulnerabilities: 19 low, 24 moderate, 12 high, and 4 critical. Several suggested fixes require breaking upgrades to Hardhat/Ethers-related tooling and were not applied in this pass.
-- Attempted `npm run slither`; Slither is not installed in the current environment.
+- Added `npm run secret:scan` for tracked-file secret scanning.
+- Added Solhint, Slither configuration, Solidity coverage, gas reporting, Besu config validation, and property tests.
+- Added GitHub Actions jobs for linting, offline compile, full tests, VCEM matrix, audit verifier tests, FHIR tests, coverage, gas report, dependency audit, secret scan, Slither, and Besu config validation.
+- Ran `npm audit --json`; current dependency tree reports 54 vulnerabilities: 19 low, 21 moderate, 11 high, and 3 critical.
+- Attempted `npm audit fix`; npm refused the non-forcing fix because of a Hardhat peer-dependency conflict. Breaking `--force` upgrades were not applied.
+- Created `docs/dependency-risk-register.md` for unresolved dependency risk.
 
 Legacy contracts still contain plaintext prototype paths and delete-on-revoke behavior; they are retained for backward compatibility and are not used for VCEM claims.

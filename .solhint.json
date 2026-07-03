@@ -1,8 +1,10 @@
 {
   "extends": "solhint:recommended",
   "rules": {
-    "compiler-version": ["warn", "0.8.20"],
-    "func-name-mixedcase": "off",
-    "reason-string": ["warn", { "maxLength": 96 }]
+    "compiler-version": "off",
+    "func-visibility": ["warn", { "ignoreConstructors": true }],
+    "not-rely-on-time": "off",
+    "avoid-low-level-calls": "warn",
+    "no-console": "warn"
   }
 }

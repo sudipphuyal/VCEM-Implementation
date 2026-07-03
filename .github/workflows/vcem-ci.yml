@@ -5,7 +5,49 @@ on:
   pull_request:
 
 jobs:
-  test:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - name: Secret scan
+        run: npm run secret:scan
+      - name: Dependency audit
+        run: npm run security:audit
+      - name: Lint TypeScript
+        run: npm run lint
+      - name: Solhint
+        run: npm run solhint
+      - name: Offline compile
+        env:
+          HARDHAT_DISABLE_DOWNLOADS: "true"
+        run: npm run compile
+      - name: Full tests
+        run: npm test
+      - name: VCEM matrix
+        run: npm run test:vcem:matrix
+      - name: Audit verifier tests
+        run: npm run test:audit-verifier
+      - name: FHIR tests
+        run: npm run test:fhir
+      - name: Property tests
+        run: npm run test:property
+      - name: Legacy ZKP experimental tests
+        run: npm run test:legacy:zkp
+      - name: Coverage
+        run: npm run coverage
+      - name: Gas report
+        run: npm run gas
+      - name: Besu config validation
+        run: npm run besu:config:validate
+
+  slither:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,9 +56,18 @@ jobs:
           node-version: "22"
           cache: "npm"
       - run: npm ci
-      - run: npm run lint
       - run: npm run compile
-      - run: npm test
-      - run: npm run test:vcem:matrix
-      - run: npm audit --audit-level=critical
-        continue-on-error: true
+      - uses: crytic/slither-action@v0.4.1
+        with:
+          target: "."
+          fail-on: high
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

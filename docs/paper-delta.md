@@ -6,8 +6,9 @@
 - VCEM purpose requests use one explicit purpose bit: treatment `1`, research `2`, public health `4`, or other `8`.
 - Modified consent is implemented as a new `ACTIVE` version. Previous versions remain immutable and historically `ACTIVE`; supersession is derived from later versions.
 - Actor-set roots are now generated on-chain from sorted pseudonymous actor IDs rather than accepted as external metadata.
-- Besu infrastructure is scaffolded but not executed in this work.
-- Benchmark scripts are implemented, but no performance results are claimed.
+- Besu infrastructure is executable through Docker and validated by `npm run besu:config:validate`; full network execution still depends on local Docker availability.
+- Benchmark scripts are executable, but no performance results are claimed unless the run metadata under `benchmarks/raw/` records successful execution.
 - FHIR support is fixture-based, not live server integration.
-- Authenticated proxy is implemented as a TypeScript service layer, not a deployed HTTP API.
-- Legacy ZKP support remains experimental, is isolated behind `npm run test:legacy:zkp`, currently fails because checked-in proof artifacts do not verify against `ABVerifier`, and does not prove VCEM authorization semantics.
+- Authenticated proxy is implemented as a TypeScript API/service layer with PostgreSQL migrations, not a production-deployed clinical API.
+- Legacy ZKP support remains experimental and is isolated behind `npm run test:legacy:zkp`. The command skips proof-dependent assertions when local proof artifacts are absent, intentionally untracked, or mismatched with the generated verifier. It does not prove VCEM authorization semantics.
+- CI now includes secret scanning, dependency audit, Solhint, coverage, gas reporting, property tests, Slither invocation, and Besu config validation. The dependency audit currently has unresolved high/critical transitive findings recorded in `docs/dependency-risk-register.md`.

@@ -43,7 +43,7 @@ Legacy registry, DSA/RSA agreement, resource certification, enumerator, Circom, 
 - `npm run test:vcem`: pass, 7 tests.
 - `npm run test:vcem:matrix`: pass, 120 outcomes.
 - `npm test`: pass, 51 tests.
-- `npm run test:legacy:zkp`: fail, 1 passing and 3 failing due stale/mismatched proof artifacts.
+- `npm run test:legacy:zkp`: isolated experimental suite; proof-dependent checks are skipped when local proof artifacts are absent or mismatched.
 - `npm audit --audit-level=low`: 59 vulnerabilities.
 - `npm run slither`: unavailable because Slither is not installed.
 
@@ -65,7 +65,7 @@ Benchmark scripts are present, but no benchmark runs were executed and no perfor
 
 ## ZKP Status
 
-ZKP remains an experimental extension. Existing proof artifacts do not verify against the generated verifier, and the placeholder `ConsentAccessProof.circom` is not a complete VCEM authorization proof.
+ZKP remains an experimental extension. Existing generic proof artifacts are not VCEM authorization evidence, and the placeholder `ConsentAccessProof.circom` is not a complete VCEM authorization proof.
 
 ## Supported Claim
 

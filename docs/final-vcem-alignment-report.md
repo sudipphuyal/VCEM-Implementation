@@ -1,107 +1,89 @@
 # Final VCEM Alignment Report
 
-## Existing Components Retained
+## Implemented and Tested
 
-- Legacy DSA/RSA/resource-certification contracts remain for backward compatibility and prototype provenance.
-- Legacy Groth16/ZKP contracts and Circom files remain isolated as experimental assets.
-- VCEM registry, consent, audit, audit verifier, FHIR mapper, pseudonymization, Besu scaffold, and benchmark scaffold are retained and extended.
+- VCEM contracts preserve the baseline invariant: `VCEMAudit.authorizeAndLogAccess` validates the active consent state in the same transaction that records an authorized access event.
+- `VCEMConsent` appends immutable consent versions for create, update, and revoke operations.
+- Consent hashes are recomputable from canonical ABI-encoded SHA-256 inputs, and actor roots are derived from sorted pseudonymous actor IDs.
+- `VCEMRegistry` tracks pseudonymous actor identities, roles, active/revoked state, and wallet mappings used by access authorization.
+- The authoritative VCEM matrix contains exactly 60 policy permutations and 120 nominal/adversarial outcomes.
+- The controlled ordering test records block number, transaction index, and log index so access is checked against the consent state active at transaction position.
+- The audit verifier reconstructs lifecycle and access evidence from RPC logs, receipts, transaction calldata, block metadata, ABIs, and local artifacts.
+- The authenticated TypeScript API/data-proxy path verifies wallet sessions, registry identity, on-chain `AccessAuthorized` events, configured chain ID, configured audit contract address, one-time release state, and encrypted artifact integrity.
+- FHIR fixtures execute real VCEM create/update/revoke calls and generate AuditEvent-shaped output from real access events.
+- Security controls now include ignored `.env`, placeholder `.env.example`, secret scanning, Solhint configuration, coverage, gas reporting, property tests, dependency audit gate, and Besu config validation.
+- Legacy ZKP tests are isolated behind `npm run test:legacy:zkp`; they skip proof-dependent checks when local generated artifacts are absent or mismatched and are not part of baseline VCEM evidence.
 
-## Components Corrected or Enhanced
+## Implemented but Not Experimentally Executed Here
 
-- `VCEMConsent` no longer mutates historical consent records. Prior active versions remain immutable; updates append a new `ACTIVE` version and revocation appends a `REVOKED` version.
-- `VCEMAudit` continues to atomically validate active consent, actor, purpose, scope, data hash, expiry, signature, and replay status.
-- `scripts/auditVerify.ts` now checks that an access event references the latest active consent version at the access block.
-- `scripts/verifyDeployedBytecode.ts` compares on-chain runtime bytecode to locally compiled deployed bytecode rather than comparing against a circular manifest hash.
-- `services/data-proxy/secureProxy.ts` adds authenticated, one-time release enforcement around `AccessAuthorized` receipts.
-- `services/fhir-adapter/vcemMapper.ts` maps anonymized Consent fixtures to VCEM lifecycle call payloads and authorized access records to AuditEvent-shaped output.
-- Hardhat is configured to use local `solc@0.8.20` for VCEM compiler builds.
+- The five-node local Besu topology is implemented under `infrastructure/besu/` with four IBFT 2.0 validators, one non-validator RPC node, persistent volumes, static peers, metrics, and deployment-manifest generation. Full runtime validation requires Docker.
+- Benchmark tooling is implemented for 10, 25, 50, 75, and 100 users, five runs per level, 60-second warm-up, 300-second measurement, deterministic fixture setup, cleanup/reset hooks, VCEM k6 workload, PostgreSQL RBAC/RLS baseline, resource sampling, raw JSON/CSV, summary statistics, confidence intervals, charts metadata, and Markdown reports.
+- Benchmark metadata can record `not executed` when prerequisites such as `k6`, PostgreSQL, Besu, or API URLs are missing. No performance claim is supported until successful raw runs exist.
+- Slither is wired through `npm run slither` and GitHub Actions, but local execution requires the Slither binary.
+- Coverage and gas reporting are configured; final command results should be consulted for local pass/fail status.
 
-## New Components Added
+## Not Implemented
 
-- `services/auth/walletAuth.ts`
-- `services/storage/artifactStore.ts`
-- `services/encryption/keyProvider.ts`
-- `services/data-proxy/secureProxy.ts`
-- `services/fhir-adapter/vcemMapper.ts`
-- `fixtures/fhir/*.json`
-- `test/DataProxy.ts`
-- `test/FHIRAdapter.ts`
-- `docs/final-alignment-baseline.md`
-- `docs/final-alignment-plan.md`
+- Legal GDPR compliance analysis or certification.
+- Production clinical deployment hardening.
+- Live FHIR-server integration or SMART-on-FHIR authorization.
+- Production KMS/HSM integration; only the interface and development key provider are present.
+- A complete VCEM ZKP authorization circuit proving active consent, actor inclusion, purpose/scope authorization, and replay-safe nullifiers.
+- Production-grade key recovery, participant wallet recovery, or institutional identity-governance workflows.
 
-## Consent Immutability Fix
+## Paper Claims Requiring Manuscript Revision
 
-The previous design changed prior version status to `SUPERSEDED`, which invalidated recomputation because status is part of the canonical consent hash. The corrected design uses immutable version records:
+- Replace broad compliance claims with the narrower implementation claim: independently verifiable per-access consent-state binding.
+- Treat FHIR as fixture-based R4 alignment, not live integration.
+- Treat ZKP as an experimental extension, not evidence of VCEM authorization correctness.
+- Remove production clinical deployment language unless supported by deployment, operational, privacy, and security evidence outside this prototype.
+- Do not report blockchain, API, proxy, Besu, baseline, or ZKP performance figures unless produced by successful benchmark runs and stored raw artifacts.
 
-- create: appends version 1 with `ACTIVE`;
-- update: appends a later `ACTIVE` version;
-- revoke: appends a later `REVOKED` version;
-- supersession is derived from a later version existing, not stored by mutating history.
+## Security and Dependency Status
 
-Tests recompute historical hashes after create, multiple updates, and revocation.
+- `.env` is ignored and untracked; `.env.example` contains placeholders only.
+- Secret scanning is available through `npm run secret:scan` and CI also invokes Gitleaks.
+- Dependency audit is intentionally not ignored in CI. Current high/critical transitive findings are tracked in `docs/dependency-risk-register.md`.
+- `npm audit fix` was attempted without `--force`; it failed on Hardhat peer-dependency conflicts, so no unsafe forced dependency migration was applied.
 
-## Data Proxy Security Design
+## Evidence Commands
 
-The secure proxy layer requires an authenticated session whose requestor ID matches the authorized event. It validates chain ID, audit contract address, receipt status, event topic, participant ID, requestor ID, data hash, scope hash, purpose, request ID, consent version, consent hash, confirmation count, and one-time delivery ledger state before decrypting.
+```bash
+npm run lint
+HARDHAT_DISABLE_DOWNLOADS=true npm run compile
+npm test
+npm run test:vcem:matrix
+npm run test:audit-verifier
+npm run test:fhir
+npm run test:property
+npm run test:legacy:zkp
+npm run secret:scan
+npm run solhint
+npm run coverage
+npm run gas
+npm run besu:config:validate
+npm run security:audit
+```
 
-Plaintext data is returned only after receipt verification and is not stored in the delivery ledger. Cryptographic erasure is represented by deleting the participant key.
+## Final Check Results
 
-## Audit Verifier Coverage
+Run date: 2026-07-03.
 
-The audit verifier reconstructs consent versions, recomputes consent hashes, validates previous-hash continuity, recomputes actor roots, validates immutable version-specific actor membership, replays registry lifecycle events for historical wallet/role state, checks latest active consent at the exact access event position, decodes `authorizeAndLogAccess` calldata, recovers the EIP-712 signer, validates purpose/scope/data-hash binding, request expiry, expected consent hash, and detects replayed request IDs in observed events.
-
-Remaining verifier limitations:
-
-- denied access verification is limited to emitted denial evidence and gateway-signed denial transactions;
-- historical wallet-to-requestor mapping at block height is limited by current `VCEMRegistry` event coverage;
-- live Besu audit reports require deployed addresses and RPC access.
-
-## FHIR Mapping Coverage
-
-FHIR mapping remains fixture-level. Active, modified, and revoked anonymized Consent fixtures map into VCEM lifecycle call payloads; unsupported nested provision semantics are rejected; authorized access data maps into an AuditEvent-shaped object. The repository does not implement live FHIR-server integration.
-
-## Besu Deployment Validation
-
-The Besu topology remains scaffolded. A real generated IBFT `extraData`, validator-key set, static peers, block-production proof, and deployment manifest have not been produced in this environment.
-
-## VCEM Matrix Results
-
-- `npm run test:vcem:matrix`: passes.
-- The authoritative matrix records exactly 60 deterministic policy cases and 120 outcomes.
-- Evidence files are generated under `artifacts/vcem-matrix/`.
-
-## Benchmark Tooling and Evidence
-
-Benchmark scaffolding exists, but no end-to-end benchmark runs were executed. No performance numbers are claimed.
-
-## Security Findings and Fixes
-
-Fixes:
-
-- `.env` is ignored and removed from tracking.
-- Generated proof/local inputs are untracked.
-- Actor roots are contract-derived.
-- Historical consent records are immutable.
-- Data proxy has one-time release protection.
-- Local `solc@0.8.20` is pinned for VCEM compile reproducibility.
-
-Open findings:
-
-- `npm audit --audit-level=low` reports 59 vulnerabilities.
-- Slither is configured but not installed locally.
-- Legacy ZKP tests remain failing and isolated.
-
-## Supported Paper Claim
-
-Supported by current code and tests:
-
-> Independently verifiable per-access consent-state binding.
-
-## Claims Requiring More Work or Manuscript Revision
-
-- Legal GDPR compliance.
-- Production clinical deployment.
-- Live FHIR-server integration.
-- Complete ZKP-based privacy-preserving authorization proof.
-- Executed Besu five-node experiment.
-- Executed benchmark results and baseline comparison.
+| Command | Result | Summary |
+| --- | --- | --- |
+| `npm run secret:scan` | Pass | No obvious committed secrets detected in tracked files. |
+| `.env` tracking check | Pass | `.env` is ignored by `.gitignore` and not tracked. |
+| `npm run solhint` | Pass with warnings | Exits 0; warnings are mostly NatSpec/gas-style findings across retained legacy and VCEM contracts. |
+| `npm run besu:config:validate` | Pass | Besu config validation passed. |
+| `npm run lint` | Pass | TypeScript typecheck passes. |
+| `HARDHAT_DISABLE_DOWNLOADS=true npm run compile` | Pass | Hardhat reports nothing to compile and no compiler download. |
+| `npm run test:property` | Pass | 2 property tests passing. |
+| `npm test` | Pass | 85 passing. |
+| `npm run test:vcem:matrix` | Pass | 2 passing; 60 cases and 120 outcomes. |
+| `npm run test:audit-verifier` | Pass | 17 passing. |
+| `npm run test:fhir` | Pass | 6 passing. |
+| `npm run test:legacy:zkp` | Pass with pending skips | 0 passing, 4 pending because local proof artifacts are stale/mismatched with the verifier. |
+| `npm run coverage` | Pass | 87 passing, 4 pending; overall statement coverage 77.66%. |
+| `npm run gas` | Pass | 6 VCEM tests passing with gas report generated. |
+| `npm run security:audit` | Fail | 54 vulnerabilities: 19 low, 21 moderate, 11 high, 3 critical. |
+| `npm run slither` | Not executed locally | Fails with `slither: command not found`; CI uses the Slither action. |

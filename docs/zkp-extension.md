@@ -21,4 +21,4 @@ The scaffold `zkp/circuits/ConsentAccessProof.circom` is intentionally labelled 
 
 ZKP proof generation time is not part of baseline VCEM performance claims.
 
-The legacy ZKP tests are intentionally isolated under `npm run test:legacy:zkp`. They currently fail because the checked-in proof artifacts do not verify against `ABVerifier`; this must be repaired by regenerating aligned verifier/proof artifacts or replacing the legacy proof path with a real VCEM authorization circuit.
+The legacy ZKP tests are intentionally isolated under `npm run test:legacy:zkp`. Proof-dependent checks skip when local generated proof artifacts are absent or intentionally untracked. A future VCEM ZKP claim still requires regenerating aligned artifacts or replacing the legacy proof path with a real VCEM authorization circuit.

@@ -1,5 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "solidity-coverage";
+import "hardhat-gas-reporter";
 import { subtask, task } from "hardhat/config";
 import { TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD } from "hardhat/builtin-tasks/task-names";
 import fs from "fs";
@@ -95,6 +97,11 @@ const config: HardhatUserConfig = {
   ignition: {
     blockPollingInterval: 1_000,
     requiredConfirmations: 1,
+  },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS === "true",
+    currency: "USD",
+    excludeContracts: ["contracts/ABVerifier.sol"],
   },
 };
 export default config;

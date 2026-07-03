@@ -1,5 +1,5 @@
 {
-  "filter_paths": "node_modules|artifacts|cache|typechain-types",
-  "solc_remaps": [],
-  "exclude_dependencies": true
+  "filter_paths": "node_modules|artifacts|cache|coverage|contracts/ABVerifier.sol",
+  "exclude_dependencies": true,
+  "solc_remaps": []
 }

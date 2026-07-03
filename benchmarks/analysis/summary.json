@@ -1,0 +1,1125 @@
+{
+  "generatedAt": "2026-07-03T14:37:26.748Z",
+  "aggregates": [
+    {
+      "mode": "baseline",
+      "users": 100,
+      "metric": "baseline_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 100,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 100,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 100,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 100,
+      "metric": "baseline_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 100,
+      "metric": "baseline_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 10,
+      "metric": "baseline_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 10,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 10,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 10,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 10,
+      "metric": "baseline_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 10,
+      "metric": "baseline_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 25,
+      "metric": "baseline_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 25,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 25,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 25,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 25,
+      "metric": "baseline_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 25,
+      "metric": "baseline_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 50,
+      "metric": "baseline_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 50,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 50,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 50,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 50,
+      "metric": "baseline_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 50,
+      "metric": "baseline_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 75,
+      "metric": "baseline_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 75,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 75,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 75,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 75,
+      "metric": "baseline_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "baseline",
+      "users": 75,
+      "metric": "baseline_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 100,
+      "metric": "vcem_app_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 100,
+      "metric": "vcem_tx_confirmation_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 100,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 100,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 100,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 100,
+      "metric": "vcem_proxy_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 100,
+      "metric": "vcem_proxy_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 100,
+      "metric": "vcem_rpc_failure_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 10,
+      "metric": "vcem_app_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 10,
+      "metric": "vcem_tx_confirmation_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 10,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 10,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 10,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 10,
+      "metric": "vcem_proxy_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 10,
+      "metric": "vcem_proxy_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 10,
+      "metric": "vcem_rpc_failure_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 25,
+      "metric": "vcem_app_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 25,
+      "metric": "vcem_tx_confirmation_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 25,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 25,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 25,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 25,
+      "metric": "vcem_proxy_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 25,
+      "metric": "vcem_proxy_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 25,
+      "metric": "vcem_rpc_failure_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 50,
+      "metric": "vcem_app_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 50,
+      "metric": "vcem_tx_confirmation_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 50,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 50,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 50,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 50,
+      "metric": "vcem_proxy_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 50,
+      "metric": "vcem_proxy_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 50,
+      "metric": "vcem_rpc_failure_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 75,
+      "metric": "vcem_app_latency_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 75,
+      "metric": "vcem_tx_confirmation_ms",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 75,
+      "metric": "http_req_duration",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 75,
+      "metric": "http_reqs",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 75,
+      "metric": "http_req_failed",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 75,
+      "metric": "vcem_proxy_release_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 75,
+      "metric": "vcem_proxy_denial_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    },
+    {
+      "mode": "vcem",
+      "users": 75,
+      "metric": "vcem_rpc_failure_rate",
+      "executedRuns": 0,
+      "totalRuns": 5,
+      "mean": 0,
+      "sd": 0,
+      "p50": 0,
+      "p95": 0,
+      "ci95": 0,
+      "status": "not executed",
+      "reasons": [
+        "k6 is not installed or not on PATH"
+      ]
+    }
+  ]
+}

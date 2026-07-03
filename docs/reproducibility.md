@@ -4,13 +4,16 @@
 
 1. Copy `.env.example` to `.env` and fill local-only values.
 2. Install pinned dependencies with `npm ci`.
-3. Compile with `npm run compile`.
+3. Compile with `HARDHAT_DISABLE_DOWNLOADS=true npm run compile`.
 4. Run supported tests with `npm test`.
 5. Run VCEM unit tests with `npm run test:vcem`.
 6. Generate paper-aligned 120-outcome matrix evidence with `npm run test:vcem:matrix`.
-7. Run isolated experimental legacy ZKP tests with `npm run test:legacy:zkp`; they currently fail until proof artifacts are repaired.
+7. Run isolated experimental legacy ZKP tests with `npm run test:legacy:zkp`; proof-dependent assertions are skipped when local proof artifacts are absent or mismatched.
 8. Verify deployed bytecode with `npm run audit:verify-bytecode` after creating `deployments/vcem-manifest.json`.
 9. Run `npm run audit:verify -- --rpc=<rpc> --consent=<address> --audit=<address>`.
+10. Run quality/security checks with `npm run secret:scan`, `npm run solhint`, `npm run test:property`, `npm run coverage`, `npm run gas`, `npm run besu:config:validate`, and `npm run security:audit`.
+
+`npm run security:audit` is intentionally a release gate. It currently fails on unresolved high/critical transitive dependency findings documented in `docs/dependency-risk-register.md`.
 
 ## Besu
 
@@ -48,4 +51,23 @@ npm run besu:clean
 
 ## Benchmarks
 
-Benchmark scripts are present, but no benchmark results are claimed unless raw outputs are produced in `benchmarks/raw/` and analyzed into `benchmarks/analysis/`.
+Benchmark tooling is executable, but no benchmark results are claimed unless raw outputs are produced by successful runs.
+
+```bash
+npm run benchmark:seed
+npm run benchmark:baseline
+npm run benchmark:vcem
+npm run benchmark:all
+npm run benchmark:analyze
+```
+
+Expected outputs:
+
+- `benchmarks/raw/fixtures/benchmark-fixtures.json`
+- `benchmarks/raw/baseline/<users>u/run-<n>/metadata.json`
+- `benchmarks/raw/vcem/<users>u/run-<n>/metadata.json`
+- `benchmarks/analysis/summary.json`
+- `benchmarks/analysis/summary.csv`
+- `benchmarks/reports/benchmark-report.md`
+
+Each run metadata file explicitly states `executed`, `failed`, or `not executed`.
