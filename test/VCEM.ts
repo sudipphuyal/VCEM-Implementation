@@ -128,6 +128,21 @@ async function createConsentFixture(
   return { policy, version };
 }
 
+async function expectVersionHashRecomputes(consent: any, participantId: string, version: any) {
+  const recomputed = await consent.computeConsentHash(
+    version.previousConsentHash,
+    participantId,
+    version.version,
+    version.status,
+    version.purposeMask,
+    version.scopeHash,
+    version.actorsRoot,
+    version.zkConsentCommitment,
+    version.timestamp
+  );
+  expect(recomputed).to.equal(version.consentHash);
+}
+
 async function requestFor(env: any, overrides: any = {}) {
   const latest = await ethers.provider.getBlock("latest");
   const version = await env.consent.getCurrentConsentVersion(env.participantId);
@@ -171,19 +186,41 @@ describe("VCEM", function () {
 
     const oldVersion = await env.consent.getConsentVersion(env.participantId, 1);
     const newVersion = await env.consent.getCurrentConsentVersion(env.participantId);
-    expect(oldVersion.status).to.equal(ConsentStatus.SUPERSEDED);
+    expect(oldVersion.status).to.equal(ConsentStatus.ACTIVE);
     expect(newVersion.previousConsentHash).to.equal(version.consentHash);
     expect(newVersion.consentHash).to.not.equal(version.consentHash);
+    await expectVersionHashRecomputes(env.consent, env.participantId, oldVersion);
+    await expectVersionHashRecomputes(env.consent, env.participantId, newVersion);
+
+    await env.consent.connect(env.participant).updateConsent(
+      env.participantId,
+      {
+        purposeMask: Purpose.TREAT | Purpose.RESEARCH,
+        scopeHash: hash("scope:vitals"),
+        zkConsentCommitment: hash("zk:commitment:v3"),
+      },
+      [env.researcherId, env.addedResearcherId]
+    );
+    const secondVersion = await env.consent.getConsentVersion(env.participantId, 2);
+    const thirdVersion = await env.consent.getCurrentConsentVersion(env.participantId);
+    expect(secondVersion.status).to.equal(ConsentStatus.ACTIVE);
+    expect(thirdVersion.status).to.equal(ConsentStatus.ACTIVE);
+    expect(thirdVersion.previousConsentHash).to.equal(secondVersion.consentHash);
+    expect(secondVersion.actorsRoot).to.equal(newVersion.actorsRoot);
+    await expectVersionHashRecomputes(env.consent, env.participantId, secondVersion);
+    await expectVersionHashRecomputes(env.consent, env.participantId, thirdVersion);
 
     await env.consent.connect(env.participant).revokeConsent(env.participantId);
     const revoked = await env.consent.getCurrentConsentVersion(env.participantId);
     expect(revoked.status).to.equal(ConsentStatus.REVOKED);
+    expect(revoked.previousConsentHash).to.equal(thirdVersion.consentHash);
+    await expectVersionHashRecomputes(env.consent, env.participantId, revoked);
     await expect(env.consent.getCurrentActiveConsentHash(env.participantId)).to.be.revertedWith(
       "VCEMConsent: no active consent"
     );
 
     const history = await env.consent.getConsentHashHistory(env.participantId);
-    expect(history.length).to.equal(3);
+    expect(history.length).to.equal(4);
   });
 
   it("authorizes and logs access with the exact active consent hash", async function () {

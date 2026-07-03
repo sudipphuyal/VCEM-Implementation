@@ -26,7 +26,7 @@ The existing registry, DSA, RSA, resource certification, utility, ZKP verifier, 
 - `npm run lint`: passed after fixing the existing `ignition/modules/verifier.ts` Ignition typing issue.
 - `npm run test:vcem`: now passes 7 tests after actor-root remediation.
 - `npm run test:vcem:matrix`: passes and records exactly 120 outcomes from 60 deterministic policy cases.
-- `npm test`: now passes the supported default suite, 51 passing. Experimental ZKP tests are isolated from the default command.
+- `npm test`: now passes the supported default suite, 55 passing. Experimental ZKP tests are isolated from the default command.
 - `npm run test:legacy:zkp`: 1 passing, 3 failing. `ABVerifier` returns `false` for the checked-in proof, and `DataSharingAgreementZKP` rejects that proof.
 - `npm audit --audit-level=low`: completed and reported 59 vulnerabilities.
 - `npm run slither`: not completed because `slither` is not installed.

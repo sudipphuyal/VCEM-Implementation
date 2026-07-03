@@ -8,6 +8,7 @@
 | Per-access consent-state binding. | `VCEMAudit.sol` | `authorizeAndLogAccess`. | `test/VCEM.ts`, `test/VCEMMatrix.ts`, `evidence/vcem/*`, `artifacts/vcem-matrix/*`. | Requires gateway/data proxy to honor authorized events. |
 | Independent audit verification. | `scripts/auditVerify.ts` | On-chain logs only. | `evidence/audit/*` when run. | Historical signature calldata verification remains future work. |
 | Off-chain data proxy enforcement. | `services/data-proxy/*` | Receipt and event verification. | Fixture-level module. | Not a production API. |
+| Authenticated one-time data release. | `services/auth/walletAuth.ts`, `services/data-proxy/secureProxy.ts`, `services/storage/artifactStore.ts`, `services/encryption/keyProvider.ts` | Session-bound receipt verification and delivery ledger. | `test/DataProxy.ts`. | Library/service layer only, no HTTP server. |
 | FHIR R4 alignment. | `services/fhir-adapter/*` | Fixture mapper. | `docs/fhir-mapping.md` | No live FHIR server integration. |
 | ZKP VCEM extension. | `zkp/circuits/ConsentAccessProof.circom` | Experimental scaffold. | `npm run test:legacy:zkp` currently fails due proof/verifier mismatch. | Not baseline VCEM. |
 | Reproducible benchmarking. | `benchmarks/*` | k6 and analysis scripts. | Raw outputs required. | No benchmark results claimed here. |

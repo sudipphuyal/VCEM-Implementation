@@ -225,10 +225,18 @@ async function main() {
   const seenRequests = new Set<string>();
   for (const access of selectedAccess) {
     const record = consentByKey.get(key(access.participantId, access.consentVersion));
+    const priorParticipantConsent = orderedConsent.filter(
+      (entry) =>
+        entry.participantId.toLowerCase() === access.participantId.toLowerCase() &&
+        (entry.blockNumber < access.blockNumber || (entry.blockNumber === access.blockNumber && entry.logIndex < access.logIndex))
+    );
+    const latestAtAccess = priorParticipantConsent.length ? priorParticipantConsent[priorParticipantConsent.length - 1] : undefined;
     if (!record) {
       access.failures.push("MISSING_CONSENT_VERSION");
     } else {
       if (record.status !== ACTIVE) access.failures.push("CONSENT_NOT_ACTIVE");
+      if (!latestAtAccess || latestAtAccess.version !== access.consentVersion) access.failures.push("STALE_CONSENT_VERSION");
+      if (latestAtAccess && latestAtAccess.status !== ACTIVE) access.failures.push("LATEST_CONSENT_NOT_ACTIVE");
       if (record.consentHash.toLowerCase() !== access.consentHash.toLowerCase()) access.failures.push("ACCESS_CONSENT_HASH_MISMATCH");
       if (record.actorsRoot.toLowerCase() !== access.actorsRoot.toLowerCase()) access.failures.push("ACCESS_ACTOR_ROOT_MISMATCH");
       if (record.scopeHash.toLowerCase() !== access.scopeHash.toLowerCase()) access.failures.push("SCOPE_MISMATCH");

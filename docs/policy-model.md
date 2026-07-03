@@ -31,4 +31,4 @@ It must not contain patient names, raw IDs, emails, FHIR JSON, clinical text, or
 sha256(abi.encode(sortedActorIds))
 ```
 
-Auditors can retrieve actor count and actor-at-index values and recompute the root independently.
+Auditors can retrieve actor count and actor-at-index values and recompute the root independently. Historical actor sets are immutable; removing or adding an actor creates a later consent version and does not mutate prior actor roots.

@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import { task } from "hardhat/config";
+import { subtask, task } from "hardhat/config";
+import { TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD } from "hardhat/builtin-tasks/task-names";
 import fs from "fs";
 import path from "path";
 
@@ -22,6 +23,19 @@ task("clean", "Cleans the cache and deletes all artifacts", async (_, hre) => {
       console.log(`Deleted: ${p}`);
     }
   }
+});
+
+subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD, async (args: { solcVersion: string }, _hre, runSuper) => {
+  if (args.solcVersion === "0.8.20") {
+    const compilerPath = require.resolve("solc/soljson.js");
+    return {
+      compilerPath,
+      isSolcJs: true,
+      version: "0.8.20",
+      longVersion: "0.8.20+commit.a1b79de6",
+    };
+  }
+  return runSuper();
 });
 
 const config: HardhatUserConfig = {

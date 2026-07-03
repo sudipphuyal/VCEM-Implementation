@@ -8,7 +8,7 @@ Legacy registry, DSA/RSA agreement, resource certification, enumerator, Circom, 
 
 - `VCEMConsent` now derives `actorsRoot` from the actual sorted actor set enforced at runtime.
 - Consent hashes include previous hash, participant ID, version, status, purpose mask, scope hash, actor root, ZKP commitment, and timestamp.
-- Consent lifecycle now uses `ACTIVE`, `SUPERSEDED`, and `REVOKED` semantics.
+- Consent lifecycle now preserves committed versions immutably. Prior active versions remain historically `ACTIVE`; supersession is derived from later versions, and revocation appends a `REVOKED` version.
 - `VCEMAudit` now persists consent version and actor root in each authorized access event.
 - Purpose checks now require exactly one valid purpose bit.
 - `scripts/auditVerify.ts` recomputes consent hashes, actor roots, previous-hash continuity, data-hash bindings, and access-event policy compliance.
@@ -33,6 +33,7 @@ Legacy registry, DSA/RSA agreement, resource certification, enumerator, Circom, 
 - Caller-supplied actor roots are no longer accepted.
 - Duplicate or zero actor IDs are rejected.
 - Removed actors lose authorization in new policy versions while historical authorization remains auditable.
+- Historical consent versions no longer mutate fields included in their canonical hash.
 - Data hashes must be registered by a data custodian before authorization.
 
 ## Test Results

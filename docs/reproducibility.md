@@ -9,6 +9,7 @@
 5. Run VCEM unit tests with `npm run test:vcem`.
 6. Generate paper-aligned 120-outcome matrix evidence with `npm run test:vcem:matrix`.
 7. Run isolated experimental legacy ZKP tests with `npm run test:legacy:zkp`; they currently fail until proof artifacts are repaired.
+8. Verify deployed bytecode with `npm run audit:verify-bytecode` after creating `deployments/vcem-manifest.json`.
 6. Run `npm run audit:verify -- --rpc=<rpc> --consent=<address> --audit=<address>`.
 
 ## Besu

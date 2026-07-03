@@ -15,6 +15,9 @@
 - Added versioned actor-list getters for independent audit recomputation.
 - Added canonical purpose-bit validation for access requests.
 - Isolated mismatched legacy ZKP tests under `npm run test:legacy:zkp` so default VCEM/legacy non-ZKP tests are reproducible and green.
+- Fixed historical consent immutability so fields included in old consent hashes are never mutated.
+- Added authenticated policy-enforcing data-proxy service with one-time request delivery ledger.
+- Added local `solc@0.8.20` for VCEM compiler reproducibility.
 - Ran `npm audit --audit-level=low`; current dependency tree reports 59 vulnerabilities: 19 low, 24 moderate, 12 high, and 4 critical. Several suggested fixes require breaking upgrades to Hardhat/Ethers-related tooling and were not applied in this pass.
 - Attempted `npm run slither`; Slither is not installed in the current environment.
 

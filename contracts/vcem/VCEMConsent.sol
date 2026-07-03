@@ -93,7 +93,6 @@ contract VCEMConsent {
         uint64 current = _currentVersion[participantId];
         require(current != 0, "VCEMConsent: no consent");
         require(_versions[participantId][current].status == VCEMTypes.ConsentStatus.ACTIVE, "VCEMConsent: not active");
-        _versions[participantId][current].status = VCEMTypes.ConsentStatus.SUPERSEDED;
         return _recordVersion(participantId, policy, authorizedActors, VCEMTypes.ConsentStatus.ACTIVE, false);
     }
 
@@ -102,7 +101,6 @@ contract VCEMConsent {
         require(current != 0, "VCEMConsent: no consent");
         VCEMTypes.ConsentVersion storage previous = _versions[participantId][current];
         require(previous.status == VCEMTypes.ConsentStatus.ACTIVE, "VCEMConsent: not active");
-        previous.status = VCEMTypes.ConsentStatus.SUPERSEDED;
 
         VCEMTypes.ConsentPolicy memory policy = VCEMTypes.ConsentPolicy({
             purposeMask: previous.purposeMask,
