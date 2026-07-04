@@ -1,0 +1,102 @@
+{
+  "status": "not executed",
+  "mode": "vcem",
+  "users": 75,
+  "run": 4,
+  "warmupSeconds": 60,
+  "measureSeconds": 300,
+  "timestamp": "2026-07-04T20:38:46.023Z",
+  "command": "k6 run benchmarks/k6/vcem-access.js",
+  "gitCommit": "a2513d091132c713add3ca2eaf2f9053d2f856cd",
+  "deploymentManifest": {
+    "chainId": "20260703",
+    "networkName": "vcem-besu-local",
+    "consensus": "IBFT 2.0",
+    "blockPeriodSeconds": 2,
+    "validatorAddresses": [
+      "0x6C13A2a26CB76DFB6faCb8ea119c25B00831998B",
+      "0x09a963DD7C56698476D92cE60F83E731BE4D7212",
+      "0x515E056240C45c80fF7b5136906d5a3A9f6c8876",
+      "0xB22E456B42bACcD7FE5ffaD7F6627837959A40Cb"
+    ],
+    "topology": {
+      "validators": [
+        {
+          "name": "validator1",
+          "address": "0x6C13A2a26CB76DFB6faCb8ea119c25B00831998B",
+          "enode": "enode://ff0732e7d04e8e7e46405bf1f20ac03ba11ee357b345566707f1457428360bd05910d69170b1a8c5b699b66f008f679f40069195220e467d72f66e9c04769029@172.28.0.11:30303",
+          "ip": "172.28.0.11"
+        },
+        {
+          "name": "validator2",
+          "address": "0x09a963DD7C56698476D92cE60F83E731BE4D7212",
+          "enode": "enode://aecf21c192f6a88faf2890a724032d9c1aedec9c8c83e70d54252ec0bbcb6146d7c83702094f6e962371b5aafd0ee3cfad298e163bb397d6e7626c1223659569@172.28.0.12:30303",
+          "ip": "172.28.0.12"
+        },
+        {
+          "name": "validator3",
+          "address": "0x515E056240C45c80fF7b5136906d5a3A9f6c8876",
+          "enode": "enode://a877c808b721396b28821c59542c50233c30c8a2d900debba3b701623f2f8ef06b704ab3d6ea267c38532cae5aa661a2a8ff6942d688d863ad4d2cae5de03a54@172.28.0.13:30303",
+          "ip": "172.28.0.13"
+        },
+        {
+          "name": "validator4",
+          "address": "0xB22E456B42bACcD7FE5ffaD7F6627837959A40Cb",
+          "enode": "enode://7d4eb60aab8f8364cb3b046837d42b17708cf0840be2729ec5fe7236da29c945664fda671198ef3905c7d39a7486c27887e4745474d0f974ceaab4e7cdff78e0@172.28.0.14:30303",
+          "ip": "172.28.0.14"
+        }
+      ],
+      "rpc": [
+        {
+          "name": "rpc",
+          "address": "0x8dd1D8eFcE4EB3B0CAeAdc29BEf41c061484c123",
+          "enode": "enode://8463028f0f7cd31edddcfb313bc2f340927496335c8a4610005205526f2d6f27a74b866f80c948a3a36d58c009c88d188ea80a46b00f2c1c97b23392a00171a2@172.28.0.15:30303",
+          "ip": "172.28.0.15"
+        }
+      ]
+    },
+    "addresses": {
+      "VCEMRegistry": "0x38727d1498DE1f43384B86c5451b197AFb455cD1",
+      "VCEMConsent": "0x0C22d1Ce6CFf3701843Ad49049A45D0bDca83Ca2",
+      "VCEMAudit": "0xc85872A2604f141bE601381F44c0f36dEECDF36d"
+    },
+    "deploymentTransactions": {
+      "VCEMRegistry": "0xbadc00b8c3c9b3b76f90e2e0b9b6944ea864d7682225f2dfc54289267986c07c",
+      "VCEMConsent": "0x5ecc8304f7d40a9caa04fdbf7f6b47f4ded2a34b1b4b4ab2118ea16461f1755a",
+      "VCEMAudit": "0x0d56a783fb4decb05b6430331cae7357b97d5483cff1c0bf10f45c37e27aa782"
+    },
+    "abiVersion": "vcem-v1",
+    "localRuntimeBytecodeHashes": {
+      "VCEMRegistry": "0x0ae4ca0ea97be66b21afd1f7887b3df97f06c6fedeffdbb5e3aeda40cd66998a",
+      "VCEMConsent": "0xa0baf68c826b93168b2192f7c30883359ad5fc7f00fd907bdb18cfbe3760a11d",
+      "VCEMAudit": "0x2e3ffa3dcaaf7c932101a45e27a1933fa27281faf990fcafefc8fdae50a2cb38"
+    },
+    "deployedRuntimeBytecodeHashes": {
+      "VCEMRegistry": "0x0ae4ca0ea97be66b21afd1f7887b3df97f06c6fedeffdbb5e3aeda40cd66998a",
+      "VCEMConsent": "0xe0060f3b8b89283f053669cf4ef3eda915dd058cbc25bfaea051def7199835c5",
+      "VCEMAudit": "0xa43b3e7aa715aca61b1b7b57db8d3bf138cf2e80ac15d4d33735bcc92b620dbf"
+    },
+    "deploymentTimestamp": "2026-07-04T20:35:15.283Z",
+    "gitCommit": "a2513d091132c713add3ca2eaf2f9053d2f856cd"
+  },
+  "dockerImages": {
+    "docker": "Docker version 28.0.1, build 068a01e",
+    "compose": "Docker Compose version v2.33.1-desktop.1",
+    "besu": "hyperledger/besu:24.12.0",
+    "postgres": "not configured",
+    "api": "not configured"
+  },
+  "host": {
+    "platform": "darwin",
+    "release": "25.5.0",
+    "arch": "arm64",
+    "cpus": 11,
+    "totalMemoryBytes": 19327352832,
+    "node": "v24.2.0"
+  },
+  "rawArtifactPaths": {
+    "summaryPath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/vcem/75u/run-4/k6-summary.json",
+    "resourcePath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/vcem/75u/run-4/resources.csv"
+  },
+  "reason": "missing environment: VCEM_API_URL"
+}

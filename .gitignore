@@ -24,7 +24,7 @@ ignition/deployments
 .env
 .env.local
 evidence/*
-benchmarks/raw/
+
 
 # Generated Besu network secrets and runtime files
 infrastructure/besu/generated/

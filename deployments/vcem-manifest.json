@@ -4,56 +4,56 @@
   "consensus": "IBFT 2.0",
   "blockPeriodSeconds": 2,
   "validatorAddresses": [
-    "0xA3b6bE9f147B8F742D39Fb089848f038E7b2b1e3",
-    "0xa6d8e468ec30CF30F9edAEeb21a6e35F501b189b",
-    "0x137ab06b39e089bDbA3e1b0eA4Db4C034e167049",
-    "0x4f69993152730B7302E4435a658328166e99f2e2"
+    "0x6C13A2a26CB76DFB6faCb8ea119c25B00831998B",
+    "0x09a963DD7C56698476D92cE60F83E731BE4D7212",
+    "0x515E056240C45c80fF7b5136906d5a3A9f6c8876",
+    "0xB22E456B42bACcD7FE5ffaD7F6627837959A40Cb"
   ],
   "topology": {
     "validators": [
       {
         "name": "validator1",
-        "address": "0xA3b6bE9f147B8F742D39Fb089848f038E7b2b1e3",
-        "enode": "enode://ceae29fdb2a3598d0d30128ecc3fe157e2ea9293034327358514ba1e3de3875062b038c6748efea062afe1807eb8f8a819736d5304a2f90f8349a4bd3d5b1511@172.28.0.11:30303",
+        "address": "0x6C13A2a26CB76DFB6faCb8ea119c25B00831998B",
+        "enode": "enode://ff0732e7d04e8e7e46405bf1f20ac03ba11ee357b345566707f1457428360bd05910d69170b1a8c5b699b66f008f679f40069195220e467d72f66e9c04769029@172.28.0.11:30303",
         "ip": "172.28.0.11"
       },
       {
         "name": "validator2",
-        "address": "0xa6d8e468ec30CF30F9edAEeb21a6e35F501b189b",
-        "enode": "enode://16b1ff259fa45afbf791f0de666417dcc1d20d452b203f62cf5db2619085a9eacbf53beb7fa9e7f657a65a84b5946367abc19948e72174c84589160d1a1ac6df@172.28.0.12:30303",
+        "address": "0x09a963DD7C56698476D92cE60F83E731BE4D7212",
+        "enode": "enode://aecf21c192f6a88faf2890a724032d9c1aedec9c8c83e70d54252ec0bbcb6146d7c83702094f6e962371b5aafd0ee3cfad298e163bb397d6e7626c1223659569@172.28.0.12:30303",
         "ip": "172.28.0.12"
       },
       {
         "name": "validator3",
-        "address": "0x137ab06b39e089bDbA3e1b0eA4Db4C034e167049",
-        "enode": "enode://222ee4cfd6963ad614e65106417f50bb6c8ded11cfa10bf6a730c975bc67915ee3688398a8c42ee0dce09f5edfdd4edcbea0290b441f7bd4500c540ba07237df@172.28.0.13:30303",
+        "address": "0x515E056240C45c80fF7b5136906d5a3A9f6c8876",
+        "enode": "enode://a877c808b721396b28821c59542c50233c30c8a2d900debba3b701623f2f8ef06b704ab3d6ea267c38532cae5aa661a2a8ff6942d688d863ad4d2cae5de03a54@172.28.0.13:30303",
         "ip": "172.28.0.13"
       },
       {
         "name": "validator4",
-        "address": "0x4f69993152730B7302E4435a658328166e99f2e2",
-        "enode": "enode://b5d261ff99f78d525c5668597d8321806600bf06882a52e4c1ca36b60c5631e936612fe9454c65186668d9680d891e4890a3e50318af2e12ee2fc505da1c2aad@172.28.0.14:30303",
+        "address": "0xB22E456B42bACcD7FE5ffaD7F6627837959A40Cb",
+        "enode": "enode://7d4eb60aab8f8364cb3b046837d42b17708cf0840be2729ec5fe7236da29c945664fda671198ef3905c7d39a7486c27887e4745474d0f974ceaab4e7cdff78e0@172.28.0.14:30303",
         "ip": "172.28.0.14"
       }
     ],
     "rpc": [
       {
         "name": "rpc",
-        "address": "0xB426d2a89d04d854eC0810AA4E55b5766ae39754",
-        "enode": "enode://03e16ee079d06edd99920b1fbae0e48bb6f44d78bc8328bf22bef51eaf6c0d53d9cb584eaf364a283a287ab6dc915e1c980a2d80b0a499f2975990c571c992ea@172.28.0.15:30303",
+        "address": "0x8dd1D8eFcE4EB3B0CAeAdc29BEf41c061484c123",
+        "enode": "enode://8463028f0f7cd31edddcfb313bc2f340927496335c8a4610005205526f2d6f27a74b866f80c948a3a36d58c009c88d188ea80a46b00f2c1c97b23392a00171a2@172.28.0.15:30303",
         "ip": "172.28.0.15"
       }
     ]
   },
   "addresses": {
-    "VCEMRegistry": "0xF64A63D4C23b890E4E77929E9D4f79bf950Ac3ab",
-    "VCEMConsent": "0xdaD06edF20baDD02767A0Cd082563a3Fc473F6db",
-    "VCEMAudit": "0xb7E9E45039d192F7A315De6662061D6d3d73f6d0"
+    "VCEMRegistry": "0x38727d1498DE1f43384B86c5451b197AFb455cD1",
+    "VCEMConsent": "0x0C22d1Ce6CFf3701843Ad49049A45D0bDca83Ca2",
+    "VCEMAudit": "0xc85872A2604f141bE601381F44c0f36dEECDF36d"
   },
   "deploymentTransactions": {
-    "VCEMRegistry": "0x2183696bb40b27bd9b8526bb3d4132571960bdadf14ded6a2dbd0ffcca3b24b9",
-    "VCEMConsent": "0xfd68c206737ded55c702fdf88ccb782cb61eb43b2ba29e2f2c3e9d82f37ab6b3",
-    "VCEMAudit": "0xf26eb27f9042796b0e839729a25e75849d7eb22ae87a203375b8d1489e943b42"
+    "VCEMRegistry": "0xbadc00b8c3c9b3b76f90e2e0b9b6944ea864d7682225f2dfc54289267986c07c",
+    "VCEMConsent": "0x5ecc8304f7d40a9caa04fdbf7f6b47f4ded2a34b1b4b4ab2118ea16461f1755a",
+    "VCEMAudit": "0x0d56a783fb4decb05b6430331cae7357b97d5483cff1c0bf10f45c37e27aa782"
   },
   "abiVersion": "vcem-v1",
   "localRuntimeBytecodeHashes": {
@@ -63,9 +63,9 @@
   },
   "deployedRuntimeBytecodeHashes": {
     "VCEMRegistry": "0x0ae4ca0ea97be66b21afd1f7887b3df97f06c6fedeffdbb5e3aeda40cd66998a",
-    "VCEMConsent": "0xb5ba367b2e3a4549739d1f556530f32f17b3fe0f4fe5a6298dc8c58b395c21b4",
-    "VCEMAudit": "0xf66adaaa4e09f7f6b9d944ac0703e799da84d57ae74049bc47969211c6f48481"
+    "VCEMConsent": "0xe0060f3b8b89283f053669cf4ef3eda915dd058cbc25bfaea051def7199835c5",
+    "VCEMAudit": "0xa43b3e7aa715aca61b1b7b57db8d3bf138cf2e80ac15d4d33735bcc92b620dbf"
   },
-  "deploymentTimestamp": "2026-07-03T10:50:49.806Z",
-  "gitCommit": "bef01bcc3bf8232d648cf638a141748c4879df84"
+  "deploymentTimestamp": "2026-07-04T20:35:15.283Z",
+  "gitCommit": "a2513d091132c713add3ca2eaf2f9053d2f856cd"
 }
