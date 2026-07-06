@@ -1,0 +1,9 @@
+# Python tooling used by the release/reviewer evidence workflow.
+#
+# Node/TypeScript dependencies are pinned separately in package-lock.json and
+# should be installed with `npm ci`.
+#
+# Slither can also be installed with:
+#   pipx install slither-analyzer==0.11.5
+slither-analyzer==0.11.5
+python-docx==1.2.0

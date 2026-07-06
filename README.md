@@ -12,6 +12,26 @@ That means each authorized data-access event is cryptographically linked to the 
 
 This repository does not claim legal GDPR compliance, production clinical deployment, live FHIR-server integration, or benchmark performance results unless those workflows are actually executed and their evidence artifacts are present.
 
+## Start Here: What This Repository Contains
+
+This repository is intended to be reproducible from a fresh clone. A reader should be able to install dependencies, compile contracts offline, run tests, inspect security-analysis reports, start a local Besu network, execute the benchmark tooling, and trace every major paper claim to code and evidence.
+
+| Area | What to inspect first |
+|---|---|
+| Core VCEM contracts | `contracts/vcem/VCEMRegistry.sol`, `contracts/vcem/VCEMConsent.sol`, `contracts/vcem/VCEMAudit.sol` |
+| Legacy contracts retained for provenance | `contracts/DSA/`, `contracts/RSA/`, `contracts/DataSharingAgreementZKP.sol`, `contracts/ABVerifier.sol` |
+| Authenticated API and secure proxy | `services/api/`, `services/auth/`, `services/data-proxy/`, `services/encryption/`, `services/storage/` |
+| FHIR examples and adapter | `fixtures/fhir/`, `services/fhir-adapter/`, `test/FHIRAdapter.ts`, `docs/fhir-mapping.md` |
+| Besu network | `infrastructure/besu/docker-compose.yml`, `infrastructure/besu/genesis.json.template`, `infrastructure/besu/scripts/` |
+| Deployment | `ignition/modules/VCEM.ts`, `infrastructure/besu/scripts/deployVcem.ts`, `deployments/vcem-manifest.json` |
+| Tests | `test/VCEM.ts`, `test/VCEMMatrix.ts`, `test/AuditVerifier.ts`, `test/ApiDataProxy.ts`, `test/FHIRAdapter.ts` |
+| Slither static analysis | `slither-report.md`, `reports/slither/slither-final.json`, `reports/slither/slither-final.txt` |
+| Benchmarks and k6 | `benchmarks/k6/`, `benchmarks/scripts/`, `benchmarks/raw/`, `benchmarks/analysis/`, `benchmarks/reports/` |
+| Claim-to-evidence mapping | `docs/claim-to-evidence.md`, `docs/final-vcem-alignment-report.md` |
+| Release inventory | `docs/open-source-release-inventory.md` |
+
+The main README gives the operational path. The `docs/` folder gives the deeper reviewer-facing explanation and limitations.
+
 ## What Is Implemented
 
 ### On-chain VCEM contracts
@@ -148,12 +168,38 @@ test/                           unit, integration, matrix, verifier, FHIR, prope
 
 - Node.js compatible with the installed Hardhat toolchain.
 - npm.
+- Python 3 and either `pip` or `pipx` for Slither/report tooling.
 - Docker and Docker Compose for local Besu execution.
 - PostgreSQL 15 for API/database and baseline benchmark execution.
 - k6 for benchmark execution.
 - Slither binary for local Slither execution.
 
 The repository pins npm dependencies in `package-lock.json`. Use `npm ci` for reproducibility.
+Python tooling is pinned in `requirements.txt`.
+
+Quick dependency install:
+
+```bash
+npm ci
+python3 -m pip install -r requirements.txt
+```
+
+If you prefer to isolate Slither from your Python environment:
+
+```bash
+pipx install slither-analyzer==0.11.5
+```
+
+Dependency sources:
+
+| Dependency type | File / command |
+|---|---|
+| Node, Hardhat, TypeScript, snarkjs | `package-lock.json`, install with `npm ci` |
+| Python tooling, Slither, Word report generation | `requirements.txt`, install with `python3 -m pip install -r requirements.txt` |
+| Slither isolated install alternative | `pipx install slither-analyzer==0.11.5` |
+| Docker / Docker Compose | Install with Docker Desktop or platform package manager |
+| PostgreSQL 15 | Install with platform package manager or Docker |
+| k6 | Install from Grafana k6 packages or platform package manager |
 
 ## Environment Setup
 
@@ -205,6 +251,18 @@ mkdir -p reports/execution-logs
 
 ```bash
 npm ci 2>&1 | tee reports/execution-logs/01-npm-ci.log
+```
+
+Optional Python tooling install for Slither and Word-report generation:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+Alternative isolated Slither install:
+
+```bash
+pipx install slither-analyzer==0.11.5
 ```
 
 Expected result:
@@ -304,6 +362,7 @@ npm run secret:scan 2>&1 | tee reports/execution-logs/11-secret-scan.log
 npm run solhint 2>&1 | tee reports/execution-logs/12-solhint.log
 npm run security:audit 2>&1 | tee reports/execution-logs/13-npm-audit.log
 npm run besu:config:validate 2>&1 | tee reports/execution-logs/14-besu-config-validate.log
+npm run slither 2>&1 | tee reports/execution-logs/15-slither.log
 ```
 
 Expected result from the last recorded local run:
@@ -312,25 +371,35 @@ Expected result from the last recorded local run:
 - `npm run solhint`: pass with warnings;
 - `npm run security:audit`: fails because unresolved high/critical dependency findings remain;
 - `npm run besu:config:validate`: pass.
+- `npm run slither`: pass when Slither is installed and available on `PATH`.
 
 Important interpretation:
 
 - Solhint is executed static analysis.
 - npm audit is executed dependency security analysis.
 - The dependency-audit failure is an unresolved risk, not a clean security sign-off.
-- Slither is configured, but local Slither execution requires installing the Slither binary.
+- Slither static analysis has been executed and its reports are committed as evidence.
 
-Optional Slither command:
+Install Slither if needed:
 
 ```bash
-npm run slither 2>&1 | tee reports/execution-logs/15-slither.log
+pipx install slither-analyzer==0.11.5
 ```
 
-Expected behavior without local Slither installed:
+Slither evidence:
 
-- fails with `slither: command not found`.
+- `slither-report.md`
+- `reports/slither/slither-final.json`
+- `reports/slither/slither-final.txt`
 
-If Slither is installed, keep `reports/execution-logs/15-slither.log` as the static-analysis report.
+Current Slither status after remediation:
+
+- High findings: 0
+- Medium findings: 0
+- Low findings: 48
+- Informational findings: 120
+
+The remaining Low/Informational warnings are documented in `slither-report.md`; they are not suppressed.
 
 ### Step 7: Run Coverage and Gas Reports
 
@@ -738,6 +807,8 @@ Benchmark tooling exists for:
 - authenticated VCEM API and secure data-proxy path;
 - PostgreSQL 15 RBAC/RLS baseline with equivalent participant, researcher, role, purpose, scope, authentication, and encrypted-artifact delivery logic.
 
+The benchmark runner uses k6 scripts in `benchmarks/k6/` and TypeScript orchestration in `benchmarks/scripts/`. Raw k6 summaries and resource samples are retained under `benchmarks/raw/`; generated summaries live under `benchmarks/analysis/` and `benchmarks/reports/`.
+
 Commands:
 
 ```bash
@@ -796,6 +867,18 @@ Artifacts:
 - `benchmarks/reports/benchmark-report.md`
 
 Benchmark reports must be treated as evidence only when metadata says `status: executed` and the corresponding k6 summary has successful checks. Do not use `failed` or `not executed` metadata as performance evidence. The baseline runner resets the PostgreSQL delivery ledger before each run by default; set `BENCHMARK_RESET_BETWEEN_RUNS=0` only when intentionally testing replay/duplicate-request behavior.
+
+Current retained benchmark interpretation:
+
+| Load | PostgreSQL baseline | VCEM blockchain path | Interpretation |
+|---:|---|---|---|
+| 10 VUs | 5/5 valid runs | 5/5 valid runs | Valid direct comparison |
+| 25 VUs | 5/5 valid runs | 5/5 valid runs | Valid direct comparison |
+| 50 VUs | 5/5 valid runs | 0/5 valid runs | VCEM local single-relayer setup unstable at this load |
+| 75 VUs | 5/5 valid runs | Not cleanly executed | Baseline-only evidence |
+| 100 VUs | Partial baseline evidence | Not cleanly executed | Diagnostic only |
+
+Do not average failed VCEM 50-VU runs into performance claims. The correct interpretation is that the local experimental VCEM path was reproducible at 10 and 25 VUs, while the 50-VU VCEM workload exposed relay/RPC contention in this local setup.
 
 ## Testing
 
@@ -991,16 +1074,45 @@ npm run benchmark:analyze
 
 ## Supporting Documentation
 
-The root README is the primary operating guide. The `docs/` directory contains deeper reference material, including:
+The root README is the primary operating guide. The `docs/` directory contains deeper reference material:
 
-- `docs/architecture.md`
-- `docs/audit-verification.md`
-- `docs/authentication.md`
-- `docs/benchmark-methodology.md`
-- `docs/besu-deployment.md`
-- `docs/claim-to-evidence.md`
-- `docs/data-proxy-security.md`
-- `docs/fhir-mapping.md`
-- `docs/privacy-and-erasure.md`
-- `docs/security-fixes.md`
-- `docs/zkp-extension.md`
+| Document | Purpose |
+|---|---|
+| `docs/architecture.md` | System architecture and VCEM component boundaries |
+| `docs/current-state-assessment.md` | Initial repository assessment before VCEM hardening |
+| `docs/vcem-migration-plan.md` | How retained, extended, and new modules map to VCEM requirements |
+| `docs/audit-verification.md` | Independent audit verifier model, commands, and limitations |
+| `docs/authentication.md` | Wallet challenge/session authentication flow |
+| `docs/data-proxy-security.md` | Secure data-proxy threat model and enforcement rules |
+| `docs/privacy-and-erasure.md` | Off-chain encryption, pseudonymization, and erasure behavior |
+| `docs/fhir-mapping.md` | Supported FHIR R4 Consent and AuditEvent mapping |
+| `docs/fhir-limitations.md` | Unsupported FHIR semantics and fixture-only limitation |
+| `docs/besu-deployment.md` | Local Besu topology and deployment commands |
+| `docs/benchmark-methodology.md` | k6/PostgreSQL/VCEM benchmark methodology |
+| `docs/claim-to-evidence.md` | Paper claim to source/test/evidence mapping |
+| `docs/paper-delta.md` | Claims that require revision or careful wording |
+| `docs/security-fixes.md` | Security hardening performed |
+| `docs/dependency-risk-register.md` | Remaining dependency-audit risks |
+| `docs/final-vcem-alignment-report.md` | Final implemented/tested/unimplemented alignment summary |
+| `docs/open-source-release-inventory.md` | Open-source release artifact inventory |
+| `docs/zkp-extension.md` | Experimental ZKP status and limitations |
+
+## Open Source Release Contents
+
+The release inventory is maintained in `docs/open-source-release-inventory.md`. It confirms that the repository includes:
+
+- Solidity contracts;
+- Besu configuration and generation scripts;
+- deployment scripts and manifest tooling;
+- benchmark scripts and raw benchmark logs;
+- unit and integration tests;
+- Slither reports;
+- anonymized HL7/FHIR examples;
+- reproduction instructions in this README;
+- an MIT license.
+
+Generated validator keys, RPC keys, local `.env` files, and benchmark fixture encryption keys are intentionally ignored and must be regenerated locally.
+
+## License
+
+This project is released under the MIT License. See `LICENSE`.
