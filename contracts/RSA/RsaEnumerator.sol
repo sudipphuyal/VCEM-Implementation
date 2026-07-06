@@ -55,8 +55,8 @@ interface IResourcesSharingAgreement {
 }
 
 contract RsaEnumerator {
-    IUtils public utils;
-    IResourcesSharingAgreement private rsaContract;
+    IUtils public immutable utils;
+    IResourcesSharingAgreement private immutable rsaContract;
 
     constructor(address _utilsContract, address _rsaContract) {
         utils = IUtils(_utilsContract);

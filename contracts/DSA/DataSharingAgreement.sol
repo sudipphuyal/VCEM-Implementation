@@ -52,8 +52,8 @@ contract DataSharingAgreement {
     mapping(address => bytes20[]) private providerDsas;
     mapping(address => bytes20[]) private recipientDsas;
 
-    IUtils public utils;
-    IRegistries public registriesContract;
+    IUtils public immutable utils;
+    IRegistries public immutable registriesContract;
 
     event DsaCreated(
         bytes20 indexed dsaId,
@@ -147,6 +147,8 @@ contract DataSharingAgreement {
             expiresAt: block.timestamp + durationInSeconds,
             createdAt: block.timestamp
         });
+        providerDsas[msg.sender].push(dsaId);
+        recipientDsas[_recipient].push(dsaId);
 
         emit DsaCreated(
             dsaId,
@@ -164,7 +166,7 @@ contract DataSharingAgreement {
             "Only healthcare professionals can accept DSAs"
         );
         require(dsas[_dsaId].recipient == msg.sender, "Not the recipient");
-        require(dsas[_dsaId].state == DsaState.Pending, "DSA not pending");
+        if (dsas[_dsaId].state != DsaState.Pending) revert("DSA not pending");
 
         dsas[_dsaId].state = DsaState.Active;
         emit DsaAccepted(_dsaId, dsas[_dsaId].provider, dsas[_dsaId].recipient);
@@ -184,7 +186,7 @@ contract DataSharingAgreement {
 
     function rejectDsa(bytes20 _dsaId) external {
         require(dsas[_dsaId].recipient == msg.sender, "Not the recipient");
-        require(dsas[_dsaId].state == DsaState.Pending, "DSA not pending");
+        if (dsas[_dsaId].state != DsaState.Pending) revert("DSA not pending");
 
         address provider = dsas[_dsaId].provider;
         address recipient = dsas[_dsaId].recipient;
@@ -196,7 +198,7 @@ contract DataSharingAgreement {
 
     function cancelDsa(bytes20 _dsaId) external {
         require(dsas[_dsaId].provider == msg.sender, "Not the provider");
-        require(dsas[_dsaId].state == DsaState.Pending, "Cannot cancel");
+        if (dsas[_dsaId].state != DsaState.Pending) revert("Cannot cancel");
 
         address provider = dsas[_dsaId].provider;
         address recipient = dsas[_dsaId].recipient;

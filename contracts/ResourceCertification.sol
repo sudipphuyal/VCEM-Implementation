@@ -14,7 +14,7 @@ contract ResourceCertification {
     }
 
     // Reference to the Registries contract for access control
-    IRegistries public registriesContract;
+    IRegistries public immutable registriesContract;
 
     // Array of certificates
     Certificate[] public certificates;
@@ -24,6 +24,7 @@ contract ResourceCertification {
 
     // Mapping to track which issuer created which certificate
     mapping(string => address) private certificateIssuer;
+    mapping(string => bool) private certificateExists;
 
     // Event for resource certification
     event ResourceCertified(
@@ -63,6 +64,7 @@ contract ResourceCertification {
         // Store the index and issuer of the certificate for future reference
         certificateIndexById[_resourceId] = certificates.length - 1;
         certificateIssuer[_resourceId] = msg.sender;
+        certificateExists[_resourceId] = true;
 
         // Emit an event
         emit ResourceCertified(
@@ -99,6 +101,7 @@ contract ResourceCertification {
         certificates.pop();
         delete certificateIndexById[_resourceId];
         delete certificateIssuer[_resourceId];
+        delete certificateExists[_resourceId];
 
         // Emit an event for the removal
         emit CertificateRemoved(_resourceId, msg.sender);
@@ -117,19 +120,9 @@ contract ResourceCertification {
             uint256 issuedAt
         )
     {
+        require(certificateExists[_resourceId], "Resource not certified");
         uint256 index = certificateIndexById[_resourceId];
-
-        // Verify that the resource ID maps to a valid certificate
         require(index < certificates.length, "Resource not certified");
-
-        if (index == 0) {
-            // If _resourceId is not actually the resourceId at index 0, it’s uncertified
-            require(
-                keccak256(abi.encodePacked(certificates[0].resourceId)) ==
-                    keccak256(abi.encodePacked(_resourceId)),
-                "Resource not certified"
-            );
-        }
 
         Certificate memory certificate = certificates[index];
         return (

@@ -12,15 +12,15 @@ contract VCEMRegistry {
     mapping(bytes32 => bool) public revokedId;
 
     bool public paused;
-    address public owner;
+    address public immutable owner;
 
     event RoleGranted(bytes32 indexed actorId, address indexed wallet, VCEMTypes.Role indexed role, address operator);
     event RoleRevoked(bytes32 indexed actorId, address indexed wallet, VCEMTypes.Role indexed role, address operator);
     event ActorRegistered(bytes32 indexed actorId, address indexed wallet, VCEMTypes.Role primaryRole, address operator);
     event ActorWalletUpdated(bytes32 indexed actorId, address indexed oldWallet, address indexed newWallet);
     event ActorRevoked(bytes32 indexed actorId, address indexed wallet, address operator);
-    event Paused(address operator);
-    event Unpaused(address operator);
+    event Paused(address indexed operator);
+    event Unpaused(address indexed operator);
 
     modifier onlyAdmin() {
         require(msg.sender == owner || hasRole(msg.sender, VCEMTypes.Role.ADMIN), "VCEMRegistry: admin only");

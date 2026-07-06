@@ -3,9 +3,10 @@ pragma solidity 0.8.20;
 
 import {VCEMTypes} from "./VCEMTypes.sol";
 import {IVCEMRegistry} from "./interfaces/IVCEMRegistry.sol";
+import {IVCEMConsent} from "./interfaces/IVCEMConsent.sol";
 import {CanonicalHash} from "./libraries/CanonicalHash.sol";
 
-contract VCEMConsent {
+contract VCEMConsent is IVCEMConsent {
     IVCEMRegistry public immutable registry;
     bool public paused;
 
@@ -52,8 +53,8 @@ contract VCEMConsent {
         uint64 timestamp
     );
     event ConsentActorsRecorded(bytes32 indexed participantId, uint64 indexed version, bytes32[] actorIds, bytes32 actorsRoot);
-    event Paused(address operator);
-    event Unpaused(address operator);
+    event Paused(address indexed operator);
+    event Unpaused(address indexed operator);
 
     modifier onlyAdmin() {
         require(registry.hasRole(msg.sender, VCEMTypes.Role.ADMIN), "VCEMConsent: admin only");

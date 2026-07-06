@@ -3,7 +3,7 @@ pragma solidity ^0.8.27;
 
 contract Registries {
     // Contract owner and health authority
-    address public owner;
+    address public immutable owner;
 
     // Role mappings
     mapping(address => bool) public patients;

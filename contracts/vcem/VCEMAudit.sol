@@ -63,8 +63,8 @@ contract VCEMAudit {
         uint64 timestamp
     );
     event DataHashRegistered(bytes32 indexed participantId, bytes32 indexed scopeHash, bytes32 dataHash, address operator);
-    event Paused(address operator);
-    event Unpaused(address operator);
+    event Paused(address indexed operator);
+    event Unpaused(address indexed operator);
 
     modifier onlyAdmin() {
         require(registry.hasRole(msg.sender, VCEMTypes.Role.ADMIN), "VCEMAudit: admin only");

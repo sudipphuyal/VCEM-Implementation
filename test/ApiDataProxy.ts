@@ -214,7 +214,7 @@ describe("Authenticated VCEM API and data proxy", function () {
     const session = await env.login(env.researcher);
     const req = await env.request("ok");
     const authz = await env.authorize(session.body.token, req);
-    expect(authz.status).to.equal(200);
+    expect(authz.status, JSON.stringify(authz.body)).to.equal(200);
     const released = await env.release(session.body.token, authz.body.transactionHash, req);
     expect(released.status, JSON.stringify(released.body)).to.equal(200);
     expect(Buffer.from(released.body.data, "base64").toString()).to.equal("fixture clinical data not for logs");

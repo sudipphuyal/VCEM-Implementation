@@ -36,8 +36,8 @@ interface IDataSharingAgreement {
 }
 
 contract DsaEnumerator {
-    IUtils public utils;
-    IDataSharingAgreement private dsaContract;
+    IUtils public immutable utils;
+    IDataSharingAgreement private immutable dsaContract;
 
     constructor(address _utilsContract, address _dsaContract) {
         utils = IUtils(_utilsContract);
@@ -57,24 +57,6 @@ contract DsaEnumerator {
             utils.generateHash(_stateFilter) == utils.generateHash("PENDING")
         ) {
             return (IDataSharingAgreement.DsaState.Pending, true);
-        } else {
-            revert("Invalid state filter");
-        }
-    }
-
-    function _getAcceptanceFilterFromString(
-        string memory _stateFilter
-    ) private view returns (bool, bool) {
-        if (utils.generateHash(_stateFilter) == utils.generateHash("ALL")) {
-            return (true, true);
-        } else if (
-            utils.generateHash(_stateFilter) == utils.generateHash("ACTIVE")
-        ) {
-            return (true, false);
-        } else if (
-            utils.generateHash(_stateFilter) == utils.generateHash("PENDING")
-        ) {
-            return (false, true);
         } else {
             revert("Invalid state filter");
         }

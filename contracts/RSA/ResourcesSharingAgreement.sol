@@ -93,9 +93,9 @@ contract ResourcesSharingAgreement {
 
     mapping(bytes20 => ObserverAssignment) private observerAssignments;
 
-    IUtils public utils;
-    IRegistries public registriesContract;
-    IResourceCertification public resourceCertificationContract;
+    IUtils public immutable utils;
+    IRegistries public immutable registriesContract;
+    IResourceCertification public immutable resourceCertificationContract;
 
     event RsaCreated(
         bytes20 indexed rsaId,
@@ -197,7 +197,7 @@ contract ResourcesSharingAgreement {
     }
 
     modifier onlyActive(bytes20 _rsaId) {
-        require(rsas[_rsaId].state == RsaState.Active, "Rsa is not active");
+        if (rsas[_rsaId].state != RsaState.Active) revert("Rsa is not active");
         _;
     }
 
@@ -353,9 +353,16 @@ contract ResourcesSharingAgreement {
 
         // Validate that all shared resources are owned by the provider
         for (uint256 i = 0; i < _sharedResources.length; i++) {
-            (, address subject, , ) = resourceCertificationContract
-                .verifyResource(_sharedResources[i]);
+            (
+                string memory certifiedResourceId,
+                address subject,
+                address issuer,
+                uint256 issuedAt
+            ) = resourceCertificationContract.verifyResource(_sharedResources[i]);
 
+            require(bytes(certifiedResourceId).length > 0, "Invalid resource");
+            require(issuer != address(0), "Invalid issuer");
+            require(issuedAt <= block.timestamp, "Invalid certification timestamp");
             require(subject == msg.sender, "Resource not owned by provider");
         }
 
@@ -567,7 +574,7 @@ contract ResourcesSharingAgreement {
 
         bytes20[] storage assignmentIds = rsa.observerAssignmentIds;
         bool isObserver = false;
-        bytes20 targetAssignmentId;
+        bytes20 targetAssignmentId = bytes20(0);
 
         for (uint256 i = 0; i < assignmentIds.length; i++) {
             ObserverAssignment storage assignment = observerAssignments[
@@ -604,7 +611,7 @@ contract ResourcesSharingAgreement {
         require(rsa.provider != address(0), "Invalid Rsa ID");
 
         bytes20[] storage assignmentIds = rsa.observerAssignmentIds;
-        bytes20 targetAssignmentId;
+        bytes20 targetAssignmentId = bytes20(0);
         bool isObserver = false;
 
         for (uint256 i = 0; i < assignmentIds.length; i++) {
@@ -647,7 +654,7 @@ contract ResourcesSharingAgreement {
         );
 
         bytes20[] storage assignmentIds = rsa.observerAssignmentIds;
-        bytes20 targetAssignmentId;
+        bytes20 targetAssignmentId = bytes20(0);
         bool observerFound = false;
 
         for (uint256 i = 0; i < assignmentIds.length; i++) {

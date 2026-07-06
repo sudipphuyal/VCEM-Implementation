@@ -173,14 +173,22 @@ export function createAuditRelay(auditAddress: string, signer: ethers.Signer, ab
   }
   async function sendWithFreshNonce(request: any, signature: string) {
     const populated = await (contract.authorizeAndLogAccess as any).populateTransaction(request, signature);
-    const send = async () =>
-      signer.sendTransaction({
+    const send = async () => {
+      const provider = signer.provider;
+      if (!provider) throw new Error("audit relay signer has no provider");
+      const network = await provider.getNetwork();
+      const baseTransaction = {
         ...populated,
         nonce: await takeNonce(),
+        gasLimit: 1_000_000n,
+      };
+      if (network.chainId === 31337n) return signer.sendTransaction(baseTransaction);
+      return signer.sendTransaction({
+        ...baseTransaction,
         type: 0,
         gasPrice: 1n,
-        gasLimit: 1_000_000n,
       });
+    };
     try {
       return await send();
     } catch (err: any) {

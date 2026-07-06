@@ -35,8 +35,8 @@ contract DataSharingAgreementZKP {
 
     mapping(bytes20 => Dsa) public dsas;
 
-    Utils public utils;
-    ABVerifier public verifier;
+    Utils public immutable utils;
+    ABVerifier public immutable verifier;
 
     event DsaCreated(bytes20 indexed dsaId, uint256 providerCommitment, uint256 recipientCommitment, string duration, uint256 expiresAt, string sharedData);
     event DsaAccepted(bytes20 indexed dsaId);
@@ -60,7 +60,7 @@ contract DataSharingAgreementZKP {
         uint256 recipientCommitment = 0; // set later by recipient
 
         bytes20 dsaId = utils.generateDsaIdFromCommitments(providerCommitment, recipientCommitment);
-        require(dsas[dsaId].providerCommitment == 0, "DSA already exists");
+        if (dsas[dsaId].providerCommitment != 0) revert("DSA already exists");
 
         uint256 durationInSeconds = utils.getDurationInSeconds(_duration);
 
@@ -79,7 +79,7 @@ contract DataSharingAgreementZKP {
 
     function acceptDsaWithProof(
         uint256 _providerCommitment,
-        string memory _duration,
+        string memory,
         uint[2] memory a,
         uint[2][2] memory b,
         uint[2] memory c,
@@ -89,8 +89,8 @@ contract DataSharingAgreementZKP {
 
         uint256 recipientCommitment = input[0];
         bytes20 dsaId = utils.generateDsaIdFromCommitments(_providerCommitment, 0);
-        require(dsas[dsaId].providerCommitment == _providerCommitment, "DSA not found");
-        require(dsas[dsaId].state == DsaState.Pending, "DSA not pending");
+        if (dsas[dsaId].providerCommitment != _providerCommitment) revert("DSA not found");
+        if (dsas[dsaId].state != DsaState.Pending) revert("DSA not pending");
 
         // update recipient commitment and promote state
         dsas[dsaId].recipientCommitment = recipientCommitment;
