@@ -1,69 +1,69 @@
 {
-  "status": "not executed",
+  "status": "executed",
   "mode": "vcem",
   "users": 10,
   "run": 1,
   "warmupSeconds": 60,
   "measureSeconds": 300,
-  "timestamp": "2026-07-04T20:38:40.148Z",
+  "timestamp": "2026-07-05T19:41:08.560Z",
   "command": "k6 run benchmarks/k6/vcem-access.js",
-  "gitCommit": "a2513d091132c713add3ca2eaf2f9053d2f856cd",
+  "gitCommit": "6077d27a9eca686e5395e8e081bbbf588b824a0b",
   "deploymentManifest": {
     "chainId": "20260703",
     "networkName": "vcem-besu-local",
     "consensus": "IBFT 2.0",
     "blockPeriodSeconds": 2,
     "validatorAddresses": [
-      "0x6C13A2a26CB76DFB6faCb8ea119c25B00831998B",
-      "0x09a963DD7C56698476D92cE60F83E731BE4D7212",
-      "0x515E056240C45c80fF7b5136906d5a3A9f6c8876",
-      "0xB22E456B42bACcD7FE5ffaD7F6627837959A40Cb"
+      "0x3ca30eeC09411232b6F7E378C74Dd940a7443f92",
+      "0x9EFCe7C38B58604575559080476e89b426D8Ea11",
+      "0x4825CfF306b3a0F67B2ABC71447262328bA8F5EF",
+      "0x70f8360D62Daf704888d8081558CB4a0be12eFaf"
     ],
     "topology": {
       "validators": [
         {
           "name": "validator1",
-          "address": "0x6C13A2a26CB76DFB6faCb8ea119c25B00831998B",
-          "enode": "enode://ff0732e7d04e8e7e46405bf1f20ac03ba11ee357b345566707f1457428360bd05910d69170b1a8c5b699b66f008f679f40069195220e467d72f66e9c04769029@172.28.0.11:30303",
+          "address": "0x3ca30eeC09411232b6F7E378C74Dd940a7443f92",
+          "enode": "enode://7449a730a37a471801f2a76e8ab770ecdcb9a492b4968bf683a2655cab282b9e2e7cd8ce70c3357162247135a87cc609112d4a680ef2a6c0fe100594efefd42a@172.28.0.11:30303",
           "ip": "172.28.0.11"
         },
         {
           "name": "validator2",
-          "address": "0x09a963DD7C56698476D92cE60F83E731BE4D7212",
-          "enode": "enode://aecf21c192f6a88faf2890a724032d9c1aedec9c8c83e70d54252ec0bbcb6146d7c83702094f6e962371b5aafd0ee3cfad298e163bb397d6e7626c1223659569@172.28.0.12:30303",
+          "address": "0x9EFCe7C38B58604575559080476e89b426D8Ea11",
+          "enode": "enode://0f548ca3e98ff875443f3c197afc931f12a734e3ea151a251454dcd20e783a8915a6eeda32eff5a91336b0615da673b2fd30d6ef427f4ccca151e7a108a05265@172.28.0.12:30303",
           "ip": "172.28.0.12"
         },
         {
           "name": "validator3",
-          "address": "0x515E056240C45c80fF7b5136906d5a3A9f6c8876",
-          "enode": "enode://a877c808b721396b28821c59542c50233c30c8a2d900debba3b701623f2f8ef06b704ab3d6ea267c38532cae5aa661a2a8ff6942d688d863ad4d2cae5de03a54@172.28.0.13:30303",
+          "address": "0x4825CfF306b3a0F67B2ABC71447262328bA8F5EF",
+          "enode": "enode://5ad04880acb6eef72459b043a5962c3f591412b1815a19ea5b9c26f641c6fcb4a38110aaf1b82f5c0a3ff2a1fbd8ab19f0035350bce06ba4e2ceb455795f4abf@172.28.0.13:30303",
           "ip": "172.28.0.13"
         },
         {
           "name": "validator4",
-          "address": "0xB22E456B42bACcD7FE5ffaD7F6627837959A40Cb",
-          "enode": "enode://7d4eb60aab8f8364cb3b046837d42b17708cf0840be2729ec5fe7236da29c945664fda671198ef3905c7d39a7486c27887e4745474d0f974ceaab4e7cdff78e0@172.28.0.14:30303",
+          "address": "0x70f8360D62Daf704888d8081558CB4a0be12eFaf",
+          "enode": "enode://821cf69addfaec13be4b217cd1f1ead7012914ff16b9a0bfc7557db8ad1dd98585297e2c20f84920b13ea61e311425fd8239ace9b7b1d21d2a83207db8107aa7@172.28.0.14:30303",
           "ip": "172.28.0.14"
         }
       ],
       "rpc": [
         {
           "name": "rpc",
-          "address": "0x8dd1D8eFcE4EB3B0CAeAdc29BEf41c061484c123",
-          "enode": "enode://8463028f0f7cd31edddcfb313bc2f340927496335c8a4610005205526f2d6f27a74b866f80c948a3a36d58c009c88d188ea80a46b00f2c1c97b23392a00171a2@172.28.0.15:30303",
+          "address": "0xD3eb80C5540Dc18976a5ba9b69F2824612505c99",
+          "enode": "enode://1dc243a9e8151bf286b77ab7f4e473186dd490599b2f349ac5b418f4893e055720a70c1aab174a7f63762bac792c79db52ab41a3996f0dc5c649ffe52bc9c67a@172.28.0.15:30303",
           "ip": "172.28.0.15"
         }
       ]
     },
     "addresses": {
-      "VCEMRegistry": "0x38727d1498DE1f43384B86c5451b197AFb455cD1",
-      "VCEMConsent": "0x0C22d1Ce6CFf3701843Ad49049A45D0bDca83Ca2",
-      "VCEMAudit": "0xc85872A2604f141bE601381F44c0f36dEECDF36d"
+      "VCEMRegistry": "0x07318D43d8E7B129016ae895BA2C3D4B38AB6164",
+      "VCEMConsent": "0x4CC050117F572E3CF92A20f6D99924B6b85D2e68",
+      "VCEMAudit": "0x6ccf8567830024aAD2621eef08ecfc652c0FB2C2"
     },
     "deploymentTransactions": {
-      "VCEMRegistry": "0xbadc00b8c3c9b3b76f90e2e0b9b6944ea864d7682225f2dfc54289267986c07c",
-      "VCEMConsent": "0x5ecc8304f7d40a9caa04fdbf7f6b47f4ded2a34b1b4b4ab2118ea16461f1755a",
-      "VCEMAudit": "0x0d56a783fb4decb05b6430331cae7357b97d5483cff1c0bf10f45c37e27aa782"
+      "VCEMRegistry": "0x59102b906a7c5963a6b07072b45752c1182b2b897e53e0bf1f4a02ce6c9ec17c",
+      "VCEMConsent": "0x3192344d8362615ae6f2a4eeda1af9aa3584afe974cf5e519ace7d313d625908",
+      "VCEMAudit": "0xe5c445d29925346802b739eebc0203e20725c33ebf23379fad38aa3bd35d0082"
     },
     "abiVersion": "vcem-v1",
     "localRuntimeBytecodeHashes": {
@@ -73,11 +73,11 @@
     },
     "deployedRuntimeBytecodeHashes": {
       "VCEMRegistry": "0x0ae4ca0ea97be66b21afd1f7887b3df97f06c6fedeffdbb5e3aeda40cd66998a",
-      "VCEMConsent": "0xe0060f3b8b89283f053669cf4ef3eda915dd058cbc25bfaea051def7199835c5",
-      "VCEMAudit": "0xa43b3e7aa715aca61b1b7b57db8d3bf138cf2e80ac15d4d33735bcc92b620dbf"
+      "VCEMConsent": "0xa12d6bdd7a5629644e1f049fb74cf3b9cd49e941a94b5328db7a00e93c2c1536",
+      "VCEMAudit": "0x6f2c2620165c379c3e98d72d440c90f0627055ca44fd7b47dd3997039bc25bbf"
     },
-    "deploymentTimestamp": "2026-07-04T20:35:15.283Z",
-    "gitCommit": "a2513d091132c713add3ca2eaf2f9053d2f856cd"
+    "deploymentTimestamp": "2026-07-05T18:55:17.498Z",
+    "gitCommit": "6077d27a9eca686e5395e8e081bbbf588b824a0b"
   },
   "dockerImages": {
     "docker": "Docker version 28.0.1, build 068a01e",
@@ -92,11 +92,11 @@
     "arch": "arm64",
     "cpus": 11,
     "totalMemoryBytes": 19327352832,
-    "node": "v24.2.0"
+    "node": "v24.13.1"
   },
   "rawArtifactPaths": {
     "summaryPath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/vcem/10u/run-1/k6-summary.json",
     "resourcePath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/vcem/10u/run-1/resources.csv"
   },
-  "reason": "missing environment: VCEM_API_URL"
+  "exitCode": 0
 }

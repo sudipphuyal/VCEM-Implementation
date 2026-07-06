@@ -19,6 +19,7 @@ type RunRow = {
   p95?: number;
   count?: number;
   rate?: number;
+  value?: number;
   reason?: string;
   summaryPath: string;
   resourcePath: string;
@@ -59,7 +60,16 @@ function gitCommit() {
 }
 
 function metricValue(summary: any, name: string, key: string) {
-  return summary?.metrics?.[name]?.values?.[key];
+  const metric = summary?.metrics?.[name];
+  return metric?.values?.[key] ?? metric?.[key];
+}
+
+function primaryMetricValue(row: RunRow) {
+  if (Number.isFinite(row.avg)) return row.avg;
+  if (Number.isFinite(row.value)) return row.value;
+  if (Number.isFinite(row.rate)) return row.rate;
+  if (Number.isFinite(row.count)) return row.count;
+  return undefined;
 }
 
 function summarizeResources(resourcePath: string) {
@@ -98,6 +108,7 @@ function collectRows(): RunRow[] {
         p95: metricValue(summary, metric, "p(95)"),
         count: metricValue(summary, metric, "count"),
         rate: metricValue(summary, metric, "rate"),
+        value: metricValue(summary, metric, "value"),
         reason: metadata.reason,
         summaryPath,
         resourcePath,
@@ -110,21 +121,34 @@ function aggregate(rows: RunRow[]) {
   for (const row of rows) groups.set(`${row.mode}:${row.users}:${row.metric}`, [...(groups.get(`${row.mode}:${row.users}:${row.metric}`) || []), row]);
   return [...groups.entries()].map(([key, values]) => {
     const [mode, users, metric] = key.split(":");
-    const avgs = values.map((row) => row.avg).filter((value): value is number => Number.isFinite(value));
-    const p50s = values.map((row) => row.p50).filter((value): value is number => Number.isFinite(value));
-    const p95s = values.map((row) => row.p95).filter((value): value is number => Number.isFinite(value));
+    const executed = values.filter((row) => row.status === "executed");
+    const primary = executed.map(primaryMetricValue).filter((value): value is number => Number.isFinite(value));
+    const p50s = executed.map((row) => row.p50).filter((value): value is number => Number.isFinite(value));
+    const p95s = executed.map((row) => row.p95).filter((value): value is number => Number.isFinite(value));
+    const failedRuns = values.filter((row) => row.status === "failed").length;
+    const notExecutedRuns = values.filter((row) => row.status === "not executed").length;
+    const executedRuns = executed.length;
+    const status = executedRuns === values.length
+      ? "executed"
+      : executedRuns > 0
+        ? "partial"
+        : failedRuns > 0
+          ? "failed"
+          : "not executed";
     return {
       mode,
       users: Number(users),
       metric,
-      executedRuns: values.filter((row) => row.status === "executed").length,
+      executedRuns,
       totalRuns: values.length,
-      mean: mean(avgs),
-      sd: sd(avgs),
+      failedRuns,
+      notExecutedRuns,
+      mean: mean(primary),
+      sd: sd(primary),
       p50: mean(p50s),
       p95: mean(p95s),
-      ci95: ci95(avgs),
-      status: values.some((row) => row.status === "executed") ? "executed" : "not executed",
+      ci95: ci95(primary),
+      status,
       reasons: [...new Set(values.map((row) => row.reason).filter(Boolean))],
     };
   });
@@ -160,9 +184,9 @@ function markdown(rows: ReturnType<typeof aggregate>, rawRows: RunRow[]) {
     "",
     "## Aggregate Metrics",
     "",
-    "| mode | users | metric | status | executed runs | mean | SD | p50 | p95 | 95% CI |",
-    "|---|---:|---|---|---:|---:|---:|---:|---:|---:|",
-    ...rows.map((row) => `| ${row.mode} | ${row.users} | ${row.metric} | ${row.status} | ${row.executedRuns}/${row.totalRuns} | ${row.mean.toFixed(3)} | ${row.sd.toFixed(3)} | ${row.p50.toFixed(3)} | ${row.p95.toFixed(3)} | ${row.ci95.toFixed(3)} |`),
+    "| mode | users | metric | status | executed runs | failed runs | not executed | mean | SD | p50 | p95 | 95% CI |",
+    "|---|---:|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+    ...rows.map((row) => `| ${row.mode} | ${row.users} | ${row.metric} | ${row.status} | ${row.executedRuns}/${row.totalRuns} | ${row.failedRuns} | ${row.notExecutedRuns} | ${row.mean.toFixed(3)} | ${row.sd.toFixed(3)} | ${row.p50.toFixed(3)} | ${row.p95.toFixed(3)} | ${row.ci95.toFixed(3)} |`),
     "",
     "## Baseline Comparison",
     "",
@@ -178,7 +202,12 @@ function markdown(rows: ReturnType<typeof aggregate>, rawRows: RunRow[]) {
     for (const resource of resources) lines.push(`| ${resource.container} | ${resource.avgCpuPercent.toFixed(2)} | ${resource.maxCpuPercent.toFixed(2)} |`);
     lines.push("");
   }
-  lines.push("## Notes", "", "No paper performance figures are claimed by this report unless the corresponding raw run directories show `status: executed`.");
+  lines.push(
+    "## Notes",
+    "",
+    "No paper performance figures are claimed by this report unless the corresponding raw run directories show `status: executed`.",
+    "Rows with `partial`, `failed`, or `not executed` status are diagnostic only unless the manuscript explicitly describes the incomplete run set and excludes failed repetitions from statistical claims."
+  );
   return lines.join("\n");
 }
 

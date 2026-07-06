@@ -1,6 +1,7 @@
 import http from "k6/http";
 import { check, sleep } from "k6";
 import { SharedArray } from "k6/data";
+import exec from "k6/execution";
 import { Counter, Rate, Trend } from "k6/metrics";
 
 const fixturePath = __ENV.BENCHMARK_FIXTURES || "benchmarks/raw/fixtures/benchmark-fixtures.json";
@@ -29,7 +30,7 @@ export const options = {
 };
 
 function fixtureForIteration() {
-  return requests[(__VU * 100000 + __ITER) % requests.length];
+  return requests[exec.scenario.iterationInTest % requests.length];
 }
 
 function tags() {
@@ -55,8 +56,8 @@ export default function () {
         scopeHash: item.scopeHash,
         requestedPurpose: item.purpose,
         requestId: item.requestId,
-        clientTimestamp: Math.floor(Date.now() / 1000),
-        requestExpiry: Math.floor(Date.now() / 1000) + 300,
+        clientTimestamp: item.clientTimestamp,
+        requestExpiry: item.requestExpiry,
         expectedConsentHash: item.expectedConsentHash,
       },
       signature: item.signature,

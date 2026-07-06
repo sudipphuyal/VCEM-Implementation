@@ -1,13 +1,13 @@
 {
-  "status": "not executed",
+  "status": "executed",
   "mode": "vcem",
   "users": 25,
   "run": 2,
   "warmupSeconds": 60,
   "measureSeconds": 300,
-  "timestamp": "2026-07-04T20:38:42.146Z",
+  "timestamp": "2026-07-05T15:23:53.952Z",
   "command": "k6 run benchmarks/k6/vcem-access.js",
-  "gitCommit": "a2513d091132c713add3ca2eaf2f9053d2f856cd",
+  "gitCommit": "6077d27a9eca686e5395e8e081bbbf588b824a0b",
   "deploymentManifest": {
     "chainId": "20260703",
     "networkName": "vcem-besu-local",
@@ -56,14 +56,14 @@
       ]
     },
     "addresses": {
-      "VCEMRegistry": "0x38727d1498DE1f43384B86c5451b197AFb455cD1",
-      "VCEMConsent": "0x0C22d1Ce6CFf3701843Ad49049A45D0bDca83Ca2",
-      "VCEMAudit": "0xc85872A2604f141bE601381F44c0f36dEECDF36d"
+      "VCEMRegistry": "0x55f6C4408c46dddd611A91c542cEf330D2f30B38",
+      "VCEMConsent": "0x6AeaA3c5e037ceF1B9615a032f7712Ac073ED42C",
+      "VCEMAudit": "0x13467D78bA84f85A84Dfc7c4cE9c6f90c7733646"
     },
     "deploymentTransactions": {
-      "VCEMRegistry": "0xbadc00b8c3c9b3b76f90e2e0b9b6944ea864d7682225f2dfc54289267986c07c",
-      "VCEMConsent": "0x5ecc8304f7d40a9caa04fdbf7f6b47f4ded2a34b1b4b4ab2118ea16461f1755a",
-      "VCEMAudit": "0x0d56a783fb4decb05b6430331cae7357b97d5483cff1c0bf10f45c37e27aa782"
+      "VCEMRegistry": "0xa4053b5e79a7119730f6c817b322fe1b8adf4a23a4e7b9fd1d70baf42663ca4e",
+      "VCEMConsent": "0x4c3d0ff63a53cecf0a79a8361ddb98238123e6ac61f96b453b6b53089fb0058b",
+      "VCEMAudit": "0x8a2d8981f744ec1167147704453900e12bed767206eeeedf5cc8e145b41e1dc4"
     },
     "abiVersion": "vcem-v1",
     "localRuntimeBytecodeHashes": {
@@ -73,11 +73,11 @@
     },
     "deployedRuntimeBytecodeHashes": {
       "VCEMRegistry": "0x0ae4ca0ea97be66b21afd1f7887b3df97f06c6fedeffdbb5e3aeda40cd66998a",
-      "VCEMConsent": "0xe0060f3b8b89283f053669cf4ef3eda915dd058cbc25bfaea051def7199835c5",
-      "VCEMAudit": "0xa43b3e7aa715aca61b1b7b57db8d3bf138cf2e80ac15d4d33735bcc92b620dbf"
+      "VCEMConsent": "0x637405b89da2d243f5249f3b1e54ca8055be843ccf0a3e3e79863b10cece344e",
+      "VCEMAudit": "0x1b09d4fbdb9f068e9e7da3eaa2b437678f62e87189c4a16469e3cc9a4cff829b"
     },
-    "deploymentTimestamp": "2026-07-04T20:35:15.283Z",
-    "gitCommit": "a2513d091132c713add3ca2eaf2f9053d2f856cd"
+    "deploymentTimestamp": "2026-07-05T13:21:34.734Z",
+    "gitCommit": "6077d27a9eca686e5395e8e081bbbf588b824a0b"
   },
   "dockerImages": {
     "docker": "Docker version 28.0.1, build 068a01e",
@@ -98,5 +98,5 @@
     "summaryPath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/vcem/25u/run-2/k6-summary.json",
     "resourcePath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/vcem/25u/run-2/resources.csv"
   },
-  "reason": "missing environment: VCEM_API_URL"
+  "exitCode": 0
 }

@@ -1,11 +1,21 @@
+import "dotenv/config";
 import childProcess from "child_process";
 import fs from "fs";
 import os from "os";
 import path from "path";
 
 const repoRoot = path.resolve(__dirname, "../..");
-const levels = [10, 25, 50, 75, 100];
-const runs = [1, 2, 3, 4, 5];
+function parseNumberList(value: string | undefined, fallback: number[]) {
+  if (!value) return fallback;
+  const parsed = value
+    .split(",")
+    .map((item) => Number(item.trim()))
+    .filter((item) => Number.isInteger(item) && item > 0);
+  return parsed.length ? parsed : fallback;
+}
+
+const levels = parseNumberList(process.env.BENCHMARK_LEVELS, [10, 25, 50, 75, 100]);
+const runs = parseNumberList(process.env.BENCHMARK_RUNS, [1, 2, 3, 4, 5]);
 const warmupSeconds = Number(process.env.BENCHMARK_WARMUP_SECONDS || 60);
 const measureSeconds = Number(process.env.BENCHMARK_MEASURE_SECONDS || 300);
 
@@ -50,6 +60,58 @@ function hostDetails() {
 function writeJson(file: string, value: unknown) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, JSON.stringify(value, null, 2));
+}
+
+function resetBaselineFixtureAndDatabase() {
+  const databaseConfigured = Boolean(process.env.BASELINE_DATABASE_URL || process.env.DATABASE_URL);
+  if (!databaseConfigured) return { ok: false, reason: "BASELINE_DATABASE_URL/DATABASE_URL is required for baseline reset" };
+  const result = childProcess.spawnSync("npm", ["run", "benchmark:seed", "--silent"], {
+    cwd: repoRoot,
+    stdio: "inherit",
+    env: process.env,
+  });
+  if (result.status !== 0) return { ok: false, reason: `benchmark seed failed with exit code ${result.status}` };
+  return { ok: true };
+}
+
+function resetVcemFixtures() {
+  const result = childProcess.spawnSync("npm", ["run", "benchmark:vcem:seed", "--silent"], {
+    cwd: repoRoot,
+    stdio: "inherit",
+    env: process.env,
+  });
+  if (result.status !== 0) return { ok: false, reason: `VCEM fixture seed failed with exit code ${result.status}` };
+  return { ok: true };
+}
+
+function metricValue(summary: any, name: string) {
+  const metric = summary?.metrics?.[name];
+  return typeof metric?.value === "number" ? metric.value : undefined;
+}
+
+function metricFails(summary: any, name: string) {
+  const metric = summary?.metrics?.[name];
+  return typeof metric?.fails === "number" ? metric.fails : undefined;
+}
+
+function validateK6Summary(mode: "baseline" | "vcem", summaryPath: string) {
+  if (!fs.existsSync(summaryPath)) return { ok: false, failures: ["k6 summary was not written"] };
+  const summary = JSON.parse(fs.readFileSync(summaryPath, "utf8"));
+  const failures: string[] = [];
+  const checkFails = metricFails(summary, "checks");
+  const httpFailed = metricValue(summary, "http_req_failed");
+  if (checkFails === undefined) failures.push("checks metric missing");
+  else if (checkFails > 0) failures.push(`checks failed: ${checkFails}`);
+  if (httpFailed === undefined) failures.push("http_req_failed metric missing");
+  else if (httpFailed > 0) failures.push(`http_req_failed rate: ${httpFailed}`);
+  const releaseMetric = mode === "baseline" ? "baseline_release_rate" : "vcem_proxy_release_rate";
+  const denialMetric = mode === "baseline" ? "baseline_denial_rate" : "vcem_proxy_denial_rate";
+  const releaseRate = metricValue(summary, releaseMetric);
+  const denialRate = metricValue(summary, denialMetric);
+  if (releaseRate === undefined) failures.push(`${releaseMetric} metric missing`);
+  else if (releaseRate < 1) failures.push(`${releaseMetric}: ${releaseRate}`);
+  if (denialRate !== undefined && denialRate > 0) failures.push(`${denialMetric}: ${denialRate}`);
+  return { ok: failures.length === 0, failures };
 }
 
 function startDockerSampler(outCsv: string) {
@@ -117,10 +179,17 @@ function runOne(mode: "baseline" | "vcem", users: number, run: number) {
     rawArtifactPaths: { summaryPath, resourcePath },
   } as any;
   const missing = requiredEnv(mode).filter((name) => !process.env[name]);
-  const ready = fixtureReady(mode, path.join(repoRoot, fixturePath));
   if (!commandExists("k6")) metadata.reason = "k6 is not installed or not on PATH";
   else if (missing.length) metadata.reason = `missing environment: ${missing.join(", ")}`;
-  else if (!ready.ok) metadata.reason = ready.reason;
+  else if (mode === "baseline" && process.env.BENCHMARK_RESET_BETWEEN_RUNS !== "0") {
+    const reset = resetBaselineFixtureAndDatabase();
+    if (!reset.ok) metadata.reason = reset.reason;
+  } else if (mode === "vcem" && process.env.BENCHMARK_RESET_BETWEEN_RUNS !== "0") {
+    const reset = resetVcemFixtures();
+    if (!reset.ok) metadata.reason = reset.reason;
+  }
+  const ready = fixtureReady(mode, path.join(repoRoot, fixturePath));
+  if (!metadata.reason && !ready.ok) metadata.reason = ready.reason;
   if (metadata.reason) {
     writeJson(path.join(outDir, "metadata.json"), metadata);
     return metadata;
@@ -142,8 +211,15 @@ function runOne(mode: "baseline" | "vcem", users: number, run: number) {
     }
   );
   stopSampler();
-  metadata.status = result.status === 0 ? "executed" : "failed";
   metadata.exitCode = result.status;
+  if (result.status !== 0) {
+    metadata.status = "failed";
+    metadata.validationFailures = [`k6 exited with code ${result.status}`];
+  } else {
+    const validation = validateK6Summary(mode, summaryPath);
+    metadata.status = validation.ok ? "executed" : "failed";
+    if (!validation.ok) metadata.validationFailures = validation.failures;
+  }
   writeJson(path.join(outDir, "metadata.json"), metadata);
   return metadata;
 }

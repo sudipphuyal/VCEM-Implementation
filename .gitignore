@@ -25,6 +25,11 @@ ignition/deployments
 .env.local
 evidence/*
 
+# Generated benchmark runtime fixtures and local keys
+benchmarks/raw/fixtures/vcem-actors.json
+benchmarks/raw/fixtures/vcem-keys.json
+benchmarks/raw/fixtures/vcem-artifacts/
+
 
 # Generated Besu network secrets and runtime files
 infrastructure/besu/generated/

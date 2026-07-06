@@ -1,3 +1,4 @@
+import "dotenv/config";
 import crypto from "crypto";
 import http from "http";
 import { Client } from "pg";

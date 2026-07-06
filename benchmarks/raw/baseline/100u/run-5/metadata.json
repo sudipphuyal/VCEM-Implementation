@@ -1,13 +1,13 @@
 {
-  "status": "executed",
+  "status": "failed",
   "mode": "baseline",
   "users": 100,
   "run": 5,
   "warmupSeconds": 60,
   "measureSeconds": 300,
-  "timestamp": "2026-07-04T23:27:29.295Z",
+  "timestamp": "2026-07-05T10:56:26.870Z",
   "command": "k6 run benchmarks/k6/baseline-access.js",
-  "gitCommit": "a2513d091132c713add3ca2eaf2f9053d2f856cd",
+  "gitCommit": "6077d27a9eca686e5395e8e081bbbf588b824a0b",
   "deploymentManifest": {
     "chainId": "20260703",
     "networkName": "vcem-besu-local",
@@ -98,5 +98,11 @@
     "summaryPath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/baseline/100u/run-5/k6-summary.json",
     "resourcePath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/baseline/100u/run-5/resources.csv"
   },
-  "exitCode": 0
+  "exitCode": 0,
+  "validationFailures": [
+    "checks failed: 25",
+    "http_req_failed rate: 0.0007554467712204998",
+    "baseline_release_rate: 0.9992445532287795",
+    "baseline_denial_rate: 0.0007554467712204998"
+  ]
 }

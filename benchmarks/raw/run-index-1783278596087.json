@@ -1,0 +1,104 @@
+[
+  {
+    "status": "executed",
+    "mode": "vcem",
+    "users": 10,
+    "run": 1,
+    "warmupSeconds": 1,
+    "measureSeconds": 5,
+    "timestamp": "2026-07-05T19:05:20.765Z",
+    "command": "k6 run benchmarks/k6/vcem-access.js",
+    "gitCommit": "6077d27a9eca686e5395e8e081bbbf588b824a0b",
+    "deploymentManifest": {
+      "chainId": "20260703",
+      "networkName": "vcem-besu-local",
+      "consensus": "IBFT 2.0",
+      "blockPeriodSeconds": 2,
+      "validatorAddresses": [
+        "0x3ca30eeC09411232b6F7E378C74Dd940a7443f92",
+        "0x9EFCe7C38B58604575559080476e89b426D8Ea11",
+        "0x4825CfF306b3a0F67B2ABC71447262328bA8F5EF",
+        "0x70f8360D62Daf704888d8081558CB4a0be12eFaf"
+      ],
+      "topology": {
+        "validators": [
+          {
+            "name": "validator1",
+            "address": "0x3ca30eeC09411232b6F7E378C74Dd940a7443f92",
+            "enode": "enode://7449a730a37a471801f2a76e8ab770ecdcb9a492b4968bf683a2655cab282b9e2e7cd8ce70c3357162247135a87cc609112d4a680ef2a6c0fe100594efefd42a@172.28.0.11:30303",
+            "ip": "172.28.0.11"
+          },
+          {
+            "name": "validator2",
+            "address": "0x9EFCe7C38B58604575559080476e89b426D8Ea11",
+            "enode": "enode://0f548ca3e98ff875443f3c197afc931f12a734e3ea151a251454dcd20e783a8915a6eeda32eff5a91336b0615da673b2fd30d6ef427f4ccca151e7a108a05265@172.28.0.12:30303",
+            "ip": "172.28.0.12"
+          },
+          {
+            "name": "validator3",
+            "address": "0x4825CfF306b3a0F67B2ABC71447262328bA8F5EF",
+            "enode": "enode://5ad04880acb6eef72459b043a5962c3f591412b1815a19ea5b9c26f641c6fcb4a38110aaf1b82f5c0a3ff2a1fbd8ab19f0035350bce06ba4e2ceb455795f4abf@172.28.0.13:30303",
+            "ip": "172.28.0.13"
+          },
+          {
+            "name": "validator4",
+            "address": "0x70f8360D62Daf704888d8081558CB4a0be12eFaf",
+            "enode": "enode://821cf69addfaec13be4b217cd1f1ead7012914ff16b9a0bfc7557db8ad1dd98585297e2c20f84920b13ea61e311425fd8239ace9b7b1d21d2a83207db8107aa7@172.28.0.14:30303",
+            "ip": "172.28.0.14"
+          }
+        ],
+        "rpc": [
+          {
+            "name": "rpc",
+            "address": "0xD3eb80C5540Dc18976a5ba9b69F2824612505c99",
+            "enode": "enode://1dc243a9e8151bf286b77ab7f4e473186dd490599b2f349ac5b418f4893e055720a70c1aab174a7f63762bac792c79db52ab41a3996f0dc5c649ffe52bc9c67a@172.28.0.15:30303",
+            "ip": "172.28.0.15"
+          }
+        ]
+      },
+      "addresses": {
+        "VCEMRegistry": "0x07318D43d8E7B129016ae895BA2C3D4B38AB6164",
+        "VCEMConsent": "0x4CC050117F572E3CF92A20f6D99924B6b85D2e68",
+        "VCEMAudit": "0x6ccf8567830024aAD2621eef08ecfc652c0FB2C2"
+      },
+      "deploymentTransactions": {
+        "VCEMRegistry": "0x59102b906a7c5963a6b07072b45752c1182b2b897e53e0bf1f4a02ce6c9ec17c",
+        "VCEMConsent": "0x3192344d8362615ae6f2a4eeda1af9aa3584afe974cf5e519ace7d313d625908",
+        "VCEMAudit": "0xe5c445d29925346802b739eebc0203e20725c33ebf23379fad38aa3bd35d0082"
+      },
+      "abiVersion": "vcem-v1",
+      "localRuntimeBytecodeHashes": {
+        "VCEMRegistry": "0x0ae4ca0ea97be66b21afd1f7887b3df97f06c6fedeffdbb5e3aeda40cd66998a",
+        "VCEMConsent": "0xa0baf68c826b93168b2192f7c30883359ad5fc7f00fd907bdb18cfbe3760a11d",
+        "VCEMAudit": "0x2e3ffa3dcaaf7c932101a45e27a1933fa27281faf990fcafefc8fdae50a2cb38"
+      },
+      "deployedRuntimeBytecodeHashes": {
+        "VCEMRegistry": "0x0ae4ca0ea97be66b21afd1f7887b3df97f06c6fedeffdbb5e3aeda40cd66998a",
+        "VCEMConsent": "0xa12d6bdd7a5629644e1f049fb74cf3b9cd49e941a94b5328db7a00e93c2c1536",
+        "VCEMAudit": "0x6f2c2620165c379c3e98d72d440c90f0627055ca44fd7b47dd3997039bc25bbf"
+      },
+      "deploymentTimestamp": "2026-07-05T18:55:17.498Z",
+      "gitCommit": "6077d27a9eca686e5395e8e081bbbf588b824a0b"
+    },
+    "dockerImages": {
+      "docker": "Docker version 28.0.1, build 068a01e",
+      "compose": "Docker Compose version v2.33.1-desktop.1",
+      "besu": "hyperledger/besu:24.12.0",
+      "postgres": "not configured",
+      "api": "not configured"
+    },
+    "host": {
+      "platform": "darwin",
+      "release": "25.5.0",
+      "arch": "arm64",
+      "cpus": 11,
+      "totalMemoryBytes": 19327352832,
+      "node": "v24.2.0"
+    },
+    "rawArtifactPaths": {
+      "summaryPath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/vcem/10u/run-1/k6-summary.json",
+      "resourcePath": "/Users/sudipphuyal/Developments/zkp-with-snarkjs/benchmarks/raw/vcem/10u/run-1/resources.csv"
+    },
+    "exitCode": 0
+  }
+]

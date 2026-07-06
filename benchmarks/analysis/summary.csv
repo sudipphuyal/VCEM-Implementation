@@ -1,71 +1,71 @@
-mode,users,metric,executedRuns,totalRuns,mean,sd,p50,p95,ci95,status,reasons
-baseline,100,baseline_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,100,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,100,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,100,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,100,baseline_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,100,baseline_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,10,baseline_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,10,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,10,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,10,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,10,baseline_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,10,baseline_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,25,baseline_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,25,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,25,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,25,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,25,baseline_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,25,baseline_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,50,baseline_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,50,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,50,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,50,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,50,baseline_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,50,baseline_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,75,baseline_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,75,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,75,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,75,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,75,baseline_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-baseline,75,baseline_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,100,vcem_app_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,100,vcem_tx_confirmation_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,100,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,100,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,100,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,100,vcem_proxy_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,100,vcem_proxy_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,100,vcem_rpc_failure_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,10,vcem_app_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,10,vcem_tx_confirmation_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,10,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,10,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,10,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,10,vcem_proxy_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,10,vcem_proxy_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,10,vcem_rpc_failure_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,25,vcem_app_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,25,vcem_tx_confirmation_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,25,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,25,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,25,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,25,vcem_proxy_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,25,vcem_proxy_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,25,vcem_rpc_failure_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,50,vcem_app_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,50,vcem_tx_confirmation_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,50,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,50,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,50,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,50,vcem_proxy_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,50,vcem_proxy_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,50,vcem_rpc_failure_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,75,vcem_app_latency_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,75,vcem_tx_confirmation_ms,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,75,http_req_duration,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,75,http_reqs,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,75,http_req_failed,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,75,vcem_proxy_release_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,75,vcem_proxy_denial_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
-vcem,75,vcem_rpc_failure_rate,0,5,0,0,0,0,0,not executed,k6 is not installed or not on PATH
+mode,users,metric,executedRuns,totalRuns,failedRuns,notExecutedRuns,mean,sd,p50,p95,ci95,status,reasons
+baseline,100,baseline_latency_ms,2,5,3,0,93.2355279253154,78.55141719879543,12,568.9499999999987,108.86670995524042,partial,
+baseline,100,http_req_duration,2,5,3,0,82.40815852608267,68.82381760464735,3.77075,515.4909749999996,95.38494474536876,partial,
+baseline,100,http_reqs,2,5,3,0,90.65840016828051,7.460778010393515,0,0,10.340110779190395,partial,
+baseline,100,http_req_failed,2,5,3,0,0,0,0,0,0,partial,
+baseline,100,baseline_release_rate,2,5,3,0,1,0,0,0,0,partial,
+baseline,100,baseline_denial_rate,2,5,3,0,0,0,0,0,0,partial,
+baseline,10,baseline_latency_ms,5,5,0,0,4.992970853239134,0.7531568953396331,4,11.009999999999968,0.6601711261552288,executed,
+baseline,10,http_req_duration,5,5,0,0,4.64460556791833,0.6344524716152311,3.7366,10.589059999999993,0.5561221111695697,executed,
+baseline,10,http_reqs,5,5,0,0,9.94544615376652,0.0092161478926306,0,0,0.008078309806016473,executed,
+baseline,10,http_req_failed,5,5,0,0,0,0,0,0,0,executed,
+baseline,10,baseline_release_rate,5,5,0,0,1,0,0,0,0,executed,
+baseline,10,baseline_denial_rate,5,5,0,0,0,0,0,0,0,executed,
+baseline,25,baseline_latency_ms,5,5,0,0,5.832373146431593,0.6543197879061007,4.6,12.90999999999992,0.5735365817142641,executed,
+baseline,25,http_req_duration,5,5,0,0,5.471809232628293,0.6483500932830418,4.3408,12.344139999999996,0.5683039136652908,executed,
+baseline,25,http_reqs,5,5,0,0,24.833104883134162,0.020429830112193736,0,0,0.01790753564865784,executed,
+baseline,25,http_req_failed,5,5,0,0,0,0,0,0,0,executed,
+baseline,25,baseline_release_rate,5,5,0,0,1,0,0,0,0,executed,
+baseline,25,baseline_denial_rate,5,5,0,0,0,0,0,0,0,executed,
+baseline,50,baseline_latency_ms,5,5,0,0,6.899608938547486,0.45750792672014556,5.2,16.40999999999984,0.40102337916136527,executed,
+baseline,50,http_req_duration,5,5,0,0,6.4626683687150885,0.46418646378198414,4.6392,15.74930999999999,0.40687737500269017,executed,
+baseline,50,http_reqs,5,5,0,0,49.62835031203203,0.020204625685518823,0,0,0.017710135265161284,executed,
+baseline,50,http_req_failed,5,5,0,0,0,0,0,0,0,executed,
+baseline,50,baseline_release_rate,5,5,0,0,1,0,0,0,0,executed,
+baseline,50,baseline_denial_rate,5,5,0,0,0,0,0,0,0,executed,
+baseline,75,baseline_latency_ms,5,5,0,0,12.850746410078875,11.063562496157415,4.4,30.8,9.697640103372292,executed,
+baseline,75,http_req_duration,5,5,0,0,11.989931716642454,10.491145225401906,3.6704999999999997,29.038239999999995,9.195894243241838,executed,
+baseline,75,http_reqs,5,5,0,0,73.95706285044676,0.8576542358240379,0,0,0.7517670836173281,executed,
+baseline,75,http_req_failed,5,5,0,0,0,0,0,0,0,executed,
+baseline,75,baseline_release_rate,5,5,0,0,1,0,0,0,0,executed,
+baseline,75,baseline_denial_rate,5,5,0,0,0,0,0,0,0,executed,
+vcem,100,vcem_app_latency_ms,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,100,vcem_tx_confirmation_ms,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,100,http_req_duration,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,100,http_reqs,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,100,http_req_failed,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,100,vcem_proxy_release_rate,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,100,vcem_proxy_denial_rate,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,100,vcem_rpc_failure_rate,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,10,vcem_app_latency_ms,5,5,0,0,4344.011176470588,6.267059986445073,4343.8,4369.6,5.493320282313957,executed,
+vcem,10,vcem_tx_confirmation_ms,5,5,0,0,4248.458235294118,4.743402880949835,4249,4268.2,4.157775944297092,executed,
+vcem,10,http_req_duration,5,5,0,0,2171.6999811764713,3.1300085918795717,2166.7955,4264.26263,2.743573496787638,executed,
+vcem,10,http_reqs,5,5,0,0,3.7417987417149865,0.004562049967137438,0,0,0.003998813106561838,executed,
+vcem,10,http_req_failed,5,5,0,0,0,0,0,0,0,executed,
+vcem,10,vcem_proxy_release_rate,5,5,0,0,1,0,0,0,0,executed,
+vcem,10,vcem_proxy_denial_rate,5,5,0,0,0,0,0,0,0,executed,
+vcem,10,vcem_rpc_failure_rate,5,5,0,0,0,0,0,0,0,executed,
+vcem,25,vcem_app_latency_ms,5,5,0,0,4424.25721206605,93.04340551254045,4387.2,5079.35,81.55614079697467,executed,
+vcem,25,vcem_tx_confirmation_ms,5,5,0,0,4318.2239323874865,84.1210985097218,4284.2,4969.4,73.73539388700013,executed,
+vcem,25,http_req_duration,5,5,0,0,2211.395020396568,46.07665106858385,1413.3104,4359.87919,40.38796539423758,executed,
+vcem,25,http_reqs,5,5,0,0,9.199651240950736,0.18013529834387584,0,0,0.15789555071969177,executed,
+vcem,25,http_req_failed,5,5,0,0,0,0,0,0,0,executed,
+vcem,25,vcem_proxy_release_rate,5,5,0,0,1,0,0,0,0,executed,
+vcem,25,vcem_proxy_denial_rate,5,5,0,0,0,0,0,0,0,executed,
+vcem,25,vcem_rpc_failure_rate,5,5,0,0,0,0,0,0,0,executed,
+vcem,50,vcem_app_latency_ms,0,5,4,1,0,0,0,0,0,failed,missing environment: VCEM_API_URL
+vcem,50,vcem_tx_confirmation_ms,0,5,4,1,0,0,0,0,0,failed,missing environment: VCEM_API_URL
+vcem,50,http_req_duration,0,5,4,1,0,0,0,0,0,failed,missing environment: VCEM_API_URL
+vcem,50,http_reqs,0,5,4,1,0,0,0,0,0,failed,missing environment: VCEM_API_URL
+vcem,50,http_req_failed,0,5,4,1,0,0,0,0,0,failed,missing environment: VCEM_API_URL
+vcem,50,vcem_proxy_release_rate,0,5,4,1,0,0,0,0,0,failed,missing environment: VCEM_API_URL
+vcem,50,vcem_proxy_denial_rate,0,5,4,1,0,0,0,0,0,failed,missing environment: VCEM_API_URL
+vcem,50,vcem_rpc_failure_rate,0,5,4,1,0,0,0,0,0,failed,missing environment: VCEM_API_URL
+vcem,75,vcem_app_latency_ms,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,75,vcem_tx_confirmation_ms,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,75,http_req_duration,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,75,http_reqs,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,75,http_req_failed,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,75,vcem_proxy_release_rate,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,75,vcem_proxy_denial_rate,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL
+vcem,75,vcem_rpc_failure_rate,0,5,0,5,0,0,0,0,0,not executed,missing environment: VCEM_API_URL

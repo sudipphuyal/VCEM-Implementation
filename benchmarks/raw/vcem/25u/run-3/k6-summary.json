@@ -1,0 +1,160 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "authorize accepted": {
+                    "name": "authorize accepted",
+                    "path": "::authorize accepted",
+                    "id": "f990ba6739d5498fd52d0c3ec0e0dc16",
+                    "passes": 1629,
+                    "fails": 0
+                },
+                "release accepted": {
+                    "name": "release accepted",
+                    "path": "::release accepted",
+                    "id": "dadf25e8dde8c7f7d1a62d555eb1bedb",
+                    "passes": 1629,
+                    "fails": 0
+                }
+            }
+    },
+    "metrics": {
+        "http_req_blocked": {
+            "avg": 0.02103652547575217,
+            "min": 0,
+            "med": 0.005,
+            "p(50)": 0.005,
+            "p(95)": 0.048,
+            "max": 4.156
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "p(50)": 0,
+            "p(95)": 0,
+            "max": 0
+        },
+        "vus": {
+            "max": 25,
+            "value": 25,
+            "min": 25
+        },
+        "http_req_duration{expected_response:true}": {
+            "avg": 2270.686930325352,
+            "min": 76.4,
+            "med": 1586.976,
+            "p(50)": 1586.976,
+            "p(95)": 4445.4121000000005,
+            "max": 8389.184
+        },
+        "http_req_duration": {
+            "avg": 2270.686930325352,
+            "min": 76.4,
+            "med": 1586.976,
+            "p(50)": 1586.976,
+            "p(95)": 4445.4121000000005,
+            "max": 8389.184
+        },
+        "vus_max": {
+            "value": 25,
+            "min": 25,
+            "max": 25
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 3258,
+            "value": 0
+        },
+        "checks": {
+            "passes": 3258,
+            "fails": 0,
+            "value": 1
+        },
+        "http_req_receiving": {
+            "avg": 0.13455279312461585,
+            "min": 0.005,
+            "med": 0.043,
+            "p(50)": 0.043,
+            "p(95)": 0.5918999999999991,
+            "max": 6.491
+        },
+        "data_sent": {
+            "count": 3069036,
+            "rate": 8492.614781247268
+        },
+        "http_req_connecting": {
+            "avg": 0.0030101289134438305,
+            "min": 0,
+            "med": 0,
+            "p(50)": 0,
+            "p(95)": 0,
+            "max": 0.857
+        },
+        "vcem_proxy_release_rate": {
+            "passes": 1629,
+            "fails": 0,
+            "value": 1
+        },
+        "data_received": {
+            "count": 922014,
+            "rate": 2551.39064022609
+        },
+        "iteration_duration": {
+            "avg": 5545.79530348066,
+            "min": 3968.275833,
+            "med": 5421.501833,
+            "p(50)": 5421.501833,
+            "p(95)": 6151.8080418,
+            "max": 9502.734791
+        },
+        "iterations": {
+            "count": 1629,
+            "rate": 4.507757314887085
+        },
+        "http_req_waiting": {
+            "p(95)": 4443.927500000001,
+            "max": 8389.046,
+            "avg": 2270.464394106817,
+            "min": 76.359,
+            "med": 1586.8719999999998,
+            "p(50)": 1586.8719999999998
+        },
+        "vcem_tx_confirmation_ms": {
+            "avg": 4425.433394720688,
+            "min": 2867,
+            "med": 4311,
+            "p(50)": 4311,
+            "p(95)": 5046,
+            "max": 8391
+        },
+        "vcem_proxy_denial_rate": {
+            "passes": 0,
+            "fails": 1629,
+            "value": 0
+        },
+        "http_reqs": {
+            "count": 3258,
+            "rate": 9.01551462977417
+        },
+        "http_req_sending": {
+            "p(50)": 0.016,
+            "p(95)": 0.34399999999999714,
+            "max": 10.672,
+            "avg": 0.08798342541436371,
+            "min": 0.002,
+            "med": 0.016
+        },
+        "vcem_app_latency_ms": {
+            "med": 4420,
+            "p(50)": 4420,
+            "p(95)": 5150,
+            "max": 8501,
+            "avg": 4543.384898710866,
+            "min": 2967
+        }
+    }
+}

@@ -429,6 +429,8 @@ Benchmarks require k6, PostgreSQL, the API/proxy services, and for VCEM benchmar
 
 ```bash
 npm run benchmark:seed 2>&1 | tee reports/execution-logs/27-benchmark-seed.log
+npm run benchmark:baseline:server 2>&1 | tee reports/execution-logs/27a-benchmark-baseline-server.log
+npm run benchmark:baseline:smoke 2>&1 | tee reports/execution-logs/27b-benchmark-baseline-smoke.log
 npm run benchmark:baseline 2>&1 | tee reports/execution-logs/28-benchmark-baseline.log
 npm run benchmark:vcem 2>&1 | tee reports/execution-logs/29-benchmark-vcem.log
 npm run benchmark:analyze 2>&1 | tee reports/execution-logs/30-benchmark-analyze.log
@@ -445,8 +447,9 @@ Generated benchmark evidence:
 
 Interpretation rule:
 
-- use benchmark results only when the relevant metadata says `status: executed`;
-- do not cite `not executed` benchmark metadata as performance evidence.
+- use benchmark results only when the relevant metadata says `status: executed` and the matching k6 summary has successful checks;
+- do not cite `failed` or `not executed` benchmark metadata as performance evidence;
+- if `npm run benchmark:baseline:smoke` returns `duplicate request id`, rerun `npm run benchmark:seed` before the load test so the delivery ledger is reset.
 
 ### Step 11: Paper/Reviewer Report
 
@@ -739,10 +742,18 @@ Commands:
 
 ```bash
 npm run benchmark:seed
+npm run benchmark:baseline:server
+npm run benchmark:baseline:smoke
 npm run benchmark:baseline
 npm run benchmark:vcem
 npm run benchmark:all
 npm run benchmark:analyze
+```
+
+Short baseline sanity check before the full workload:
+
+```bash
+BENCHMARK_LEVELS=10 BENCHMARK_RUNS=1 BENCHMARK_WARMUP_SECONDS=1 BENCHMARK_MEASURE_SECONDS=5 npm run benchmark:baseline
 ```
 
 Workload levels:
@@ -784,7 +795,7 @@ Artifacts:
 - `benchmarks/analysis/summary.csv`
 - `benchmarks/reports/benchmark-report.md`
 
-Benchmark reports must be treated as evidence only when metadata says `status: executed`. Do not use `not executed` metadata as performance evidence.
+Benchmark reports must be treated as evidence only when metadata says `status: executed` and the corresponding k6 summary has successful checks. Do not use `failed` or `not executed` metadata as performance evidence. The baseline runner resets the PostgreSQL delivery ledger before each run by default; set `BENCHMARK_RESET_BETWEEN_RUNS=0` only when intentionally testing replay/duplicate-request behavior.
 
 ## Testing
 

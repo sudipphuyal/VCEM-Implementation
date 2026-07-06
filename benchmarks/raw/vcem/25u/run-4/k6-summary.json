@@ -1,0 +1,160 @@
+{
+    "root_group": {
+        "checks": {
+            "authorize accepted": {
+                "name": "authorize accepted",
+                "path": "::authorize accepted",
+                "id": "f990ba6739d5498fd52d0c3ec0e0dc16",
+                "passes": 1699,
+                "fails": 0
+            },
+            "release accepted": {
+                "name": "release accepted",
+                "path": "::release accepted",
+                "id": "dadf25e8dde8c7f7d1a62d555eb1bedb",
+                "passes": 1699,
+                "fails": 0
+            }
+        },
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {}
+    },
+    "metrics": {
+        "data_received": {
+            "count": 961634,
+            "rate": 2651.0849109717433
+        },
+        "vcem_app_latency_ms": {
+            "med": 4350,
+            "p(50)": 4350,
+            "p(95)": 4413.1,
+            "max": 8314,
+            "avg": 4336.610947616245,
+            "min": 3014
+        },
+        "http_req_connecting": {
+            "avg": 0.008040906415538552,
+            "min": 0,
+            "med": 0,
+            "p(50)": 0,
+            "p(95)": 0,
+            "max": 1.679
+        },
+        "http_req_blocked": {
+            "max": 3.129,
+            "avg": 0.01776574455562129,
+            "min": 0,
+            "med": 0.003,
+            "p(50)": 0.003,
+            "p(95)": 0.012
+        },
+        "http_req_waiting": {
+            "avg": 2167.9878428487355,
+            "min": 77.495,
+            "med": 1545.9275000000002,
+            "p(50)": 1545.9275000000002,
+            "p(95)": 4271.270399999999,
+            "max": 8230.387
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 3398,
+            "value": 0
+        },
+        "http_req_tls_handshaking": {
+            "med": 0,
+            "p(50)": 0,
+            "p(95)": 0,
+            "max": 0,
+            "avg": 0,
+            "min": 0
+        },
+        "vcem_proxy_release_rate": {
+            "passes": 1699,
+            "fails": 0,
+            "value": 1
+        },
+        "iteration_duration": {
+            "min": 4014.708833,
+            "med": 5351.216667,
+            "p(50)": 5351.216667,
+            "p(95)": 5413.754700299999,
+            "max": 9314.10225,
+            "avg": 5337.482477075347
+        },
+        "vcem_tx_confirmation_ms": {
+            "avg": 4238.286639199529,
+            "min": 2931,
+            "med": 4254,
+            "p(50)": 4254,
+            "p(95)": 4276,
+            "max": 8231
+        },
+        "vus": {
+            "value": 25,
+            "min": 25,
+            "max": 25
+        },
+        "vus_max": {
+            "value": 25,
+            "min": 25,
+            "max": 25
+        },
+        "http_req_receiving": {
+            "avg": 0.0342710417892883,
+            "min": 0.005,
+            "med": 0.022,
+            "p(50)": 0.022,
+            "p(95)": 0.079,
+            "max": 2.109
+        },
+        "http_req_duration": {
+            "avg": 2168.082987934086,
+            "min": 77.567,
+            "med": 1545.9605,
+            "p(50)": 1545.9605,
+            "p(95)": 4271.30535,
+            "max": 8230.463
+        },
+        "http_req_duration{expected_response:true}": {
+            "p(50)": 1545.9605,
+            "p(95)": 4271.30535,
+            "max": 8230.463,
+            "avg": 2168.082987934086,
+            "min": 77.567,
+            "med": 1545.9605
+        },
+        "data_sent": {
+            "count": 3200916,
+            "rate": 8824.459314966014
+        },
+        "iterations": {
+            "count": 1699,
+            "rate": 4.683895602423575
+        },
+        "checks": {
+            "passes": 3398,
+            "fails": 0,
+            "value": 1
+        },
+        "http_reqs": {
+            "count": 3398,
+            "rate": 9.36779120484715
+        },
+        "http_req_sending": {
+            "min": 0.001,
+            "med": 0.012,
+            "p(50)": 0.012,
+            "p(95)": 0.3432999999999997,
+            "max": 2.416,
+            "avg": 0.06087404355503205
+        },
+        "vcem_proxy_denial_rate": {
+            "passes": 0,
+            "fails": 1699,
+            "value": 0
+        }
+    }
+}

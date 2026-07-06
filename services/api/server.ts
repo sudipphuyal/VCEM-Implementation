@@ -8,6 +8,10 @@ export type AccessRelay = {
   authorizeAndLogAccess(request: any, signature: string): Promise<{ hash: string; wait(confirmations: number): Promise<any> }>;
 };
 
+export type AuditRelayOptions = {
+  confirmBeforeNext?: boolean;
+};
+
 export type VcemApiConfig = {
   auth: WalletAuthService;
   sessions: SessionStore;
@@ -150,11 +154,54 @@ export function createVcemApi(config: VcemApiConfig) {
   });
 }
 
-export function createAuditRelay(auditAddress: string, signer: ethers.Signer, abi: any[]): AccessRelay {
+export function createAuditRelay(auditAddress: string, signer: ethers.Signer, abi: any[], options: AuditRelayOptions = {}): AccessRelay {
   const contract = new ethers.Contract(auditAddress, abi, signer);
+  let queue = Promise.resolve();
+  let nextNonce: number | undefined;
+  async function providerNonce() {
+    const address = await signer.getAddress();
+    const provider = signer.provider;
+    if (!provider) throw new Error("audit relay signer has no provider");
+    return provider.getTransactionCount(address, "pending");
+  }
+  async function takeNonce() {
+    if (nextNonce === undefined) nextNonce = await providerNonce();
+    return nextNonce++;
+  }
+  async function refreshNonce() {
+    nextNonce = await providerNonce();
+  }
+  async function sendWithFreshNonce(request: any, signature: string) {
+    const populated = await (contract.authorizeAndLogAccess as any).populateTransaction(request, signature);
+    const send = async () =>
+      signer.sendTransaction({
+        ...populated,
+        nonce: await takeNonce(),
+        type: 0,
+        gasPrice: 1n,
+        gasLimit: 1_000_000n,
+      });
+    try {
+      return await send();
+    } catch (err: any) {
+      const message = String(err?.message || err);
+      if (!message.includes("nonce has already been used") && !message.includes("nonce is too distant")) throw err;
+      await refreshNonce();
+      return send();
+    }
+  }
   return {
     authorizeAndLogAccess(request: any, signature: string) {
-      return contract.authorizeAndLogAccess(request, signature);
+      const submitted = queue.then(async () => {
+        const tx = await sendWithFreshNonce(request, signature);
+        if (options.confirmBeforeNext) await tx.wait(1);
+        return tx;
+      });
+      queue = submitted.then(
+        () => undefined,
+        () => undefined
+      );
+      return submitted;
     },
   };
 }

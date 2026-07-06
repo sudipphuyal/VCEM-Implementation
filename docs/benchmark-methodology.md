@@ -6,6 +6,8 @@ Benchmark tooling is executable, but benchmark results are evidence only when ra
 
 ```bash
 npm run benchmark:seed
+npm run benchmark:baseline:server
+npm run benchmark:baseline:smoke
 npm run benchmark:baseline
 npm run benchmark:vcem
 npm run benchmark:all
@@ -27,9 +29,10 @@ Each level runs five independent repetitions. Every repetition is configured for
 - 60-second warm-up;
 - 300-second measurement window;
 - deterministic fixture input;
+- baseline database and delivery-ledger reset before each baseline repetition unless `BENCHMARK_RESET_BETWEEN_RUNS=0`;
 - separate raw output directory.
 
-The runner writes metadata for every planned run even when prerequisites are missing. Missing k6, missing service URLs, missing PostgreSQL, or incomplete deployed VCEM signed fixtures are recorded as `not executed`.
+The runner writes metadata for every planned run even when prerequisites are missing. Missing k6, missing service URLs, missing PostgreSQL, or incomplete deployed VCEM signed fixtures are recorded as `not executed`. Runs where k6 exits successfully but the application checks fail are recorded as `failed`, not as performance evidence.
 
 ## VCEM Path
 
@@ -75,6 +78,21 @@ The baseline runner requires:
 - `BASELINE_API_URL`;
 - `BASELINE_DATABASE_URL` or `DATABASE_URL` for seeding.
 
+Before long load runs, execute:
+
+```bash
+npm run benchmark:seed
+npm run benchmark:baseline:smoke
+```
+
+The smoke command sends one authenticated baseline request and prints the exact non-sensitive denial reason when blocked. A `duplicate request id` response means the delivery ledger still contains previously consumed fixture IDs; reseed before running the benchmark.
+
+For a short local sanity check before the full five-run workload, restrict the runner:
+
+```bash
+BENCHMARK_LEVELS=10 BENCHMARK_RUNS=1 BENCHMARK_WARMUP_SECONDS=1 BENCHMARK_MEASURE_SECONDS=5 npm run benchmark:baseline
+```
+
 ## Metrics
 
 The k6 summaries and resource sampler support:
@@ -118,4 +136,4 @@ The Markdown report includes Git commit, deployment manifest, Docker image versi
 
 ## Reporting Rule
 
-Do not copy performance figures into the manuscript unless all relevant workload/run directories contain successful `status: executed` metadata and matching raw k6 summaries.
+Do not copy performance figures into the manuscript unless all relevant workload/run directories contain successful `status: executed` metadata and matching raw k6 summaries with successful checks and acceptable release/error rates.

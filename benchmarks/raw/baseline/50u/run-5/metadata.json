@@ -5,9 +5,9 @@
   "run": 5,
   "warmupSeconds": 60,
   "measureSeconds": 300,
-  "timestamp": "2026-07-04T22:13:27.551Z",
+  "timestamp": "2026-07-05T01:34:35.753Z",
   "command": "k6 run benchmarks/k6/baseline-access.js",
-  "gitCommit": "a2513d091132c713add3ca2eaf2f9053d2f856cd",
+  "gitCommit": "6077d27a9eca686e5395e8e081bbbf588b824a0b",
   "deploymentManifest": {
     "chainId": "20260703",
     "networkName": "vcem-besu-local",
