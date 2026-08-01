@@ -20,14 +20,14 @@ jobs:
         run: npm run secret:scan
       - name: Dependency audit
         run: npm run security:audit
-      - name: Lint TypeScript
-        run: npm run lint
       - name: Solhint
         run: npm run solhint
       - name: Offline compile
         env:
           HARDHAT_DISABLE_DOWNLOADS: "true"
         run: npm run compile
+      - name: Lint TypeScript
+        run: npm run lint
       - name: Full tests
         run: npm test
       - name: VCEM matrix
