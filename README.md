@@ -25,7 +25,8 @@ This repository is intended to be reproducible from a fresh clone. A reader shou
 | Besu network | `infrastructure/besu/docker-compose.yml`, `infrastructure/besu/genesis.json.template`, `infrastructure/besu/scripts/` |
 | Deployment | `ignition/modules/VCEM.ts`, `infrastructure/besu/scripts/deployVcem.ts`, `deployments/vcem-manifest.json` |
 | Tests | `test/VCEM.ts`, `test/VCEMMatrix.ts`, `test/AuditVerifier.ts`, `test/ApiDataProxy.ts`, `test/FHIRAdapter.ts` |
-| Slither static analysis | `slither-report.md`, `reports/slither/slither-final.json`, `reports/slither/slither-final.txt` |
+| Slither static analysis | `slither-report.md`, `reports/slither/slither-final.json`, `reports/slither/slither-final.txt`, `reports/slither/slither-disposition.csv`, `reports/slither/SLITHER_DISPOSITION_SUMMARY.md` |
+| Reviewer 2 security invariants | `test/VCEMSecurityProperty.ts`, `reports/security/VCEM_SECURITY_INVARIANTS.md` |
 | Benchmarks and k6 | `benchmarks/k6/`, `benchmarks/scripts/`, `benchmarks/raw/`, `benchmarks/analysis/`, `benchmarks/reports/` |
 | Claim-to-evidence mapping | `docs/claim-to-evidence.md`, `docs/final-vcem-alignment-report.md` |
 | Release inventory | `docs/open-source-release-inventory.md` |
@@ -115,6 +116,8 @@ Legacy DSA/RSA/resource-certification contracts remain for compatibility and pro
   - FHIR fixture-to-contract lifecycle tests.
 - `test/VCEMProperty.ts`
   - property tests for canonical consent hashing behavior.
+- `test/VCEMSecurityProperty.ts`
+  - Reviewer 2 security property/invariant tests for stale consent rejection, revocation, replay, signed-field mutation, same-state policy checks, participant-only lifecycle control, and consent-chain continuity.
 
 Generated matrix evidence is written to:
 
@@ -321,6 +324,7 @@ npm run test:audit-verifier 2>&1 | tee reports/execution-logs/06-audit-verifier.
 npm run test:fhir 2>&1 | tee reports/execution-logs/07-fhir.log
 npm run test:api 2>&1 | tee reports/execution-logs/08-api-proxy.log
 npm run test:property 2>&1 | tee reports/execution-logs/09-property.log
+npm run test:security:properties 2>&1 | tee reports/execution-logs/09a-security-properties.log
 ```
 
 Expected result from the last recorded local run:
@@ -329,6 +333,7 @@ Expected result from the last recorded local run:
 - `npm run test:audit-verifier`: 17 passing;
 - `npm run test:fhir`: 6 passing;
 - `npm run test:property`: 2 passing.
+- `npm run test:security:properties`: 7 passing.
 
 Generated VCEM matrix evidence:
 
@@ -391,6 +396,10 @@ Slither evidence:
 - `slither-report.md`
 - `reports/slither/slither-final.json`
 - `reports/slither/slither-final.txt`
+- `reports/slither/slither-reviewer2-20260807.json`
+- `reports/slither/slither-reviewer2-20260807.txt`
+- `reports/slither/slither-disposition.csv`
+- `reports/slither/SLITHER_DISPOSITION_SUMMARY.md`
 
 Current Slither status after remediation:
 
@@ -399,7 +408,14 @@ Current Slither status after remediation:
 - Low findings: 48
 - Informational findings: 120
 
-The remaining Low/Informational warnings are documented in `slither-report.md`; they are not suppressed.
+The remaining Low/Informational warnings are documented in `slither-report.md` and the one-row-per-finding disposition table in `reports/slither/slither-disposition.csv`; they are not suppressed.
+
+Reviewer 2 security invariant evidence:
+
+- `test/VCEMSecurityProperty.ts`
+- `reports/security/VCEM_SECURITY_INVARIANTS.md`
+
+These tests are property/invariant tests, not formal verification. They support the security-evidence response but should not be described as theorem-prover-backed formal verification.
 
 ### Step 7: Run Coverage and Gas Reports
 
@@ -677,6 +693,18 @@ Run FHIR integration tests:
 npm run test:fhir
 ```
 
+Base HL7 FHIR R4 fixture validation was added as a peer-review/revision artifact. The supported synthetic Consent fixtures validate against the official HL7 FHIR Validator and the base Consent profile:
+
+```bash
+java -jar .tools/fhir-validator/validator_cli.jar <fixture.json> \
+  -version 4.0.1 \
+  -ig hl7.fhir.r4.core#4.0.1 \
+  -profile http://hl7.org/fhir/StructureDefinition/Consent \
+  -tx n/a
+```
+
+Validation reports are stored under `reports/fhir-validation/`. This establishes base FHIR R4 structural/terminology conformance for supported synthetic fixtures only; it is not live FHIR-server, SMART-on-FHIR, implementation-guide, or production clinical interoperability evidence.
+
 ## VCEM Correctness Matrix
 
 Run:
@@ -897,6 +925,7 @@ npm run test:audit-verifier
 npm run test:api
 npm run test:fhir
 npm run test:property
+npm run test:security:properties
 npm run test:legacy:zkp
 ```
 
@@ -912,6 +941,7 @@ npm run security:audit
 npm run coverage
 npm run gas
 npm run slither
+npm run test:security:properties
 npm run besu:config:validate
 ```
 
@@ -924,6 +954,7 @@ Current behavior:
 - `npm run coverage` generates Solidity coverage reports under `coverage/` and `coverage.json`.
 - `npm run gas` runs the VCEM gas report.
 - `npm run slither` requires Slither to be installed locally.
+- `npm run test:security:properties` runs seven Reviewer 2 security property/invariant tests.
 - `npm run besu:config:validate` checks local Besu configuration.
 
 ## CI
@@ -999,6 +1030,7 @@ Recorded on 2026-07-03:
 | `npm run lint` | Pass |
 | `HARDHAT_DISABLE_DOWNLOADS=true npm run compile` | Pass |
 | `npm run test:property` | Pass, 2 passing |
+| `npm run test:security:properties` | Pass, 7 passing |
 | `npm test` | Pass, 85 passing |
 | `npm run test:vcem:matrix` | Pass, 2 passing |
 | `npm run test:audit-verifier` | Pass, 17 passing |
@@ -1007,7 +1039,7 @@ Recorded on 2026-07-03:
 | `npm run coverage` | Pass, 87 passing / 4 pending, 77.66% statement coverage |
 | `npm run gas` | Pass |
 | `npm run security:audit` | Fail: 54 vulnerabilities |
-| `npm run slither` | Fails locally unless Slither is installed |
+| `npm run slither` | Pass when Slither 0.11.5 is installed; current report has 0 High and 0 Medium findings |
 
 ## Known Limitations
 

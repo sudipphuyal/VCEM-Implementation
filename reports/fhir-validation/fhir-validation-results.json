@@ -1,0 +1,100 @@
+{
+  "supportedFixtureCount": 10,
+  "totals": {
+    "errors": 0,
+    "warnings": 12,
+    "notes": 0
+  },
+  "rows": [
+    {
+      "fixture": "fixtures/fhir/consent-active.json",
+      "report": "reports/fhir-validation/consent-active-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 1,
+      "information": 0,
+      "pass": true
+    },
+    {
+      "fixture": "fixtures/fhir/consent-actor-added.json",
+      "report": "reports/fhir-validation/consent-actor-added-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 1,
+      "information": 0,
+      "pass": true
+    },
+    {
+      "fixture": "fixtures/fhir/consent-actor-removed.json",
+      "report": "reports/fhir-validation/consent-actor-removed-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 1,
+      "information": 0,
+      "pass": true
+    },
+    {
+      "fixture": "fixtures/fhir/consent-disallowed-scope.json",
+      "report": "reports/fhir-validation/consent-disallowed-scope-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 1,
+      "information": 0,
+      "pass": true
+    },
+    {
+      "fixture": "fixtures/fhir/consent-modified.json",
+      "report": "reports/fhir-validation/consent-modified-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 1,
+      "information": 0,
+      "pass": true
+    },
+    {
+      "fixture": "fixtures/fhir/consent-multiple-actors.json",
+      "report": "reports/fhir-validation/consent-multiple-actors-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 2,
+      "information": 0,
+      "pass": true
+    },
+    {
+      "fixture": "fixtures/fhir/consent-multiple-purposes.json",
+      "report": "reports/fhir-validation/consent-multiple-purposes-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 1,
+      "information": 0,
+      "pass": true
+    },
+    {
+      "fixture": "fixtures/fhir/consent-revoked.json",
+      "report": "reports/fhir-validation/consent-revoked-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 1,
+      "information": 0,
+      "pass": true
+    },
+    {
+      "fixture": "fixtures/fhir/consent-supported-nested.json",
+      "report": "reports/fhir-validation/consent-supported-nested-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 2,
+      "information": 0,
+      "pass": true
+    },
+    {
+      "fixture": "services/fhir-adapter/fixtures/consent.anonymized.json",
+      "report": "reports/fhir-validation/consent.anonymized-validation.txt",
+      "profile": "http://hl7.org/fhir/StructureDefinition/Consent",
+      "errors": 0,
+      "warnings": 1,
+      "information": 0,
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,366 @@
+'npx hardhat clean' running (wd: /private/tmp/vcem-evaluated-6077d27a9eca686e5395e8e081bbbf588b824a0b)
+'npx hardhat clean --global' running (wd: /private/tmp/vcem-evaluated-6077d27a9eca686e5395e8e081bbbf588b824a0b)
+Problem executing hardhat: WARNING: You are currently using Node.js v23.11.0, which is not supported by Hardhat. This can lead to unexpected behavior. See https://hardhat.org/nodejs-versions
+
+'npx hardhat compile --force' running (wd: /private/tmp/vcem-evaluated-6077d27a9eca686e5395e8e081bbbf588b824a0b)
+
+Detector: uninitialized-state
+DataSharingAgreement.providerDsas (contracts/DSA/DataSharingAgreement.sol#52) is never initialized. It is used in:
+	- DataSharingAgreement._removeDsaIdFromProvider(bytes20,address) (contracts/DSA/DataSharingAgreement.sol#93-105)
+	- DataSharingAgreement.getProviderDsas(address) (contracts/DSA/DataSharingAgreement.sol#292-296)
+DataSharingAgreement.recipientDsas (contracts/DSA/DataSharingAgreement.sol#53) is never initialized. It is used in:
+	- DataSharingAgreement._removeDsaIdFromRecipient(bytes20,address) (contracts/DSA/DataSharingAgreement.sol#108-120)
+	- DataSharingAgreement.getRecipientDsas(address) (contracts/DSA/DataSharingAgreement.sol#298-302)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-state-variables
+
+Detector: incorrect-equality
+DataSharingAgreement.acceptDsa(bytes20) (contracts/DSA/DataSharingAgreement.sol#161-171) uses a dangerous strict equality:
+	- require(bool,string)(dsas[_dsaId].state == DsaState.Pending,DSA not pending) (contracts/DSA/DataSharingAgreement.sol#167)
+DataSharingAgreement.cancelDsa(bytes20) (contracts/DSA/DataSharingAgreement.sol#197-207) uses a dangerous strict equality:
+	- require(bool,string)(dsas[_dsaId].state == DsaState.Pending,Cannot cancel) (contracts/DSA/DataSharingAgreement.sol#199)
+DataSharingAgreement.rejectDsa(bytes20) (contracts/DSA/DataSharingAgreement.sol#185-195) uses a dangerous strict equality:
+	- require(bool,string)(dsas[_dsaId].state == DsaState.Pending,DSA not pending) (contracts/DSA/DataSharingAgreement.sol#187)
+DataSharingAgreementZKP.acceptDsaWithProof(uint256,string,uint256[2],uint256[2][2],uint256[2],uint256[1]) (contracts/DataSharingAgreementZKP.sol#80-100) uses a dangerous strict equality:
+	- require(bool,string)(dsas[dsaId].providerCommitment == _providerCommitment,DSA not found) (contracts/DataSharingAgreementZKP.sol#92)
+DataSharingAgreementZKP.acceptDsaWithProof(uint256,string,uint256[2],uint256[2][2],uint256[2],uint256[1]) (contracts/DataSharingAgreementZKP.sol#80-100) uses a dangerous strict equality:
+	- require(bool,string)(dsas[dsaId].state == DsaState.Pending,DSA not pending) (contracts/DataSharingAgreementZKP.sol#93)
+DataSharingAgreementZKP.createDsaWithProof(string,string,uint256[2],uint256[2][2],uint256[2],uint256[1]) (contracts/DataSharingAgreementZKP.sol#49-78) uses a dangerous strict equality:
+	- require(bool,string)(dsas[dsaId].providerCommitment == 0,DSA already exists) (contracts/DataSharingAgreementZKP.sol#63)
+ResourcesSharingAgreement.onlyActive(bytes20) (contracts/RSA/ResourcesSharingAgreement.sol#199-202) uses a dangerous strict equality:
+	- require(bool,string)(rsas[_rsaId].state == RsaState.Active,Rsa is not active) (contracts/RSA/ResourcesSharingAgreement.sol#200)
+ResourceCertification.verifyResource(string) (contracts/ResourceCertification.sol#108-141) uses a dangerous strict equality:
+	- index == 0 (contracts/ResourceCertification.sol#125)
+ResourceCertification.verifyResource(string) (contracts/ResourceCertification.sol#108-141) uses a dangerous strict equality:
+	- require(bool,string)(keccak256(bytes)(abi.encodePacked(certificates[0].resourceId)) == keccak256(bytes)(abi.encodePacked(_resourceId)),Resource not certified) (contracts/ResourceCertification.sol#127-131)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+
+Detector: uninitialized-local
+ResourcesSharingAgreement.acceptObserverAssignment(bytes20).targetAssignmentId (contracts/RSA/ResourcesSharingAgreement.sol#570) is a local variable never initialized
+ResourcesSharingAgreement.rejectObserverAssignment(bytes20).targetAssignmentId (contracts/RSA/ResourcesSharingAgreement.sol#607) is a local variable never initialized
+ResourcesSharingAgreement.removeObserverAssignment(bytes20,address,string).targetAssignmentId (contracts/RSA/ResourcesSharingAgreement.sol#650) is a local variable never initialized
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-local-variables
+
+Detector: unused-return
+ResourcesSharingAgreement.createRsa(address,string,string,bool,string[]) (contracts/RSA/ResourcesSharingAgreement.sol#317-399) ignores return value by (None,subject,None,None) = resourceCertificationContract.verifyResource(_sharedResources[i]) (contracts/RSA/ResourcesSharingAgreement.sol#356-357)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+
+Detector: calls-loop
+DsaEnumerator.getProviderDsaCount(address,string) (contracts/DSA/DsaEnumerator.sol#83-104) has external calls inside a loop: ! applyFilter || dsaContract.getDsaState(dsaIds[i]) == targetState (contracts/DSA/DsaEnumerator.sol#97-98)
+DsaEnumerator.getDsasByProvider(address,string,uint256,uint256) (contracts/DSA/DsaEnumerator.sol#106-151) has external calls inside a loop: ! applyFilter || dsaContract.getDsaState(dsaIds[i]) == targetState (contracts/DSA/DsaEnumerator.sol#125-126)
+DsaEnumerator.getDsasByProvider(address,string,uint256,uint256) (contracts/DSA/DsaEnumerator.sol#106-151) has external calls inside a loop: ! applyFilter || dsaContract.getDsaState(dsaIds[i_scope_0]) == targetState (contracts/DSA/DsaEnumerator.sol#142-143)
+DsaEnumerator.getDsasByProvider(address,string,uint256,uint256) (contracts/DSA/DsaEnumerator.sol#106-151) has external calls inside a loop: result[index] = dsaContract.getDsaInfo(dsaIds[i_scope_0]) (contracts/DSA/DsaEnumerator.sol#145)
+DsaEnumerator.getRecipientDsaCount(address,string) (contracts/DSA/DsaEnumerator.sol#153-175) has external calls inside a loop: ! applyFilter || dsaContract.getDsaState(dsaIds[i]) == targetState (contracts/DSA/DsaEnumerator.sol#167-168)
+DsaEnumerator.getDsasByRecipient(address,string,uint256,uint256) (contracts/DSA/DsaEnumerator.sol#177-222) has external calls inside a loop: ! applyFilter || dsaContract.getDsaState(dsaIds[i]) == targetState (contracts/DSA/DsaEnumerator.sol#193-194)
+DsaEnumerator.getDsasByRecipient(address,string,uint256,uint256) (contracts/DSA/DsaEnumerator.sol#177-222) has external calls inside a loop: ! applyFilter || dsaContract.getDsaState(dsaIds[i_scope_0]) == targetState (contracts/DSA/DsaEnumerator.sol#211-212)
+DsaEnumerator.getDsasByRecipient(address,string,uint256,uint256) (contracts/DSA/DsaEnumerator.sol#177-222) has external calls inside a loop: result[index] = dsaContract.getDsaInfo(dsaIds[i_scope_0]) (contracts/DSA/DsaEnumerator.sol#215)
+ResourcesSharingAgreement.createRsa(address,string,string,bool,string[]) (contracts/RSA/ResourcesSharingAgreement.sol#317-399) has external calls inside a loop: (None,subject,None,None) = resourceCertificationContract.verifyResource(_sharedResources[i]) (contracts/RSA/ResourcesSharingAgreement.sol#356-357)
+RsaEnumerator.getProviderRsaCount(address,string) (contracts/RSA/RsaEnumerator.sol#102-123) has external calls inside a loop: ! applyFilter || rsaContract.getRsaState(rsaIds[i]) == targetState (contracts/RSA/RsaEnumerator.sol#116-117)
+RsaEnumerator.getRsasByProvider(address,string,uint256,uint256) (contracts/RSA/RsaEnumerator.sol#125-172) has external calls inside a loop: ! applyFilter || rsaContract.getRsaState(rsaIds[i]) == targetState (contracts/RSA/RsaEnumerator.sol#144-145)
+RsaEnumerator.getRsasByProvider(address,string,uint256,uint256) (contracts/RSA/RsaEnumerator.sol#125-172) has external calls inside a loop: ! applyFilter || rsaContract.getRsaState(rsaIds[i_scope_0]) == targetState (contracts/RSA/RsaEnumerator.sol#163-164)
+RsaEnumerator.getRsasByProvider(address,string,uint256,uint256) (contracts/RSA/RsaEnumerator.sol#125-172) has external calls inside a loop: result[index] = rsaContract.getRsaInfo(rsaIds[i_scope_0]) (contracts/RSA/RsaEnumerator.sol#166)
+RsaEnumerator.getRecipientRsaCount(address,string) (contracts/RSA/RsaEnumerator.sol#174-196) has external calls inside a loop: ! applyFilter || rsaContract.getRsaState(rsaIds[i]) == targetState (contracts/RSA/RsaEnumerator.sol#188-189)
+RsaEnumerator.getRsasByRecipient(address,string,uint256,uint256) (contracts/RSA/RsaEnumerator.sol#198-245) has external calls inside a loop: ! applyFilter || rsaContract.getRsaState(rsaIds[i]) == targetState (contracts/RSA/RsaEnumerator.sol#214-215)
+RsaEnumerator.getRsasByRecipient(address,string,uint256,uint256) (contracts/RSA/RsaEnumerator.sol#198-245) has external calls inside a loop: ! applyFilter || rsaContract.getRsaState(rsaIds[i_scope_0]) == targetState (contracts/RSA/RsaEnumerator.sol#234-235)
+RsaEnumerator.getRsasByRecipient(address,string,uint256,uint256) (contracts/RSA/RsaEnumerator.sol#198-245) has external calls inside a loop: result[index] = rsaContract.getRsaInfo(rsaIds[i_scope_0]) (contracts/RSA/RsaEnumerator.sol#238)
+RsaEnumerator.getObserverRsaCount(address,string) (contracts/RSA/RsaEnumerator.sol#247-278) has external calls inside a loop: assignments = rsaContract.getObserverAssignments(rsaIds[i]) (contracts/RSA/RsaEnumerator.sol#260-263)
+RsaEnumerator.getRsasByObserver(address,string,uint256,uint256) (contracts/RSA/RsaEnumerator.sol#280-331) has external calls inside a loop: assignments = rsaContract.getObserverAssignments(rsaIds[i]) (contracts/RSA/RsaEnumerator.sol#296-299)
+RsaEnumerator.getRsasByObserver(address,string,uint256,uint256) (contracts/RSA/RsaEnumerator.sol#280-331) has external calls inside a loop: result[index] = rsaContract.getRsaInfo(rsaIds[rsaIndex]) (contracts/RSA/RsaEnumerator.sol#326)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
+
+Detector: timestamp
+VCEMAudit.authorizeAndLogAccess(VCEMAudit.AccessRequest,bytes) (contracts/vcem/VCEMAudit.sol#110-163) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(block.timestamp <= request.requestExpiry,VCEMAudit: expired request) (contracts/vcem/VCEMAudit.sol#117)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: timestamp
+DataSharingAgreement.createDsa(address,string,string) (contracts/DSA/DataSharingAgreement.sol#122-159) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[dsaId].provider == address(0),DSA already exists) (contracts/DSA/DataSharingAgreement.sol#137)
+DataSharingAgreement.acceptDsa(bytes20) (contracts/DSA/DataSharingAgreement.sol#161-171) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[_dsaId].recipient == msg.sender,Not the recipient) (contracts/DSA/DataSharingAgreement.sol#166)
+	- require(bool,string)(dsas[_dsaId].state == DsaState.Pending,DSA not pending) (contracts/DSA/DataSharingAgreement.sol#167)
+DataSharingAgreement.burnDsa(bytes20) (contracts/DSA/DataSharingAgreement.sol#173-183) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[_dsaId].provider != address(0),DSA not found) (contracts/DSA/DataSharingAgreement.sol#174)
+DataSharingAgreement.rejectDsa(bytes20) (contracts/DSA/DataSharingAgreement.sol#185-195) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[_dsaId].recipient == msg.sender,Not the recipient) (contracts/DSA/DataSharingAgreement.sol#186)
+	- require(bool,string)(dsas[_dsaId].state == DsaState.Pending,DSA not pending) (contracts/DSA/DataSharingAgreement.sol#187)
+DataSharingAgreement.cancelDsa(bytes20) (contracts/DSA/DataSharingAgreement.sol#197-207) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[_dsaId].provider == msg.sender,Not the provider) (contracts/DSA/DataSharingAgreement.sol#198)
+	- require(bool,string)(dsas[_dsaId].state == DsaState.Pending,Cannot cancel) (contracts/DSA/DataSharingAgreement.sol#199)
+DataSharingAgreement.revokeDsa(bytes20) (contracts/DSA/DataSharingAgreement.sol#209-224) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsa.provider != address(0),Invalid Dsa ID) (contracts/DSA/DataSharingAgreement.sol#211)
+	- require(bool,string)(msg.sender == dsa.provider || msg.sender == dsa.recipient,Only provider or recipient can revoke Dsa) (contracts/DSA/DataSharingAgreement.sol#213-216)
+DataSharingAgreement.getDsaInfo(bytes20) (contracts/DSA/DataSharingAgreement.sol#245-249) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsa.provider != address(0),DSA not found) (contracts/DSA/DataSharingAgreement.sol#247)
+DataSharingAgreement.getDsaById(bytes20) (contracts/DSA/DataSharingAgreement.sol#251-265) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsa.provider != address(0),DSA not found) (contracts/DSA/DataSharingAgreement.sol#253)
+DataSharingAgreement.getDsaState(bytes20) (contracts/DSA/DataSharingAgreement.sol#267-270) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[_dsaId].provider != address(0),DSA not found) (contracts/DSA/DataSharingAgreement.sol#268)
+DataSharingAgreement.getDsaByParties(address,address) (contracts/DSA/DataSharingAgreement.sol#272-290) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[dsaId].provider != address(0),DSA not found) (contracts/DSA/DataSharingAgreement.sol#277)
+DataSharingAgreementZKP.createDsaWithProof(string,string,uint256[2],uint256[2][2],uint256[2],uint256[1]) (contracts/DataSharingAgreementZKP.sol#49-78) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[dsaId].providerCommitment == 0,DSA already exists) (contracts/DataSharingAgreementZKP.sol#63)
+DataSharingAgreementZKP.acceptDsaWithProof(uint256,string,uint256[2],uint256[2][2],uint256[2],uint256[1]) (contracts/DataSharingAgreementZKP.sol#80-100) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[dsaId].providerCommitment == _providerCommitment,DSA not found) (contracts/DataSharingAgreementZKP.sol#92)
+	- require(bool,string)(dsas[dsaId].state == DsaState.Pending,DSA not pending) (contracts/DataSharingAgreementZKP.sol#93)
+DataSharingAgreementZKP.getDsaInfo(bytes20) (contracts/DataSharingAgreementZKP.sol#102-115) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsa.providerCommitment != 0,DSA not found) (contracts/DataSharingAgreementZKP.sol#104)
+DataSharingAgreementZKP.getDsaState(bytes20) (contracts/DataSharingAgreementZKP.sol#117-120) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(dsas[_dsaId].providerCommitment != 0,DSA not found) (contracts/DataSharingAgreementZKP.sol#118)
+ResourcesSharingAgreement.createRsa(address,string,string,bool,string[]) (contracts/RSA/ResourcesSharingAgreement.sol#317-399) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsas[rsaId].provider == address(0),Rsa already exists between these parties) (contracts/RSA/ResourcesSharingAgreement.sol#344-347)
+ResourcesSharingAgreement.cancelRsa(bytes20) (contracts/RSA/ResourcesSharingAgreement.sol#401-416) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsa.provider != address(0),Invalid Rsa ID) (contracts/RSA/ResourcesSharingAgreement.sol#403)
+	- require(bool,string)(rsa.state == RsaState.Pending,Can only cancel a pending Rsa) (contracts/RSA/ResourcesSharingAgreement.sol#405)
+ResourcesSharingAgreement.rejectRsa(bytes20) (contracts/RSA/ResourcesSharingAgreement.sol#418-433) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsa.provider != address(0),Invalid Rsa ID) (contracts/RSA/ResourcesSharingAgreement.sol#420)
+	- require(bool,string)(rsa.state == RsaState.Pending,Can only reject a pending Rsa) (contracts/RSA/ResourcesSharingAgreement.sol#422)
+ResourcesSharingAgreement.acceptRsa(bytes20) (contracts/RSA/ResourcesSharingAgreement.sol#435-447) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsa.provider != address(0),Invalid Rsa ID) (contracts/RSA/ResourcesSharingAgreement.sol#437)
+	- require(bool,string)(rsa.state == RsaState.Pending,Rsa is not pending) (contracts/RSA/ResourcesSharingAgreement.sol#439)
+ResourcesSharingAgreement.revokeRsa(bytes20) (contracts/RSA/ResourcesSharingAgreement.sol#449-493) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsa.provider != address(0),Invalid Rsa ID) (contracts/RSA/ResourcesSharingAgreement.sol#451)
+	- require(bool,string)(msg.sender == rsa.provider || msg.sender == rsa.recipient,Only provider or recipient can revoke Rsa) (contracts/RSA/ResourcesSharingAgreement.sol#453-456)
+ResourcesSharingAgreement.createObserverAssignment(bytes20,address,string) (contracts/RSA/ResourcesSharingAgreement.sol#495-562) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsa.secondOpinion,Adding observers not allowed) (contracts/RSA/ResourcesSharingAgreement.sol#502)
+ResourcesSharingAgreement.acceptObserverAssignment(bytes20) (contracts/RSA/ResourcesSharingAgreement.sol#564-600) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsa.provider != address(0),Invalid Rsa ID) (contracts/RSA/ResourcesSharingAgreement.sol#566)
+	- require(bool,string)(! targetAssignment.accepted,Assignment already accepted) (contracts/RSA/ResourcesSharingAgreement.sol#589)
+ResourcesSharingAgreement.rejectObserverAssignment(bytes20) (contracts/RSA/ResourcesSharingAgreement.sol#602-634) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsa.provider != address(0),Invalid Rsa ID) (contracts/RSA/ResourcesSharingAgreement.sol#604)
+	- require(bool,string)(! assignment.accepted,Observer already accepted) (contracts/RSA/ResourcesSharingAgreement.sol#615)
+ResourcesSharingAgreement.removeObserverAssignment(bytes20,address,string) (contracts/RSA/ResourcesSharingAgreement.sol#636-712) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsa.provider != address(0),Invalid Rsa ID) (contracts/RSA/ResourcesSharingAgreement.sol#642)
+	- require(bool,string)(msg.sender == rsa.recipient || (msg.sender == _observer && assignment.accepted),Caller must be the recipient or the accepted observer themselves) (contracts/RSA/ResourcesSharingAgreement.sol#670-674)
+	- require(bool,string)(msg.sender == rsa.recipient,Only recipient can remove observer) (contracts/RSA/ResourcesSharingAgreement.sol#676-679)
+ResourcesSharingAgreement.authorizeAndLogAccess(bytes20,string,address,string) (contracts/RSA/ResourcesSharingAgreement.sol#714-765) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(rsa.state == RsaState.Active,Rsa is not active) (contracts/RSA/ResourcesSharingAgreement.sol#729)
+	- require(bool,string)(block.timestamp <= rsa.expiresAt,Rsa has expired) (contracts/RSA/ResourcesSharingAgreement.sol#732)
+	- require(bool,string)(_isSharedResource(rsa,_resourceId),Resource ID not shared in this Rsa) (contracts/RSA/ResourcesSharingAgreement.sol#735-738)
+	- require(bool,string)(keccak256(bytes)(bytes(rsa.recipientEmail)) == keccak256(bytes)(bytes(_resourceAccessorEmail)) || _isObserverEmail(_rsaId,_resourceAccessorEmail),Email does not match Rsa recipient email) (contracts/RSA/ResourcesSharingAgreement.sol#742-747)
+	- require(bool,string)(_resourceAccessor == rsa.recipient || _isObserver(_rsaId,_resourceAccessor),Accessor must be recipient or an observer) (contracts/RSA/ResourcesSharingAgreement.sol#749-753)
+ResourcesSharingAgreement._getRsaInfo(bytes20,ResourcesSharingAgreement.Rsa) (contracts/RSA/ResourcesSharingAgreement.sol#769-796) uses timestamp for comparisons
+	Dangerous comparisons:
+	- i < _rsa.observerAssignmentIds.length (contracts/RSA/ResourcesSharingAgreement.sol#778)
+ResourceCertification.removeCertificate(string) (contracts/ResourceCertification.sol#78-105) uses timestamp for comparisons
+	Dangerous comparisons:
+	- indexToRemove != lastIndex (contracts/ResourceCertification.sol#90)
+ResourceCertification.verifyResource(string) (contracts/ResourceCertification.sol#108-141) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(index < certificates.length,Resource not certified) (contracts/ResourceCertification.sol#123)
+	- index == 0 (contracts/ResourceCertification.sol#125)
+	- require(bool,string)(keccak256(bytes)(abi.encodePacked(certificates[0].resourceId)) == keccak256(bytes)(abi.encodePacked(_resourceId)),Resource not certified) (contracts/ResourceCertification.sol#127-131)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: assembly
+VCEMSecurity.recoverSigner(bytes32,bytes) (contracts/vcem/libraries/VCEMSecurity.sol#5-26) uses assembly
+	- INLINE ASM (contracts/vcem/libraries/VCEMSecurity.sol#10-14)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+
+Detector: costly-loop
+ResourcesSharingAgreement._removeObserverAssignment(bytes20,bytes20) (contracts/RSA/ResourcesSharingAgreement.sol#243-258) has costly operations inside a loop:
+	- delete observerAssignments[_assignmentId] (contracts/RSA/ResourcesSharingAgreement.sol#254)
+	Calls stack containing the loop:
+		ResourcesSharingAgreement.revokeRsa(bytes20)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#costly-operations-inside-a-loop
+
+Detector: dead-code
+DsaEnumerator._getAcceptanceFilterFromString(string) (contracts/DSA/DsaEnumerator.sol#65-81) is never used and should be removed
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dead-code
+
+Detector: solc-version
+Version constraint 0.8.20 contains known severe issues (https://solidity.readthedocs.io/en/latest/bugs.html)
+	- VerbatimInvalidDeduplication
+	- FullInlinerNonExpressionSplitArgumentEvaluationOrder
+	- MissingSideEffectsOnSelectorAccess.
+It is used by:
+	- 0.8.20 (contracts/vcem/VCEMAudit.sol#2)
+	- 0.8.20 (contracts/vcem/VCEMConsent.sol#2)
+	- 0.8.20 (contracts/vcem/VCEMRegistry.sol#2)
+	- 0.8.20 (contracts/vcem/VCEMTypes.sol#2)
+	- 0.8.20 (contracts/vcem/interfaces/IVCEMConsent.sol#2)
+	- 0.8.20 (contracts/vcem/interfaces/IVCEMRegistry.sol#2)
+	- 0.8.20 (contracts/vcem/libraries/CanonicalHash.sol#2)
+	- 0.8.20 (contracts/vcem/libraries/VCEMSecurity.sol#2)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
+
+Detector: missing-inheritance
+VCEMConsent (contracts/vcem/VCEMConsent.sol#8-307) should inherit from IVCEMConsent (contracts/vcem/interfaces/IVCEMConsent.sol#6-15)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-inheritance
+
+Detector: missing-inheritance
+DataSharingAgreement (contracts/DSA/DataSharingAgreement.sol#24-303) should inherit from IDataSharingAgreement (contracts/DSA/DsaEnumerator.sol#8-36)
+ResourcesSharingAgreement (contracts/RSA/ResourcesSharingAgreement.sol#48-844) should inherit from IResourcesSharingAgreement (contracts/RSA/RsaEnumerator.sol#8-55)
+Registries (contracts/Registries.sol#4-175) should inherit from IRegistries (contracts/RSA/ResourcesSharingAgreement.sol#22-32)
+ResourceCertification (contracts/ResourceCertification.sol#8-142) should inherit from IResourceCertification (contracts/RSA/ResourcesSharingAgreement.sol#34-46)
+Utils (contracts/Utils.sol#4-83) should inherit from IUtils (contracts/DSA/DataSharingAgreement.sol#5-14)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-inheritance
+
+Detector: naming-convention
+Parameter DataSharingAgreement.createDsa(address,string,string)._recipient (contracts/DSA/DataSharingAgreement.sol#123) is not in mixedCase
+Parameter DataSharingAgreement.createDsa(address,string,string)._duration (contracts/DSA/DataSharingAgreement.sol#124) is not in mixedCase
+Parameter DataSharingAgreement.createDsa(address,string,string)._sharedData (contracts/DSA/DataSharingAgreement.sol#125) is not in mixedCase
+Parameter DataSharingAgreement.acceptDsa(bytes20)._dsaId (contracts/DSA/DataSharingAgreement.sol#161) is not in mixedCase
+Parameter DataSharingAgreement.burnDsa(bytes20)._dsaId (contracts/DSA/DataSharingAgreement.sol#173) is not in mixedCase
+Parameter DataSharingAgreement.rejectDsa(bytes20)._dsaId (contracts/DSA/DataSharingAgreement.sol#185) is not in mixedCase
+Parameter DataSharingAgreement.cancelDsa(bytes20)._dsaId (contracts/DSA/DataSharingAgreement.sol#197) is not in mixedCase
+Parameter DataSharingAgreement.revokeDsa(bytes20)._dsaId (contracts/DSA/DataSharingAgreement.sol#209) is not in mixedCase
+Parameter DataSharingAgreement.getDsaInfo(bytes20)._dsaId (contracts/DSA/DataSharingAgreement.sol#245) is not in mixedCase
+Parameter DataSharingAgreement.getDsaById(bytes20)._dsaId (contracts/DSA/DataSharingAgreement.sol#251) is not in mixedCase
+Parameter DataSharingAgreement.getDsaState(bytes20)._dsaId (contracts/DSA/DataSharingAgreement.sol#267) is not in mixedCase
+Parameter DataSharingAgreement.getDsaByParties(address,address)._provider (contracts/DSA/DataSharingAgreement.sol#273) is not in mixedCase
+Parameter DataSharingAgreement.getDsaByParties(address,address)._recipient (contracts/DSA/DataSharingAgreement.sol#274) is not in mixedCase
+Parameter DataSharingAgreement.getProviderDsas(address)._provider (contracts/DSA/DataSharingAgreement.sol#293) is not in mixedCase
+Parameter DataSharingAgreement.getRecipientDsas(address)._recipient (contracts/DSA/DataSharingAgreement.sol#299) is not in mixedCase
+Parameter DsaEnumerator.getProviderDsaCount(address,string)._provider (contracts/DSA/DsaEnumerator.sol#84) is not in mixedCase
+Parameter DsaEnumerator.getProviderDsaCount(address,string)._stateFilter (contracts/DSA/DsaEnumerator.sol#85) is not in mixedCase
+Parameter DsaEnumerator.getDsasByProvider(address,string,uint256,uint256)._provider (contracts/DSA/DsaEnumerator.sol#107) is not in mixedCase
+Parameter DsaEnumerator.getDsasByProvider(address,string,uint256,uint256)._stateFilter (contracts/DSA/DsaEnumerator.sol#108) is not in mixedCase
+Parameter DsaEnumerator.getDsasByProvider(address,string,uint256,uint256)._offset (contracts/DSA/DsaEnumerator.sol#109) is not in mixedCase
+Parameter DsaEnumerator.getDsasByProvider(address,string,uint256,uint256)._limit (contracts/DSA/DsaEnumerator.sol#110) is not in mixedCase
+Parameter DsaEnumerator.getRecipientDsaCount(address,string)._recipient (contracts/DSA/DsaEnumerator.sol#154) is not in mixedCase
+Parameter DsaEnumerator.getRecipientDsaCount(address,string)._stateFilter (contracts/DSA/DsaEnumerator.sol#155) is not in mixedCase
+Parameter DsaEnumerator.getDsasByRecipient(address,string,uint256,uint256)._recipient (contracts/DSA/DsaEnumerator.sol#178) is not in mixedCase
+Parameter DsaEnumerator.getDsasByRecipient(address,string,uint256,uint256)._stateFilter (contracts/DSA/DsaEnumerator.sol#179) is not in mixedCase
+Parameter DsaEnumerator.getDsasByRecipient(address,string,uint256,uint256)._offset (contracts/DSA/DsaEnumerator.sol#180) is not in mixedCase
+Parameter DsaEnumerator.getDsasByRecipient(address,string,uint256,uint256)._limit (contracts/DSA/DsaEnumerator.sol#181) is not in mixedCase
+Parameter DataSharingAgreementZKP.createDsaWithProof(string,string,uint256[2],uint256[2][2],uint256[2],uint256[1])._duration (contracts/DataSharingAgreementZKP.sol#50) is not in mixedCase
+Parameter DataSharingAgreementZKP.createDsaWithProof(string,string,uint256[2],uint256[2][2],uint256[2],uint256[1])._sharedData (contracts/DataSharingAgreementZKP.sol#51) is not in mixedCase
+Parameter DataSharingAgreementZKP.acceptDsaWithProof(uint256,string,uint256[2],uint256[2][2],uint256[2],uint256[1])._providerCommitment (contracts/DataSharingAgreementZKP.sol#81) is not in mixedCase
+Parameter DataSharingAgreementZKP.getDsaInfo(bytes20)._dsaId (contracts/DataSharingAgreementZKP.sol#102) is not in mixedCase
+Parameter DataSharingAgreementZKP.getDsaState(bytes20)._dsaId (contracts/DataSharingAgreementZKP.sol#117) is not in mixedCase
+Parameter DataSharingAgreementZKP.getCommitments(bytes20)._dsaId (contracts/DataSharingAgreementZKP.sol#122) is not in mixedCase
+Parameter ResourcesSharingAgreement.createRsa(address,string,string,bool,string[])._recipient (contracts/RSA/ResourcesSharingAgreement.sol#318) is not in mixedCase
+Parameter ResourcesSharingAgreement.createRsa(address,string,string,bool,string[])._recipientEmail (contracts/RSA/ResourcesSharingAgreement.sol#319) is not in mixedCase
+Parameter ResourcesSharingAgreement.createRsa(address,string,string,bool,string[])._duration (contracts/RSA/ResourcesSharingAgreement.sol#320) is not in mixedCase
+Parameter ResourcesSharingAgreement.createRsa(address,string,string,bool,string[])._secondOpinion (contracts/RSA/ResourcesSharingAgreement.sol#321) is not in mixedCase
+Parameter ResourcesSharingAgreement.createRsa(address,string,string,bool,string[])._sharedResources (contracts/RSA/ResourcesSharingAgreement.sol#322) is not in mixedCase
+Parameter ResourcesSharingAgreement.cancelRsa(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#401) is not in mixedCase
+Parameter ResourcesSharingAgreement.rejectRsa(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#418) is not in mixedCase
+Parameter ResourcesSharingAgreement.acceptRsa(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#435) is not in mixedCase
+Parameter ResourcesSharingAgreement.revokeRsa(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#449) is not in mixedCase
+Parameter ResourcesSharingAgreement.createObserverAssignment(bytes20,address,string)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#496) is not in mixedCase
+Parameter ResourcesSharingAgreement.createObserverAssignment(bytes20,address,string)._observer (contracts/RSA/ResourcesSharingAgreement.sol#497) is not in mixedCase
+Parameter ResourcesSharingAgreement.createObserverAssignment(bytes20,address,string)._observerEmail (contracts/RSA/ResourcesSharingAgreement.sol#498) is not in mixedCase
+Parameter ResourcesSharingAgreement.acceptObserverAssignment(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#564) is not in mixedCase
+Parameter ResourcesSharingAgreement.rejectObserverAssignment(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#602) is not in mixedCase
+Parameter ResourcesSharingAgreement.removeObserverAssignment(bytes20,address,string)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#637) is not in mixedCase
+Parameter ResourcesSharingAgreement.removeObserverAssignment(bytes20,address,string)._observer (contracts/RSA/ResourcesSharingAgreement.sol#638) is not in mixedCase
+Parameter ResourcesSharingAgreement.removeObserverAssignment(bytes20,address,string)._observerEmail (contracts/RSA/ResourcesSharingAgreement.sol#639) is not in mixedCase
+Parameter ResourcesSharingAgreement.authorizeAndLogAccess(bytes20,string,address,string)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#715) is not in mixedCase
+Parameter ResourcesSharingAgreement.authorizeAndLogAccess(bytes20,string,address,string)._resourceId (contracts/RSA/ResourcesSharingAgreement.sol#716) is not in mixedCase
+Parameter ResourcesSharingAgreement.authorizeAndLogAccess(bytes20,string,address,string)._resourceAccessor (contracts/RSA/ResourcesSharingAgreement.sol#717) is not in mixedCase
+Parameter ResourcesSharingAgreement.authorizeAndLogAccess(bytes20,string,address,string)._resourceAccessorEmail (contracts/RSA/ResourcesSharingAgreement.sol#718) is not in mixedCase
+Parameter ResourcesSharingAgreement.getRsaInfo(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#798) is not in mixedCase
+Parameter ResourcesSharingAgreement.getRsaById(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#803) is not in mixedCase
+Parameter ResourcesSharingAgreement.getRsaState(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#807) is not in mixedCase
+Parameter ResourcesSharingAgreement.getObserverAssignments(bytes20)._rsaId (contracts/RSA/ResourcesSharingAgreement.sol#812) is not in mixedCase
+Parameter ResourcesSharingAgreement.getProviderRsas(address)._provider (contracts/RSA/ResourcesSharingAgreement.sol#828) is not in mixedCase
+Parameter ResourcesSharingAgreement.getRecipientRsas(address)._recipient (contracts/RSA/ResourcesSharingAgreement.sol#834) is not in mixedCase
+Parameter ResourcesSharingAgreement.getObserverRsas(address)._observer (contracts/RSA/ResourcesSharingAgreement.sol#840) is not in mixedCase
+Parameter RsaEnumerator.getProviderRsaCount(address,string)._provider (contracts/RSA/RsaEnumerator.sol#103) is not in mixedCase
+Parameter RsaEnumerator.getProviderRsaCount(address,string)._stateFilter (contracts/RSA/RsaEnumerator.sol#104) is not in mixedCase
+Parameter RsaEnumerator.getRsasByProvider(address,string,uint256,uint256)._provider (contracts/RSA/RsaEnumerator.sol#126) is not in mixedCase
+Parameter RsaEnumerator.getRsasByProvider(address,string,uint256,uint256)._stateFilter (contracts/RSA/RsaEnumerator.sol#127) is not in mixedCase
+Parameter RsaEnumerator.getRsasByProvider(address,string,uint256,uint256)._offset (contracts/RSA/RsaEnumerator.sol#128) is not in mixedCase
+Parameter RsaEnumerator.getRsasByProvider(address,string,uint256,uint256)._limit (contracts/RSA/RsaEnumerator.sol#129) is not in mixedCase
+Parameter RsaEnumerator.getRecipientRsaCount(address,string)._recipient (contracts/RSA/RsaEnumerator.sol#175) is not in mixedCase
+Parameter RsaEnumerator.getRecipientRsaCount(address,string)._stateFilter (contracts/RSA/RsaEnumerator.sol#176) is not in mixedCase
+Parameter RsaEnumerator.getRsasByRecipient(address,string,uint256,uint256)._recipient (contracts/RSA/RsaEnumerator.sol#199) is not in mixedCase
+Parameter RsaEnumerator.getRsasByRecipient(address,string,uint256,uint256)._stateFilter (contracts/RSA/RsaEnumerator.sol#200) is not in mixedCase
+Parameter RsaEnumerator.getRsasByRecipient(address,string,uint256,uint256)._offset (contracts/RSA/RsaEnumerator.sol#201) is not in mixedCase
+Parameter RsaEnumerator.getRsasByRecipient(address,string,uint256,uint256)._limit (contracts/RSA/RsaEnumerator.sol#202) is not in mixedCase
+Parameter RsaEnumerator.getObserverRsaCount(address,string)._observer (contracts/RSA/RsaEnumerator.sol#248) is not in mixedCase
+Parameter RsaEnumerator.getObserverRsaCount(address,string)._stateFilter (contracts/RSA/RsaEnumerator.sol#249) is not in mixedCase
+Parameter RsaEnumerator.getRsasByObserver(address,string,uint256,uint256)._observer (contracts/RSA/RsaEnumerator.sol#281) is not in mixedCase
+Parameter RsaEnumerator.getRsasByObserver(address,string,uint256,uint256)._stateFilter (contracts/RSA/RsaEnumerator.sol#282) is not in mixedCase
+Parameter RsaEnumerator.getRsasByObserver(address,string,uint256,uint256)._offset (contracts/RSA/RsaEnumerator.sol#283) is not in mixedCase
+Parameter RsaEnumerator.getRsasByObserver(address,string,uint256,uint256)._limit (contracts/RSA/RsaEnumerator.sol#284) is not in mixedCase
+Parameter Registries.isHealthAuthority(address)._addr (contracts/Registries.sol#58) is not in mixedCase
+Parameter Registries.isHealthcareOrganization(address)._addr (contracts/Registries.sol#63) is not in mixedCase
+Parameter Registries.isTrustedApplication(address)._addr (contracts/Registries.sol#68) is not in mixedCase
+Parameter Registries.isPatient(address)._addr (contracts/Registries.sol#72) is not in mixedCase
+Parameter Registries.isHealthcareProfessional(address)._addr (contracts/Registries.sol#77) is not in mixedCase
+Parameter Registries.isTrustedIssuer(address)._addr (contracts/Registries.sol#82) is not in mixedCase
+Parameter Registries.addPatient(address)._patient (contracts/Registries.sol#87) is not in mixedCase
+Parameter Registries.addHealthcareProfessional(address)._professional (contracts/Registries.sol#93) is not in mixedCase
+Parameter Registries.addTrustedApplication(address)._application (contracts/Registries.sol#100) is not in mixedCase
+Parameter Registries.addHealthcareOrganization(address)._organization (contracts/Registries.sol#107) is not in mixedCase
+Parameter Registries.addTrustedIssuer(address)._issuer (contracts/Registries.sol#113) is not in mixedCase
+Parameter Registries.addHealthAuthority(address)._authority (contracts/Registries.sol#118) is not in mixedCase
+Parameter Registries.removePatient(address)._patient (contracts/Registries.sol#123) is not in mixedCase
+Parameter Registries.removeHealthcareProfessional(address)._professional (contracts/Registries.sol#132) is not in mixedCase
+Parameter Registries.removeTrustedApplication(address)._application (contracts/Registries.sol#142) is not in mixedCase
+Parameter Registries.removeHealthcareOrganization(address)._organization (contracts/Registries.sol#153) is not in mixedCase
+Parameter Registries.removeTrustedIssuer(address)._issuer (contracts/Registries.sol#163) is not in mixedCase
+Parameter Registries.removeHealthAuthority(address)._authority (contracts/Registries.sol#172) is not in mixedCase
+Parameter ResourceCertification.certifyResource(string,address)._resourceId (contracts/ResourceCertification.sol#45) is not in mixedCase
+Parameter ResourceCertification.certifyResource(string,address)._subject (contracts/ResourceCertification.sol#46) is not in mixedCase
+Parameter ResourceCertification.removeCertificate(string)._resourceId (contracts/ResourceCertification.sol#78) is not in mixedCase
+Parameter ResourceCertification.verifyResource(string)._resourceId (contracts/ResourceCertification.sol#109) is not in mixedCase
+Parameter Utils.generateRsaId(address,address,string)._provider (contracts/Utils.sol#20) is not in mixedCase
+Parameter Utils.generateRsaId(address,address,string)._recipient (contracts/Utils.sol#21) is not in mixedCase
+Parameter Utils.generateRsaId(address,address,string)._recipientEmail (contracts/Utils.sol#22) is not in mixedCase
+Parameter Utils.generateDsaId(address,address)._provider (contracts/Utils.sol#35) is not in mixedCase
+Parameter Utils.generateDsaId(address,address)._recipient (contracts/Utils.sol#36) is not in mixedCase
+Parameter Utils.generateAssignmentId(bytes20,uint256,uint256)._rsaId (contracts/Utils.sol#47) is not in mixedCase
+Parameter Utils.generateAssignmentId(bytes20,uint256,uint256)._timestamp (contracts/Utils.sol#48) is not in mixedCase
+Parameter Utils.generateAssignmentId(bytes20,uint256,uint256)._blockNumber (contracts/Utils.sol#49) is not in mixedCase
+Parameter Utils.getDurationInSeconds(string)._duration (contracts/Utils.sol#62) is not in mixedCase
+Parameter Utils.generateDsaIdFromCommitments(uint256,uint256)._providerCommitment (contracts/Utils.sol#75) is not in mixedCase
+Parameter Utils.generateDsaIdFromCommitments(uint256,uint256)._recipientCommitment (contracts/Utils.sol#76) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+
+Detector: unindexed-event-address
+Event VCEMAudit.Paused(address) (contracts/vcem/VCEMAudit.sol#66) has address parameters but no indexed parameters
+Event VCEMAudit.Unpaused(address) (contracts/vcem/VCEMAudit.sol#67) has address parameters but no indexed parameters
+Event VCEMConsent.Paused(address) (contracts/vcem/VCEMConsent.sol#55) has address parameters but no indexed parameters
+Event VCEMConsent.Unpaused(address) (contracts/vcem/VCEMConsent.sol#56) has address parameters but no indexed parameters
+Event VCEMRegistry.Paused(address) (contracts/vcem/VCEMRegistry.sol#22) has address parameters but no indexed parameters
+Event VCEMRegistry.Unpaused(address) (contracts/vcem/VCEMRegistry.sol#23) has address parameters but no indexed parameters
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unindexed-event-address-parameters
+
+Detector: immutable-states
+VCEMRegistry.owner (contracts/vcem/VCEMRegistry.sol#15) should be immutable 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-immutable
+
+Detector: immutable-states
+DataSharingAgreement.registriesContract (contracts/DSA/DataSharingAgreement.sol#56) should be immutable 
+DataSharingAgreement.utils (contracts/DSA/DataSharingAgreement.sol#55) should be immutable 
+DataSharingAgreementZKP.utils (contracts/DataSharingAgreementZKP.sol#38) should be immutable 
+DataSharingAgreementZKP.verifier (contracts/DataSharingAgreementZKP.sol#39) should be immutable 
+DsaEnumerator.dsaContract (contracts/DSA/DsaEnumerator.sol#40) should be immutable 
+DsaEnumerator.utils (contracts/DSA/DsaEnumerator.sol#39) should be immutable 
+Registries.owner (contracts/Registries.sol#6) should be immutable 
+ResourceCertification.registriesContract (contracts/ResourceCertification.sol#17) should be immutable 
+ResourcesSharingAgreement.registriesContract (contracts/RSA/ResourcesSharingAgreement.sol#97) should be immutable 
+ResourcesSharingAgreement.resourceCertificationContract (contracts/RSA/ResourcesSharingAgreement.sol#98) should be immutable 
+ResourcesSharingAgreement.utils (contracts/RSA/ResourcesSharingAgreement.sol#96) should be immutable 
+RsaEnumerator.rsaContract (contracts/RSA/RsaEnumerator.sol#59) should be immutable 
+RsaEnumerator.utils (contracts/RSA/RsaEnumerator.sol#58) should be immutable 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-immutable
+. analyzed (28 contracts with 101 detectors), 205 result(s) found

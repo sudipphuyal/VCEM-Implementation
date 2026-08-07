@@ -11,7 +11,7 @@
 - The audit verifier reconstructs lifecycle and access evidence from RPC logs, receipts, transaction calldata, block metadata, ABIs, and local artifacts.
 - The authenticated TypeScript API/data-proxy path verifies wallet sessions, registry identity, on-chain `AccessAuthorized` events, configured chain ID, configured audit contract address, one-time release state, and encrypted artifact integrity.
 - FHIR fixtures execute real VCEM create/update/revoke calls and generate AuditEvent-shaped output from real access events.
-- Security controls now include ignored `.env`, placeholder `.env.example`, secret scanning, Solhint configuration, coverage, gas reporting, property tests, dependency audit gate, and Besu config validation.
+- Security controls now include ignored `.env`, placeholder `.env.example`, secret scanning, Solhint configuration, coverage, gas reporting, canonical-hash property tests, Reviewer 2 security invariant tests, dependency audit gate, Slither disposition reporting, and Besu config validation.
 - Legacy ZKP tests are isolated behind `npm run test:legacy:zkp`; they skip proof-dependent checks when local generated artifacts are absent or mismatched and are not part of baseline VCEM evidence.
 
 ## Implemented but Not Experimentally Executed Here
@@ -19,7 +19,7 @@
 - The five-node local Besu topology is implemented under `infrastructure/besu/` with four IBFT 2.0 validators, one non-validator RPC node, persistent volumes, static peers, metrics, and deployment-manifest generation. Full runtime validation requires Docker.
 - Benchmark tooling is implemented for 10, 25, 50, 75, and 100 users, five runs per level, 60-second warm-up, 300-second measurement, deterministic fixture setup, cleanup/reset hooks, VCEM k6 workload, PostgreSQL RBAC/RLS baseline, resource sampling, raw JSON/CSV, summary statistics, confidence intervals, charts metadata, and Markdown reports.
 - Benchmark metadata can record `not executed` when prerequisites such as `k6`, PostgreSQL, Besu, or API URLs are missing. No performance claim is supported until successful raw runs exist.
-- Slither is wired through `npm run slither` and GitHub Actions, but local execution requires the Slither binary.
+- Slither static analysis has been executed locally with Slither 0.11.5. The current report contains 0 High, 0 Medium, 48 Low, and 120 Informational findings; every remaining finding has a one-row disposition in `reports/slither/slither-disposition.csv`.
 - Coverage and gas reporting are configured; final command results should be consulted for local pass/fail status.
 
 ## Not Implemented
@@ -56,6 +56,7 @@ npm run test:vcem:matrix
 npm run test:audit-verifier
 npm run test:fhir
 npm run test:property
+npm run test:security:properties
 npm run test:legacy:zkp
 npm run secret:scan
 npm run solhint
@@ -78,6 +79,7 @@ Run date: 2026-07-03.
 | `npm run lint` | Pass | TypeScript typecheck passes. |
 | `HARDHAT_DISABLE_DOWNLOADS=true npm run compile` | Pass | Hardhat reports nothing to compile and no compiler download. |
 | `npm run test:property` | Pass | 2 property tests passing. |
+| `npm run test:security:properties` | Pass | 7 security invariant tests passing. |
 | `npm test` | Pass | 85 passing. |
 | `npm run test:vcem:matrix` | Pass | 2 passing; 60 cases and 120 outcomes. |
 | `npm run test:audit-verifier` | Pass | 17 passing. |
@@ -86,4 +88,4 @@ Run date: 2026-07-03.
 | `npm run coverage` | Pass | 87 passing, 4 pending; overall statement coverage 77.66%. |
 | `npm run gas` | Pass | 6 VCEM tests passing with gas report generated. |
 | `npm run security:audit` | Fail | 54 vulnerabilities: 19 low, 21 moderate, 11 high, 3 critical. |
-| `npm run slither` | Not executed locally | Fails with `slither: command not found`; CI uses the Slither action. |
+| `npm run slither` | Pass | Slither 0.11.5 reports 0 High, 0 Medium, 48 Low, and 120 Informational findings. |

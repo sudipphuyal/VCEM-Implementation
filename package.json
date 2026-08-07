@@ -40,7 +40,8 @@
     "test:property": "hardhat test test/VCEMProperty.ts",
     "besu:config:validate": "ts-node infrastructure/besu/scripts/validateConfig.ts",
     "lint": "tsc --noEmit",
-    "slither": "slither ."
+    "slither": "slither .",
+    "test:security:properties": "hardhat test test/VCEMSecurityProperty.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "3.0.9",

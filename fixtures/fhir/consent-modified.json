@@ -1,17 +1,58 @@
 {
   "resourceType": "Consent",
   "status": "draft",
-  "patient": { "reference": "Patient/anon-001" },
+  "patient": {
+    "reference": "Patient/anon-001"
+  },
   "performer": [
-    { "reference": "Practitioner/researcher-b" }
+    {
+      "reference": "Practitioner/researcher-b"
+    }
   ],
   "dateTime": "2026-01-02T00:00:00Z",
   "provision": {
     "purpose": [
-      { "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason", "code": "HRESCH" }
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+        "code": "HRESCH"
+      }
     ],
     "data": [
-      { "reference": { "reference": "DocumentReference/anon-vitals" } }
+      {
+        "reference": {
+          "reference": "DocumentReference/anon-vitals"
+        },
+        "meaning": "instance"
+      }
+    ]
+  },
+  "scope": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/consentscope",
+        "code": "research",
+        "display": "Research"
+      }
+    ]
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/consentcategorycodes",
+          "code": "research",
+          "display": "Research Information Access"
+        }
+      ]
+    }
+  ],
+  "policyRule": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/consentpolicycodes",
+        "code": "cric",
+        "display": "Common Rule Informed Consent"
+      }
     ]
   }
 }

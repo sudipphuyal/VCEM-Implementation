@@ -1,0 +1,37 @@
+[39mFHIR Validation tool Version 6.10.1 (Git# 2c71eeadf95f). Built 2026-08-06T22:12:24.240Z (25 hours old)
+[0;39m[39m  Java:   23.0.2 from /opt/homebrew/Cellar/openjdk/23.0.2/libexec/openjdk.jdk/Contents/Home on aarch64 (64bit). 4608MB available
+[0;39m[39m  Paths:  Current = /Users/sudipphuyal/Developments/zkp-with-snarkjs, Package Cache = /Users/sudipphuyal/.fhir/packages
+[0;39m[39m  Params: fixtures/fhir/consent-disallowed-scope.json -version 4.0.1 -ig hl7.fhir.r4.core#4.0.1 -profile http://hl7.org/fhir/StructureDefinition/Consent -tx n/a
+[0;39m[39m  Locale: Portugal/PT
+[0;39m[39m  Jurisdiction: Portugal
+[0;39m[39mLoading
+[0;39m[39m  Loading FHIR v4.0.1 from hl7.fhir.r4.core#4.0.1
+[0;39m[39m  Load hl7.terminology.r4#6.2.0 - 4288 resources (00:03.619)
+[0;39m[39m  Load hl7.fhir.uv.extensions.r4#5.2.0 - 759 resources (00:00.628)
+[0;39m[39m  Loaded FHIR - 8265 resources (00:00.000)
+[0;39m[39m  Terminology server null - Version n/a: No Terminology Server (00:00.000)
+[0;39m[39m  Load hl7.fhir.uv.extensions.r5#5.2.0 - 759 resources (00:01.081)
+[0;39m[39m  Load hl7.terminology.r5#7.1.0 - 4072 resources (00:00.391)
+[0;39m[39m  Load hl7.fhir.uv.extensions.r5#5.3.0 - 856 resources (00:00.010)
+[0;39m[39m  Load hl7.terminology#7.3.0 - 4146 resources (00:00.431)
+[0;39m[39m  Load hl7.fhir.uv.extensions#5.3.0 - 856 resources (00:00.578)
+[0;39m[39m  Package Summary: [hl7.fhir.r4.core#4.0.1, hl7.fhir.xver-extensions#0.1.0, hl7.terminology.r4#6.2.0, hl7.fhir.uv.extensions.r4#5.2.0, hl7.fhir.uv.extensions.r5#5.2.0, hl7.terminology.r5#7.1.0, hl7.fhir.uv.extensions.r5#5.3.0, hl7.terminology#7.3.0, hl7.fhir.uv.extensions#5.3.0]
+[0;39m[39m  Terminology Cache at /var/folders/c9/lc9xw_x91_78wtfdg42qybc00000gn/T/default-tx-cache
+[0;39m[39m  Get set... 
+[0;39m[39m  ...go! (00:01.677)
+[0;39m[39mCached new session. Cache size = 1
+[0;39m[39mSources to validate: fixtures/fhir/consent-disallowed-scope.json
+[0;39m[39mValidating
+[0;39m[39m  Profiles: [http://hl7.org/fhir/StructureDefinition/Consent]
+[0;39m[39m  Validate fixtures/fhir/consent-disallowed-scope.json
+[0;39m[39m 00:00.135
+[0;39m[39mDone. Times: Loading: 00:08.445, validation: 00:00.136. Memory = 641Mb
+[0;39m[39m
+[0;39m[39m*FAILURE*: 4 errors, 1 warnings, 0 notes
+[0;39m[39m  Error @ Consent (line 1, col2): Consent.scope: minimum required = 1, but only found 0 (from http://hl7.org/fhir/StructureDefinition/Consent|4.0.1), validating against Base FHIR Standard
+[0;39m[39m  Error @ Consent (line 1, col2): Consent.category: minimum required = 1, but only found 0 (from http://hl7.org/fhir/StructureDefinition/Consent|4.0.1), validating against Base FHIR Standard
+[0;39m[39m  Error @ Consent.provision.data[0] (line 14, col72): Consent.provision.data.meaning: minimum required = 1, but only found 0 (from http://hl7.org/fhir/StructureDefinition/Consent|4.0.1), validating against Base FHIR Standard
+[0;39m[39m  Warning @ Consent (line 1, col2): Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation), validating against Base FHIR Standard
+[0;39m[39m  Error @ Consent (line 1, col2): Constraint failed: ppc-1: 'Either a Policy or PolicyRule', validating against Base FHIR Standard
+[0;39m[39mDone. Times: Loading: 00:08.445, validation: 00:00.136. Max Memory = 4Gb
+[0;39m

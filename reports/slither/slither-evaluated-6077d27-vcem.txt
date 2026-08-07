@@ -1,0 +1,50 @@
+'npx hardhat clean' running (wd: /private/tmp/vcem-evaluated-6077d27a9eca686e5395e8e081bbbf588b824a0b)
+'npx hardhat clean --global' running (wd: /private/tmp/vcem-evaluated-6077d27a9eca686e5395e8e081bbbf588b824a0b)
+Problem executing hardhat: WARNING: You are currently using Node.js v23.11.0, which is not supported by Hardhat. This can lead to unexpected behavior. See https://hardhat.org/nodejs-versions
+
+'npx hardhat compile --force' running (wd: /private/tmp/vcem-evaluated-6077d27a9eca686e5395e8e081bbbf588b824a0b)
+
+Detector: timestamp
+VCEMAudit.authorizeAndLogAccess(VCEMAudit.AccessRequest,bytes) (contracts/vcem/VCEMAudit.sol#110-163) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(block.timestamp <= request.requestExpiry,VCEMAudit: expired request) (contracts/vcem/VCEMAudit.sol#117)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: assembly
+VCEMSecurity.recoverSigner(bytes32,bytes) (contracts/vcem/libraries/VCEMSecurity.sol#5-26) uses assembly
+	- INLINE ASM (contracts/vcem/libraries/VCEMSecurity.sol#10-14)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+
+Detector: solc-version
+Version constraint 0.8.20 contains known severe issues (https://solidity.readthedocs.io/en/latest/bugs.html)
+	- VerbatimInvalidDeduplication
+	- FullInlinerNonExpressionSplitArgumentEvaluationOrder
+	- MissingSideEffectsOnSelectorAccess.
+It is used by:
+	- 0.8.20 (contracts/vcem/VCEMAudit.sol#2)
+	- 0.8.20 (contracts/vcem/VCEMConsent.sol#2)
+	- 0.8.20 (contracts/vcem/VCEMRegistry.sol#2)
+	- 0.8.20 (contracts/vcem/VCEMTypes.sol#2)
+	- 0.8.20 (contracts/vcem/interfaces/IVCEMConsent.sol#2)
+	- 0.8.20 (contracts/vcem/interfaces/IVCEMRegistry.sol#2)
+	- 0.8.20 (contracts/vcem/libraries/CanonicalHash.sol#2)
+	- 0.8.20 (contracts/vcem/libraries/VCEMSecurity.sol#2)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
+
+Detector: missing-inheritance
+VCEMConsent (contracts/vcem/VCEMConsent.sol#8-307) should inherit from IVCEMConsent (contracts/vcem/interfaces/IVCEMConsent.sol#6-15)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-inheritance
+
+Detector: unindexed-event-address
+Event VCEMAudit.Paused(address) (contracts/vcem/VCEMAudit.sol#66) has address parameters but no indexed parameters
+Event VCEMAudit.Unpaused(address) (contracts/vcem/VCEMAudit.sol#67) has address parameters but no indexed parameters
+Event VCEMConsent.Paused(address) (contracts/vcem/VCEMConsent.sol#55) has address parameters but no indexed parameters
+Event VCEMConsent.Unpaused(address) (contracts/vcem/VCEMConsent.sol#56) has address parameters but no indexed parameters
+Event VCEMRegistry.Paused(address) (contracts/vcem/VCEMRegistry.sol#22) has address parameters but no indexed parameters
+Event VCEMRegistry.Unpaused(address) (contracts/vcem/VCEMRegistry.sol#23) has address parameters but no indexed parameters
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unindexed-event-address-parameters
+
+Detector: immutable-states
+VCEMRegistry.owner (contracts/vcem/VCEMRegistry.sol#15) should be immutable 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-immutable
+. analyzed (28 contracts with 101 detectors), 11 result(s) found

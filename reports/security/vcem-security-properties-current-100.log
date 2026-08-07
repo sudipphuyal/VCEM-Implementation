@@ -1,0 +1,20 @@
+
+> test:security:properties
+> hardhat test test/VCEMSecurityProperty.ts
+
+
+
+  VCEM security property invariants
+    ✔ non-current consent cannot authorize (2572ms)
+    ✔ revoked consent cannot authorize (2020ms)
+    ✔ used requestId cannot succeed again (2122ms)
+    ✔ modification of any signed field invalidates authorization (2657ms)
+    ✔ actor, purpose, scope, and data hash resolve against the same current consent state (2876ms)
+    ✔ unauthorized state transitions cannot alter consent (2283ms)
+    ✔ consent version chain cannot fork under permitted calls (2469ms)
+
+
+  7 passing (17s)
+
+CURRENT_PROPERTY_TEST_EXIT=
+CURRENT_PROPERTY_TEST_RUNTIME_SECONDS=19

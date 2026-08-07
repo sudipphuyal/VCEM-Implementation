@@ -1,0 +1,25 @@
+WARNING: You are currently using Node.js v23.11.0, which is not supported by Hardhat. This can lead to unexpected behavior. See https://hardhat.org/nodejs-versions
+
+
+Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+  --> contracts/DataSharingAgreementZKP.sol:82:9:
+   |
+82 |         string memory _duration,
+   |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Compiled 17 Solidity files successfully (evm target: berlin).
+
+
+  VCEM security property invariants
+    ✔ non-current consent cannot authorize (3025ms)
+    ✔ revoked consent cannot authorize (2201ms)
+    ✔ used requestId cannot succeed again (2439ms)
+    ✔ modification of any signed field invalidates authorization (2893ms)
+    ✔ actor, purpose, scope, and data hash resolve against the same current consent state (3195ms)
+    ✔ unauthorized state transitions cannot alter consent (2437ms)
+    ✔ consent version chain cannot fork under permitted calls (2618ms)
+
+
+  7 passing (19s)
+

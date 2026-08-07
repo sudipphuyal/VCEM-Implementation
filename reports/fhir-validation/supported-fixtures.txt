@@ -1,0 +1,10 @@
+fixtures/fhir/consent-active.json
+fixtures/fhir/consent-actor-added.json
+fixtures/fhir/consent-actor-removed.json
+fixtures/fhir/consent-disallowed-scope.json
+fixtures/fhir/consent-modified.json
+fixtures/fhir/consent-multiple-actors.json
+fixtures/fhir/consent-multiple-purposes.json
+fixtures/fhir/consent-revoked.json
+fixtures/fhir/consent-supported-nested.json
+services/fhir-adapter/fixtures/consent.anonymized.json
