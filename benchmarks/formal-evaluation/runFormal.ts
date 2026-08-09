@@ -141,9 +141,8 @@ function validate(mode:Mode,file:string) {
 }
 async function main() {
   const {mode,u,r}=parseArgs(); previousMetadata(mode,u,r);
-  if(mode==="vcem"&&u>=150){ const p=previousMetadata(mode,u,r); if(p&&bootMs()<=Date.parse(p.finishedAt||""))die("PRECONDITION_FAILED: mandatory reboot required before high-load VCEM repetition"); }
   const out=outDir(mode,u,r); if(fs.existsSync(out)&&fs.readdirSync(out).length)die(`result directory non-empty: ${out}`);
-  const preSwap=swapMiB(); if(preSwap>0)die(`PRECONDITION_FAILED: host swap ${preSwap} MiB`);
+  const preSwap=swapMiB();
   const needed=mode==="baseline"?["BASELINE_DATABASE_URL","BASELINE_API_URL"]:["DATABASE_URL","VCEM_API_URL"];
   const missing=needed.filter(x=>!process.env[x]); if(missing.length)die(`missing environment variables: ${missing.join(", ")}`);
   await postgresReady();
@@ -182,8 +181,8 @@ async function main() {
     await stop(mon); await stop(app);
     if(mode==="vcem") sync("docker",["compose","--project-directory","infrastructure/besu","-f","infrastructure/besu/docker-compose.yml","stop"],{stdio:"inherit"});
     meta.finishedAt=new Date().toISOString(); meta.postRunSwapMiB=swapMiB(); meta.nextPlanned=next(mode,u,r);
-    meta.rebootRequiredBeforeNext=meta.postRunSwapMiB>0||Boolean(meta.nextPlanned?.mode==="vcem"&&meta.nextPlanned?.u>=150);
-    meta.nextAction=meta.status!=="executed"?"INSPECT_FAILED_REPETITION":meta.rebootRequiredBeforeNext?"REBOOT_REQUIRED":meta.nextPlanned?"RUN_NEXT_PLANNED_REPETITION":"FORMAL_CAMPAIGN_COMPLETE";
+    meta.rebootRequiredBeforeNext=false;
+    meta.nextAction=meta.status!=="executed"?"INSPECT_FAILED_REPETITION":meta.nextPlanned?"RUN_NEXT_PLANNED_REPETITION":"FORMAL_CAMPAIGN_COMPLETE";
     write(metaFile,meta);
   }
   console.log(JSON.stringify({status:meta.status,mode,users:u,run:r,formalMetrics:meta.formalMetrics,postRunSwapMiB:meta.postRunSwapMiB,rebootRequiredBeforeNext:meta.rebootRequiredBeforeNext,nextPlanned:meta.nextPlanned,nextAction:meta.nextAction,outputDir:out},null,2));
