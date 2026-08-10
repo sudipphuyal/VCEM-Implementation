@@ -6,6 +6,7 @@ import { Counter, Rate, Trend } from "k6/metrics";
 
 const fixturePath = __ENV.BENCHMARK_FIXTURES || "benchmarks/raw/fixtures/benchmark-fixtures.json";
 const requests = new SharedArray("vcem benchmark fixtures", () => JSON.parse(open(`../../../${fixturePath}`)).requests);
+const sessionToken = new SharedArray("vcem benchmark session token", () => [JSON.parse(open(`../../../${fixturePath}`)).sessionToken])[0];
 const warmupMs = Number(__ENV.WARMUP_SECONDS || 60) * 1000;
 const measureMs = Number(__ENV.MEASURE_SECONDS || 300) * 1000;
 
@@ -49,7 +50,7 @@ export default function () {
   const item = fixtureForIteration();
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${fixtures.sessionToken}`,
+    Authorization: `Bearer ${sessionToken}`,
   };
   const requestStarted = Date.now();
   const authorize = http.post(
