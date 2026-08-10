@@ -16,6 +16,7 @@ This file maps the release checklist to concrete repository paths. Generated sec
 | Reviewer 2 security invariant evidence | Present | `test/VCEMSecurityProperty.ts`, `reports/security/VCEM_SECURITY_INVARIANTS.md` |
 | HL7/FHIR examples | Present | `fixtures/fhir/*.json`, `services/fhir-adapter/fixtures/consent.anonymized.json`, `docs/fhir-mapping.md`, `docs/fhir-limitations.md` |
 | HL7/FHIR validation reports | Present | `reports/fhir-validation/` peer-review/revision validation artifacts |
+| Exhaustive audit and integrity reports | Present | `reports/audit-integrity/` peer-review/revision validation artifacts |
 | README reproduction instructions | Present | `README.md` |
 | Dependency manifests | Present | `package.json`, `package-lock.json`, `requirements.txt` |
 | License | Present | `LICENSE`, `package.json` license field |

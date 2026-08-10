@@ -1,0 +1,76 @@
+{
+  "commit": "1948320d9b96d10c9308133f4de637d4b1f4b766",
+  "category": "peer-review/revision reconstructed-evidence tamper controls",
+  "rows": [
+    {
+      "test_case": "modified consentHash",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "ACCESS_CONSENT_HASH_MISMATCH",
+      "pass": true
+    },
+    {
+      "test_case": "modified consentVersion",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "MISSING_CONSENT_VERSION",
+      "pass": true
+    },
+    {
+      "test_case": "modified requesterId",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "CALLDATA_REQUESTOR_MISMATCH",
+      "pass": true
+    },
+    {
+      "test_case": "modified participantId",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "MISSING_CONSENT_VERSION",
+      "pass": true
+    },
+    {
+      "test_case": "modified purpose",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "CALLDATA_PURPOSE_MISMATCH",
+      "pass": true
+    },
+    {
+      "test_case": "modified scopeHash",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "SCOPE_MISMATCH",
+      "pass": true
+    },
+    {
+      "test_case": "modified dataHash",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "DATA_HASH_NOT_REGISTERED",
+      "pass": true
+    },
+    {
+      "test_case": "modified actorsRoot",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "ACCESS_ACTOR_ROOT_MISMATCH",
+      "pass": true
+    },
+    {
+      "test_case": "missing authorization event",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "ACCESS_EVENT_POPULATION_CHANGED",
+      "pass": true
+    },
+    {
+      "test_case": "inconsistent historical consent reference",
+      "expected_result": "DETECTED",
+      "actual_result": "DETECTED",
+      "expected_detector": "PREVIOUS_HASH_MISMATCH",
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "provenance": {
+    "category": "peer-review/revision exhaustive analysis of preserved evaluated ledger",
+    "deploymentManifest": "deployments/vcem-manifest.json",
+    "evaluatedCommit": "6077d27a9eca686e5395e8e081bbbf588b824a0b",
+    "rpcSource": "Besu on-chain logs, transaction calldata, receipts, and block metadata",
+    "applicationLayerLogsUsed": false,
+    "verifier": "scripts/auditVerify.ts",
+    "generatedAt": "2026-08-08T18:42:05.931Z"
+  },
+  "population": {
+    "recordedAuthorizationEvents": 4240,
+    "verifiedAuthorizationEvents": 4240,
+    "discrepancies": 0,
+    "consentRecords": 1,
+    "dataHashRecords": 10,
+    "deniedRecords": 0,
+    "populationFailures": [],
+    "firstBlock": 316,
+    "lastBlock": 1647
+  },
+  "checks": [
+    "requestId",
+    "participantId",
+    "requestorId",
+    "requestedPurpose",
+    "scopeHash",
+    "dataHash",
+    "consentVersion",
+    "consentHash",
+    "actorsRoot",
+    "block timestamp",
+    "consent existence/current state",
+    "historical registry role",
+    "actor membership",
+    "purpose authorization",
+    "scope authorization",
+    "registered data hash",
+    "request uniqueness",
+    "EIP-712 signature/signer",
+    "expectedConsentHash",
+    "request expiry"
+  ]
+}

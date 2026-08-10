@@ -417,6 +417,36 @@ Reviewer 2 security invariant evidence:
 
 These tests are property/invariant tests, not formal verification. They support the security-evidence response but should not be described as theorem-prover-backed formal verification.
 
+Reviewer 2 temporal-semantics evidence:
+
+```bash
+npm run test:temporal
+npm run besu:up
+npm run besu:status
+npm run experiment:temporal:besu
+```
+
+- `test/VCEMTemporalSemantics.ts` deterministically tests adjacent-block and same-block authorization/revocation orderings.
+- `benchmarks/temporal/runBesuTemporal.ts` performs exactly 20 revocation-to-enforcement trials on the five-node Besu network using evaluated-commit artifacts.
+- `reports/temporal-semantics/VCEM_TEMPORAL_SEMANTICS.md` records semantics, provenance, measured statistics, and limitations.
+- `reports/temporal-semantics/revocation-latency-runs.csv` and `temporal-ordering-results.csv` contain run-level evidence.
+
+These are peer-review/revision artifacts added after the original benchmark campaign. They do not modify the original benchmark results. The experiment shows ledger-order semantics; it does not claim mempool front-running protection or revocation priority.
+
+Reviewer 2 exhaustive audit and artifact-integrity evidence:
+
+```bash
+npm run besu:up
+npm run audit:verify-full-population
+npm run test:audit-integrity
+```
+
+The preserved evaluated deployment contains 4,240 successful `AccessAuthorized` events. Revision-time exhaustive verification checked all 4,240 and found zero discrepancies. This denominator does not include denied matrix outcomes. Detailed evidence is under `reports/audit-integrity/`.
+
+The documented `--sample-size 100` command defines a sample cap; no preserved original 100-row report exists. In this project, independent verification means verification from on-chain evidence independently of application-layer logs. The verifier is author-developed and has not been independently replicated by an external organization.
+
+The integrity controls cover single-byte modification, hashed metadata modification, wrong participant, wrong scope, stale data hash, serialization change, and artifact substitution. A matching SHA-256 establishes consistency with the anchored bytes only; it does not establish clinical authenticity, accuracy, completeness, provenance, lawful use, delivery, retrieval, decryption, or downstream purpose limitation.
+
 ### Step 7: Run Coverage and Gas Reports
 
 ```bash

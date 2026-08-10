@@ -2,7 +2,7 @@
   "name": "besu-contracts",
   "scripts": {
     "compile": "hardhat compile",
-    "test": "hardhat test test/DataSharingAgreement.ts test/DsaViewFunctions.ts test/Registries.ts test/ResourceCertification.ts test/ResourcesSharingAgreement.ts test/DataProxy.ts test/ApiDataProxy.ts test/FHIRAdapter.ts test/VCEM.ts test/VCEMMatrix.ts test/AuditVerifier.ts",
+    "test": "hardhat test test/DataSharingAgreement.ts test/DsaViewFunctions.ts test/Registries.ts test/ResourceCertification.ts test/ResourcesSharingAgreement.ts test/DataProxy.ts test/ApiDataProxy.ts test/FHIRAdapter.ts test/VCEM.ts test/VCEMMatrix.ts test/AuditVerifier.ts test/VCEMIntegrityNegativeControls.ts",
     "test:vcem": "hardhat test test/VCEM.ts",
     "test:vcem:matrix": "hardhat test test/VCEMMatrix.ts",
     "test:audit-verifier": "hardhat test test/AuditVerifier.ts",
@@ -41,7 +41,11 @@
     "besu:config:validate": "ts-node infrastructure/besu/scripts/validateConfig.ts",
     "lint": "tsc --noEmit",
     "slither": "slither .",
-    "test:security:properties": "hardhat test test/VCEMSecurityProperty.ts"
+    "test:security:properties": "hardhat test test/VCEMSecurityProperty.ts",
+    "test:temporal": "hardhat test test/VCEMTemporalSemantics.ts",
+    "experiment:temporal:besu": "ts-node benchmarks/temporal/runBesuTemporal.ts",
+    "audit:verify-full-population": "ts-node scripts/runFullAuditVerification.ts",
+    "test:audit-integrity": "hardhat test test/VCEMIntegrityNegativeControls.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "3.0.9",

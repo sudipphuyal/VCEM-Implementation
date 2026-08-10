@@ -1,0 +1,11 @@
+test_case,expected_result,actual_result,expected_detector,pass
+"modified consentHash","DETECTED","DETECTED","ACCESS_CONSENT_HASH_MISMATCH",true
+"modified consentVersion","DETECTED","DETECTED","MISSING_CONSENT_VERSION",true
+"modified requesterId","DETECTED","DETECTED","CALLDATA_REQUESTOR_MISMATCH",true
+"modified participantId","DETECTED","DETECTED","MISSING_CONSENT_VERSION",true
+"modified purpose","DETECTED","DETECTED","CALLDATA_PURPOSE_MISMATCH",true
+"modified scopeHash","DETECTED","DETECTED","SCOPE_MISMATCH",true
+"modified dataHash","DETECTED","DETECTED","DATA_HASH_NOT_REGISTERED",true
+"modified actorsRoot","DETECTED","DETECTED","ACCESS_ACTOR_ROOT_MISMATCH",true
+"missing authorization event","DETECTED","DETECTED","ACCESS_EVENT_POPULATION_CHANGED",true
+"inconsistent historical consent reference","DETECTED","DETECTED","PREVIOUS_HASH_MISMATCH",true

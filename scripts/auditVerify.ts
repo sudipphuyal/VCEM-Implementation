@@ -53,6 +53,7 @@ type AccessRecord = Position & {
   consentHash: string;
   actorsRoot: string;
   purpose: bigint;
+  timestamp: bigint;
   transactionHash: string;
   calldata?: {
     request: any;
@@ -282,7 +283,12 @@ function registryAt(events: ParsedEvent[], position: Position) {
 }
 
 async function parseLogs(provider: ethers.Provider, address: string, iface: ethers.Interface, fromBlock: number, toBlock: number) {
-  const logs = await provider.getLogs({ address, fromBlock, toBlock });
+  const logs: ethers.Log[] = [];
+  const maxRange = 1_000;
+  for (let start = fromBlock; start <= toBlock; start += maxRange) {
+    const end = Math.min(toBlock, start + maxRange - 1);
+    logs.push(...await provider.getLogs({ address, fromBlock: start, toBlock: end }));
+  }
   const parsed: ParsedEvent[] = [];
   for (const log of logs) {
     const event = iface.parseLog(log);
@@ -300,10 +306,21 @@ async function parseLogs(provider: ethers.Provider, address: string, iface: ethe
   return sortByPosition(parsed);
 }
 
+const blockTimestampCaches = new WeakMap<object, Map<number, bigint>>();
+
 async function blockTimestamp(provider: ethers.Provider, blockNumber: number) {
+  let cache = blockTimestampCaches.get(provider as object);
+  if (!cache) {
+    cache = new Map();
+    blockTimestampCaches.set(provider as object, cache);
+  }
+  const cached = cache.get(blockNumber);
+  if (cached !== undefined) return cached;
   const block = await provider.getBlock(blockNumber);
   if (!block) throw new Error(`missing block ${blockNumber}`);
-  return BigInt(block.timestamp);
+  const timestamp = BigInt(block.timestamp);
+  cache.set(blockNumber, timestamp);
+  return timestamp;
 }
 
 function loadArtifact(contractFile: string, contractName: string) {
@@ -436,6 +453,7 @@ export async function verifyVcemAudit(options: AuditVerifyOptions) {
         dataHash: event.args.dataHash,
         scopeHash: event.args.scopeHash,
         purpose: BigInt(event.args.requestedPurpose),
+        timestamp: BigInt(event.args.timestamp),
         consentVersion: BigInt(event.args.consentVersion),
         consentHash: event.args.consentHash,
         actorsRoot: event.args.actorsRoot,
@@ -463,7 +481,11 @@ export async function verifyVcemAudit(options: AuditVerifyOptions) {
   }
 
   const evidence: AuditEvidence = { consentRecords, actorSetRecords, accessRecords, deniedRecords, dataHashes };
+  const collectedAccessRecordCount = evidence.accessRecords.length;
   options.tamper?.(evidence);
+  const populationFailures = evidence.accessRecords.length === collectedAccessRecordCount
+    ? []
+    : [`ACCESS_EVENT_POPULATION_CHANGED:${collectedAccessRecordCount}->${evidence.accessRecords.length}`];
 
   const orderedConsent = sortByPosition(evidence.consentRecords);
   const actorSets = new Map(evidence.actorSetRecords.map((record) => [key(record.participantId, record.version), record]));
@@ -557,6 +579,9 @@ export async function verifyVcemAudit(options: AuditVerifyOptions) {
     const priorDataHash = priorDataHashes.length ? priorDataHashes[priorDataHashes.length - 1] : undefined;
     if (!priorDataHash || lower(priorDataHash.dataHash) !== lower(access.dataHash)) access.failures.push("DATA_HASH_NOT_REGISTERED");
 
+    const accessBlockTimestamp = await blockTimestamp(provider, access.blockNumber);
+    if (access.timestamp !== accessBlockTimestamp) access.failures.push("ACCESS_TIMESTAMP_MISMATCH");
+
     if (!access.calldata) {
       access.failures.push("MISSING_ACCESS_CALLDATA");
     } else {
@@ -568,7 +593,7 @@ export async function verifyVcemAudit(options: AuditVerifyOptions) {
       if (lower(req.scopeHash) !== lower(access.scopeHash)) access.failures.push("CALLDATA_SCOPE_MISMATCH");
       if (BigInt(req.requestedPurpose) !== access.purpose) access.failures.push("CALLDATA_PURPOSE_MISMATCH");
       if (lower(req.expectedConsentHash) !== lower(access.consentHash)) access.failures.push("EXPECTED_CONSENT_HASH_MISMATCH");
-      if (access.calldata.requestExpiry < await blockTimestamp(provider, access.blockNumber)) access.failures.push("REQUEST_EXPIRED_AT_BLOCK");
+      if (access.calldata.requestExpiry < accessBlockTimestamp) access.failures.push("REQUEST_EXPIRED_AT_BLOCK");
       const registryState = registryAt(registryEvents, access);
       const requestorWallet = walletOf(registryState, access.requestorId);
       if (!requestorWallet || lower(access.calldata.signer) !== requestorWallet) access.failures.push("INVALID_REQUEST_SIGNATURE");
@@ -611,6 +636,7 @@ export async function verifyVcemAudit(options: AuditVerifyOptions) {
     consentFailures,
     accessFailures,
     denialFailures,
+    populationFailures,
     consent: evidence.consentRecords,
     access: selectedAccess,
     denied: evidence.deniedRecords,
@@ -630,6 +656,7 @@ export async function verifyVcemAudit(options: AuditVerifyOptions) {
       "consentHash",
       "actorsRoot",
       "purpose",
+      "timestamp",
       "blockNumber",
       "transactionIndex",
       "logIndex",
@@ -666,7 +693,7 @@ async function main() {
   console.log(
     `VCEM audit verification: ${report.verifiedAccessRecords} access events checked, ${report.accessFailures} access failures, ${report.consentFailures} consent failures, ${report.denialFailures} denial failures`
   );
-  if (report.accessFailures > 0 || report.consentFailures > 0 || report.denialFailures > 0) process.exitCode = 1;
+  if (report.accessFailures > 0 || report.consentFailures > 0 || report.denialFailures > 0 || report.populationFailures.length > 0) process.exitCode = 1;
 }
 
 if (require.main === module) {

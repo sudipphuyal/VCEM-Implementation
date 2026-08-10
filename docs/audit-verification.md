@@ -28,4 +28,8 @@ npm run audit:verify-bytecode -- --rpc=http://127.0.0.1:8545 --manifest=deployme
 
 Sample mode uses deterministic seeded selection. With `--sample-size 100 --seed 42`, it selects exactly 100 access events when at least 100 eligible events exist, stratifying across initial-active, modified-active, and revoked consent histories where possible. If fewer than 100 eligible access events exist, the JSON report includes a notice and verifies all eligible events.
 
+The value 100 is a requested sample size, not the authorization-event denominator. No preserved 100-row report from the original campaign is present. Revision-time exhaustive verification of the preserved evaluated deployment found 4,240 `AccessAuthorized` events and verified all 4,240 with zero discrepancies. The one-row-per-event evidence is `reports/audit-integrity/full-audit-verification.csv`; provenance and limitations are in `reports/audit-integrity/AUDIT_INTEGRITY_VALIDATION.md`.
+
+In this repository, "independent verification" means verification from on-chain evidence independently of application-layer logs. The verifier is author-developed and has not been externally replicated by an independent organization.
+
 Current limitations: the verifier can only verify events and transactions available from the RPC endpoint; it cannot prove application-level non-release for denied events; and historical identity checks are limited to lifecycle events emitted by `VCEMRegistry`.

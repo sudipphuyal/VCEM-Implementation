@@ -1,0 +1,101 @@
+{
+  "commit": "6077d27a9eca686e5395e8e081bbbf588b824a0b",
+  "category": "peer-review/revision synthetic artifact integrity controls",
+  "algorithm": "SHA-256 over raw plaintext artifact bytes",
+  "originalArtifactUtf8": "{\"metadata\":{\"source\":\"synthetic-device\",\"collectedAt\":\"2026-01-01T00:00:00Z\",\"unit\":\"bpm\"},\"observations\":[{\"code\":\"heart-rate\",\"value\":72}]}",
+  "originalHash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+  "byteMutationOffset": 138,
+  "positiveControls": 1,
+  "negativeControls": 7,
+  "passed": 8,
+  "rows": [
+    {
+      "test_case": "baseline positive",
+      "original_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "test_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "participant": "0x0a5b376396de211c445c9b1cae3bfe246abb2940954c152e03beb8ba3b652767",
+      "scope": "0xce92b0367ed68be8e598825761b00247894c42b1b990b1bfc4573a0ca794c153",
+      "expected_result": "MATCH",
+      "actual_result": "MATCH",
+      "exact_rejection_or_mismatch_reason": "SHA-256(raw artifact bytes) equals registered participant/scope data hash",
+      "pass": true
+    },
+    {
+      "test_case": "single-byte modification",
+      "original_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "test_hash": "0xe752cbd97c55bd40dd319a61312f67e7aaacc111212e87da6c9eb8954c2b0f0b",
+      "participant": "0x0a5b376396de211c445c9b1cae3bfe246abb2940954c152e03beb8ba3b652767",
+      "scope": "0xce92b0367ed68be8e598825761b00247894c42b1b990b1bfc4573a0ca794c153",
+      "expected_result": "TAMPERED",
+      "actual_result": "TAMPERED",
+      "exact_rejection_or_mismatch_reason": "byte offset 138 changed from 0x32 to 0x33; SHA-256 mismatch",
+      "pass": true
+    },
+    {
+      "test_case": "metadata modification",
+      "original_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "test_hash": "0xef20df811736bae9e027fdefc7a639172f5594075d4952ef0a24d103d140d3db",
+      "participant": "0x0a5b376396de211c445c9b1cae3bfe246abb2940954c152e03beb8ba3b652767",
+      "scope": "0xce92b0367ed68be8e598825761b00247894c42b1b990b1bfc4573a0ca794c153",
+      "expected_result": "TAMPERED",
+      "actual_result": "TAMPERED",
+      "exact_rejection_or_mismatch_reason": "metadata.source is inside the hashed raw bytes; SHA-256 mismatch",
+      "pass": true
+    },
+    {
+      "test_case": "canonicalization/serialization change",
+      "original_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "test_hash": "0x106185f1a1701ca206a6f24a271019916dfe9f9333657ae573fe2b0814bd1f4d",
+      "participant": "0x0a5b376396de211c445c9b1cae3bfe246abb2940954c152e03beb8ba3b652767",
+      "scope": "0xce92b0367ed68be8e598825761b00247894c42b1b990b1bfc4573a0ca794c153",
+      "expected_result": "TAMPERED",
+      "actual_result": "TAMPERED",
+      "exact_rejection_or_mismatch_reason": "semantically equivalent JSON was pretty-printed; raw-byte hashing is serialization-sensitive; SHA-256 mismatch",
+      "pass": true
+    },
+    {
+      "test_case": "deliberately substituted artifact",
+      "original_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "test_hash": "0x0b08cb5e2f2358c92f49f257c80257cfc3227641010a22dc68d846c70542a49e",
+      "participant": "0x0a5b376396de211c445c9b1cae3bfe246abb2940954c152e03beb8ba3b652767",
+      "scope": "0xce92b0367ed68be8e598825761b00247894c42b1b990b1bfc4573a0ca794c153",
+      "expected_result": "TAMPERED",
+      "actual_result": "TAMPERED",
+      "exact_rejection_or_mismatch_reason": "different synthetic artifact bytes supplied; SHA-256 mismatch",
+      "pass": true
+    },
+    {
+      "test_case": "wrong participant association",
+      "original_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "test_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "participant": "0xa871e50108e78294c2e7d762dbf603768c320351b5edc6c31a41446efd192732",
+      "scope": "0xce92b0367ed68be8e598825761b00247894c42b1b990b1bfc4573a0ca794c153",
+      "expected_result": "REJECTED",
+      "actual_result": "REJECTED",
+      "exact_rejection_or_mismatch_reason": "VCEMAudit: data hash denied",
+      "pass": true
+    },
+    {
+      "test_case": "wrong scope",
+      "original_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "test_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "participant": "0x0a5b376396de211c445c9b1cae3bfe246abb2940954c152e03beb8ba3b652767",
+      "scope": "0x39b710c6afa63125d1add5c4dc64af8a57391b4734d55d408c14515d683fb577",
+      "expected_result": "REJECTED",
+      "actual_result": "REJECTED",
+      "exact_rejection_or_mismatch_reason": "VCEMAudit: scope denied",
+      "pass": true
+    },
+    {
+      "test_case": "stale data hash",
+      "original_hash": "0x2d2288301bba1d4a2ffc66b9cd16585a4615b06f67da79fc6eab915fb06d5a6f",
+      "test_hash": "0x254a7c1b8b5501a048c401d506de29b0fdacae039be83ea0710721e78bc318f9",
+      "participant": "0x0a5b376396de211c445c9b1cae3bfe246abb2940954c152e03beb8ba3b652767",
+      "scope": "0xce92b0367ed68be8e598825761b00247894c42b1b990b1bfc4573a0ca794c153",
+      "expected_result": "REJECTED",
+      "actual_result": "REJECTED",
+      "exact_rejection_or_mismatch_reason": "VCEMAudit: data hash denied",
+      "pass": true
+    }
+  ]
+}
