@@ -50,6 +50,63 @@ async function main() {
     diagnosticStream.write(JSON.stringify(event) + "\n");
   };
 
+  const pendingSendRawIds = new Set<number>();
+
+  (provider as any).on("debug", (info: any) => {
+    try {
+      if (info?.action === "sendRpcPayload") {
+        const payloads = Array.isArray(info.payload) ? info.payload : [info.payload];
+
+        for (const payload of payloads) {
+          if (payload?.method !== "eth_sendRawTransaction" || typeof payload.id !== "number") continue;
+
+          pendingSendRawIds.add(payload.id);
+
+          emitDiagnostic({
+            timestamp: new Date().toISOString(),
+            component: "rpc",
+            event: "rpc_send_raw_request",
+            rpcId: payload.id,
+            rpcMethod: payload.method,
+          });
+        }
+      }
+
+      if (info?.action === "receiveRpcResult") {
+        const responses = Array.isArray(info.result) ? info.result : [info.result];
+
+        for (const response of responses) {
+          if (typeof response?.id !== "number" || !pendingSendRawIds.has(response.id)) continue;
+
+          if ("error" in response) {
+            emitDiagnostic({
+              timestamp: new Date().toISOString(),
+              component: "rpc",
+              event: "rpc_send_raw_error",
+              rpcId: response.id,
+              rpcMethod: "eth_sendRawTransaction",
+              errorCode: response.error?.code !== undefined ? String(response.error.code) : undefined,
+              errorMessage: response.error?.message !== undefined ? String(response.error.message) : "JSON-RPC error",
+            });
+          } else {
+            emitDiagnostic({
+              timestamp: new Date().toISOString(),
+              component: "rpc",
+              event: "rpc_send_raw_result",
+              rpcId: response.id,
+              rpcMethod: "eth_sendRawTransaction",
+              rpcResult: response.result == null ? null : String(response.result),
+            });
+          }
+
+          pendingSendRawIds.delete(response.id);
+        }
+      }
+    } catch {
+      // RPC diagnostic collection must never alter benchmark execution.
+    }
+  });
+
   const db = createPostgresPool(process.env.DATABASE_URL);
   const gateway = new ethers.Wallet(process.env.VCEM_GATEWAY_PRIVATE_KEY || actors.gateway, provider);
   const registryArtifact = loadArtifact("VCEMRegistry");

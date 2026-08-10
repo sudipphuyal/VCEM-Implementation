@@ -10,7 +10,7 @@ export type AccessRelay = {
 
 export type VcemDiagnosticEvent = {
   timestamp: string;
-  component: "relay" | "api";
+  component: "relay" | "api" | "rpc";
   event: string;
   requestId?: string;
   queueDepth?: number;
@@ -24,6 +24,10 @@ export type VcemDiagnosticEvent = {
   retry?: boolean;
   errorCode?: string;
   errorMessage?: string;
+  errorStack?: string;
+  rpcId?: number;
+  rpcMethod?: string;
+  rpcResult?: string | null;
 };
 
 export type AuditRelayOptions = {
@@ -318,6 +322,7 @@ export function createAuditRelay(auditAddress: string, signer: ethers.Signer, ab
           retry,
           errorCode: err?.code ? String(err.code) : undefined,
           errorMessage: String(err?.message || err),
+          errorStack: err?.stack ? String(err.stack) : undefined,
         });
         // Resynchronize from the provider after any submission error; do not leave a gap in the single-signer nonce sequence.
         nextNonce = undefined;
