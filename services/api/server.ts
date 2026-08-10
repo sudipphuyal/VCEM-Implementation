@@ -319,6 +319,8 @@ export function createAuditRelay(auditAddress: string, signer: ethers.Signer, ab
           errorCode: err?.code ? String(err.code) : undefined,
           errorMessage: String(err?.message || err),
         });
+        // Resynchronize from the provider after any submission error; do not leave a gap in the single-signer nonce sequence.
+        nextNonce = undefined;
         throw err;
       }
     };
