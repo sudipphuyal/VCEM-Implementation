@@ -5,8 +5,7 @@ import exec from "k6/execution";
 import { Counter, Rate, Trend } from "k6/metrics";
 
 const fixturePath = __ENV.BENCHMARK_FIXTURES || "benchmarks/raw/fixtures/benchmark-fixtures.json";
-const fixtures = new SharedArray("baseline benchmark fixtures", () => [JSON.parse(open(`../../../${fixturePath}`))])[0];
-const requests = fixtures.requests;
+const requests = new SharedArray("baseline benchmark fixtures", () => JSON.parse(open(`../../../${fixturePath}`)).requests);
 const warmupMs = Number(__ENV.WARMUP_SECONDS || 60) * 1000;
 const measureMs = Number(__ENV.MEASURE_SECONDS || 300) * 1000;
 
