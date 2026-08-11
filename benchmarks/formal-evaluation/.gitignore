@@ -1,0 +1,4 @@
+results/
+local-snapshot/
+*.pid
+.env.formal.local

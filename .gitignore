@@ -46,3 +46,6 @@ public*.json
 private_input.json
 input*.json
 verification_key.json
+
+# Local reviewer-performance diagnostic evidence
+benchmarks/diagnostics/

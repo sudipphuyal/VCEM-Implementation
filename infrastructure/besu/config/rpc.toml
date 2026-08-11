@@ -10,3 +10,5 @@ metrics-enabled=true
 metrics-host="0.0.0.0"
 metrics-port=9545
 metrics-protocol="PROMETHEUS"
+
+tx-pool-max-future-by-sender=800

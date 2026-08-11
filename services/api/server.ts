@@ -8,8 +8,31 @@ export type AccessRelay = {
   authorizeAndLogAccess(request: any, signature: string): Promise<{ hash: string; wait(confirmations: number): Promise<any> }>;
 };
 
+export type VcemDiagnosticEvent = {
+  timestamp: string;
+  component: "relay" | "api" | "rpc";
+  event: string;
+  requestId?: string;
+  queueDepth?: number;
+  queueWaitMs?: number;
+  latencyMs?: number;
+  nonce?: number;
+  txHash?: string;
+  blockNumber?: number;
+  receiptStatus?: number;
+  confirmations?: number;
+  retry?: boolean;
+  errorCode?: string;
+  errorMessage?: string;
+  errorStack?: string;
+  rpcId?: number;
+  rpcMethod?: string;
+  rpcResult?: string | null;
+};
+
 export type AuditRelayOptions = {
   confirmBeforeNext?: boolean;
+  onDiagnostic?: (event: VcemDiagnosticEvent) => void;
 };
 
 export type VcemApiConfig = {
@@ -19,10 +42,23 @@ export type VcemApiConfig = {
   auditRelay: AccessRelay;
   dataProxy: PolicyDataProxy;
   requiredConfirmations: number;
+  onDiagnostic?: (event: VcemDiagnosticEvent) => void;
   logger?: { info(message: string, meta?: Record<string, unknown>): void; error(message: string, meta?: Record<string, unknown>): void };
 };
 
 export async function handleVcemApiRequest(config: VcemApiConfig, method: string, pathname: string, body: any = {}, token?: string) {
+  const diagnostic = (event: Omit<VcemDiagnosticEvent, "timestamp" | "component">) => {
+    try {
+      config.onDiagnostic?.({
+        timestamp: new Date().toISOString(),
+        component: "api",
+        ...event,
+      });
+    } catch {
+      // Diagnostic collection must never alter API execution.
+    }
+  };
+
   const requireToken = () => {
     if (!token) throw new Error("unauthenticated");
     return token;
@@ -47,8 +83,70 @@ export async function handleVcemApiRequest(config: VcemApiConfig, method: string
     const activeId = await config.registry.resolveActiveResearcher(session.wallet);
     if (activeId.toLowerCase() !== session.requestorId.toLowerCase()) throw new Error("requestor no longer active");
     const tx = await config.auditRelay.authorizeAndLogAccess(request, signature);
-    const receipt = await tx.wait(config.requiredConfirmations);
-    return { status: 200, body: { transactionHash: tx.hash, blockNumber: receipt.blockNumber, status: receipt.status } };
+
+    diagnostic({
+      event: "rpc_accepted",
+      requestId: request.requestId,
+      txHash: tx.hash,
+      confirmations: config.requiredConfirmations,
+    });
+
+    const waitStartedAt = Date.now();
+
+    try {
+      const receipt = await tx.wait(config.requiredConfirmations);
+      const receiptStatus =
+        receipt?.status === undefined || receipt?.status === null
+          ? undefined
+          : Number(receipt.status);
+
+      diagnostic({
+        event: receiptStatus === 0 ? "tx_reverted" : "tx_mined",
+        requestId: request.requestId,
+        txHash: tx.hash,
+        blockNumber: receipt?.blockNumber,
+        receiptStatus,
+        confirmations: config.requiredConfirmations,
+        latencyMs: Date.now() - waitStartedAt,
+      });
+
+      return {
+        status: 200,
+        body: {
+          transactionHash: tx.hash,
+          blockNumber: receipt.blockNumber,
+          status: receipt.status,
+        },
+      };
+    } catch (err: any) {
+      const message = String(err?.message || err);
+      const errorReceipt = err?.receipt;
+      const receiptStatus =
+        errorReceipt?.status === undefined || errorReceipt?.status === null
+          ? undefined
+          : Number(errorReceipt.status);
+
+      const reverted = receiptStatus === 0;
+      const timedOut = /timed?\s*out|timeout/i.test(message);
+
+      diagnostic({
+        event: reverted
+          ? "tx_reverted"
+          : timedOut
+            ? "tx_wait_timeout"
+            : "tx_wait_error",
+        requestId: request.requestId,
+        txHash: tx.hash,
+        blockNumber: errorReceipt?.blockNumber,
+        receiptStatus,
+        confirmations: config.requiredConfirmations,
+        latencyMs: Date.now() - waitStartedAt,
+        errorCode: err?.code ? String(err.code) : undefined,
+        errorMessage: message,
+      });
+
+      throw err;
+    }
   }
   if (method === "POST" && pathname === "/data/release") {
     const session = await config.sessions.require(requireToken());
@@ -158,6 +256,20 @@ export function createAuditRelay(auditAddress: string, signer: ethers.Signer, ab
   const contract = new ethers.Contract(auditAddress, abi, signer);
   let queue = Promise.resolve();
   let nextNonce: number | undefined;
+  let queueDepth = 0;
+
+  const diagnostic = (event: Omit<VcemDiagnosticEvent, "timestamp" | "component">) => {
+    try {
+      options.onDiagnostic?.({
+        timestamp: new Date().toISOString(),
+        component: "relay",
+        ...event,
+      });
+    } catch {
+      // Diagnostic collection must never alter relay execution.
+    }
+  };
+
   async function providerNonce() {
     const address = await signer.getAddress();
     const provider = signer.provider;
@@ -173,42 +285,125 @@ export function createAuditRelay(auditAddress: string, signer: ethers.Signer, ab
   }
   async function sendWithFreshNonce(request: any, signature: string) {
     const populated = await (contract.authorizeAndLogAccess as any).populateTransaction(request, signature);
-    const send = async () => {
-      const provider = signer.provider;
-      if (!provider) throw new Error("audit relay signer has no provider");
-      const network = await provider.getNetwork();
-      const baseTransaction = {
-        ...populated,
-        nonce: await takeNonce(),
-        gasLimit: 1_000_000n,
-      };
-      if (network.chainId === 31337n) return signer.sendTransaction(baseTransaction);
-      return signer.sendTransaction({
-        ...baseTransaction,
-        type: 0,
-        gasPrice: 1n,
+
+    const send = async (retry = false) => {
+      const nonce = await takeNonce();
+
+      diagnostic({
+        event: "nonce_allocated",
+        requestId: request.requestId,
+        nonce,
+        retry,
       });
+
+   const provider = signer.provider;
+if (!provider) throw new Error("audit relay signer has no provider");
+
+const network =
+  typeof (provider as any).getNetwork === "function"
+    ? await (provider as any).getNetwork()
+    : undefined;
+
+const baseTransaction = {
+  ...populated,
+  nonce,
+  gasLimit: 1_000_000n,
+};
+
+try {
+  const tx =
+    network?.chainId === 31337n
+      ? await signer.sendTransaction(baseTransaction)
+      : await signer.sendTransaction({
+          ...baseTransaction,
+          type: 0,
+          gasPrice: 1n,
+        });
+
+        diagnostic({
+          event: "tx_submitted",
+          requestId: request.requestId,
+          nonce,
+          txHash: tx.hash,
+          retry,
+        });
+
+        return tx;
+      } catch (err: any) {
+        diagnostic({
+          event: "tx_submission_error",
+          requestId: request.requestId,
+          nonce,
+          retry,
+          errorCode: err?.code ? String(err.code) : undefined,
+          errorMessage: String(err?.message || err),
+          errorStack: err?.stack ? String(err.stack) : undefined,
+        });
+        // Resynchronize from the provider after any submission error; do not leave a gap in the single-signer nonce sequence.
+        nextNonce = undefined;
+        throw err;
+      }
     };
+
     try {
-      return await send();
+      return await send(false);
     } catch (err: any) {
       const message = String(err?.message || err);
       if (!message.includes("nonce has already been used") && !message.includes("nonce is too distant")) throw err;
+
+      diagnostic({
+        event: "nonce_retry",
+        requestId: request.requestId,
+        retry: true,
+        errorCode: err?.code ? String(err.code) : undefined,
+        errorMessage: message,
+      });
+
       await refreshNonce();
-      return send();
+      return send(true);
     }
   }
   return {
     authorizeAndLogAccess(request: any, signature: string) {
-      const submitted = queue.then(async () => {
-        const tx = await sendWithFreshNonce(request, signature);
-        if (options.confirmBeforeNext) await tx.wait(1);
-        return tx;
+      const enqueuedAt = Date.now();
+      queueDepth += 1;
+
+      diagnostic({
+        event: "queue_enqueued",
+        requestId: request.requestId,
+        queueDepth,
       });
+
+      const submitted = queue.then(async () => {
+        const startedAt = Date.now();
+
+        diagnostic({
+          event: "queue_started",
+          requestId: request.requestId,
+          queueDepth,
+          queueWaitMs: startedAt - enqueuedAt,
+        });
+
+        try {
+          const tx = await sendWithFreshNonce(request, signature);
+          if (options.confirmBeforeNext) await tx.wait(1);
+          return tx;
+        } finally {
+          queueDepth -= 1;
+
+          diagnostic({
+            event: "queue_finished",
+            requestId: request.requestId,
+            queueDepth,
+          });
+        }
+      });
+
       queue = submitted.then(
         () => undefined,
         () => undefined
       );
+
       return submitted;
     },
   };
