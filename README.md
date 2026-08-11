@@ -16,20 +16,20 @@ This repository does not claim legal GDPR compliance, production clinical deploy
 
 This repository is intended to be reproducible from a fresh clone. A reader should be able to install dependencies, compile contracts offline, run tests, inspect security-analysis reports, start a local Besu network, execute the benchmark tooling, and trace every major paper claim to code and evidence.
 
-| Area | What to inspect first |
-|---|---|
-| Core VCEM contracts | `contracts/vcem/VCEMRegistry.sol`, `contracts/vcem/VCEMConsent.sol`, `contracts/vcem/VCEMAudit.sol` |
-| Legacy contracts retained for provenance | `contracts/DSA/`, `contracts/RSA/`, `contracts/DataSharingAgreementZKP.sol`, `contracts/ABVerifier.sol` |
-| Authenticated API and secure proxy | `services/api/`, `services/auth/`, `services/data-proxy/`, `services/encryption/`, `services/storage/` |
-| FHIR examples and adapter | `fixtures/fhir/`, `services/fhir-adapter/`, `test/FHIRAdapter.ts`, `docs/fhir-mapping.md` |
-| Besu network | `infrastructure/besu/docker-compose.yml`, `infrastructure/besu/genesis.json.template`, `infrastructure/besu/scripts/` |
-| Deployment | `ignition/modules/VCEM.ts`, `infrastructure/besu/scripts/deployVcem.ts`, `deployments/vcem-manifest.json` |
-| Tests | `test/VCEM.ts`, `test/VCEMMatrix.ts`, `test/AuditVerifier.ts`, `test/ApiDataProxy.ts`, `test/FHIRAdapter.ts` |
-| Slither static analysis | `slither-report.md`, `reports/slither/slither-final.json`, `reports/slither/slither-final.txt`, `reports/slither/slither-disposition.csv`, `reports/slither/SLITHER_DISPOSITION_SUMMARY.md` |
-| Reviewer 2 security invariants | `test/VCEMSecurityProperty.ts`, `reports/security/VCEM_SECURITY_INVARIANTS.md` |
-| Benchmarks and k6 | `benchmarks/k6/`, `benchmarks/scripts/`, `benchmarks/raw/`, `benchmarks/analysis/`, `benchmarks/reports/` |
-| Claim-to-evidence mapping | `docs/claim-to-evidence.md`, `docs/final-vcem-alignment-report.md` |
-| Release inventory | `docs/open-source-release-inventory.md` |
+| Area                                     | What to inspect first                                                                                                                                                                       |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core VCEM contracts                      | `contracts/vcem/VCEMRegistry.sol`, `contracts/vcem/VCEMConsent.sol`, `contracts/vcem/VCEMAudit.sol`                                                                                         |
+| Legacy contracts retained for provenance | `contracts/DSA/`, `contracts/RSA/`, `contracts/DataSharingAgreementZKP.sol`, `contracts/ABVerifier.sol`                                                                                     |
+| Authenticated API and secure proxy       | `services/api/`, `services/auth/`, `services/data-proxy/`, `services/encryption/`, `services/storage/`                                                                                      |
+| FHIR examples and adapter                | `fixtures/fhir/`, `services/fhir-adapter/`, `test/FHIRAdapter.ts`, `docs/fhir-mapping.md`                                                                                                   |
+| Besu network                             | `infrastructure/besu/docker-compose.yml`, `infrastructure/besu/genesis.json.template`, `infrastructure/besu/scripts/`                                                                       |
+| Deployment                               | `ignition/modules/VCEM.ts`, `infrastructure/besu/scripts/deployVcem.ts`, `deployments/vcem-manifest.json`                                                                                   |
+| Tests                                    | `test/VCEM.ts`, `test/VCEMMatrix.ts`, `test/AuditVerifier.ts`, `test/ApiDataProxy.ts`, `test/FHIRAdapter.ts`                                                                                |
+| Slither static analysis                  | `slither-report.md`, `reports/slither/slither-final.json`, `reports/slither/slither-final.txt`, `reports/slither/slither-disposition.csv`, `reports/slither/SLITHER_DISPOSITION_SUMMARY.md` |
+| Reviewer 2 security invariants           | `test/VCEMSecurityProperty.ts`, `reports/security/VCEM_SECURITY_INVARIANTS.md`                                                                                                              |
+| Benchmarks and k6                        | `benchmarks/k6/`, `benchmarks/scripts/`, `benchmarks/raw/`, `benchmarks/analysis/`, `benchmarks/reports/`                                                                                   |
+| Claim-to-evidence mapping                | `docs/claim-to-evidence.md`, `docs/final-vcem-alignment-report.md`                                                                                                                          |
+| Release inventory                        | `docs/open-source-release-inventory.md`                                                                                                                                                     |
 
 The main README gives the operational path. The `docs/` folder gives the deeper reviewer-facing explanation and limitations.
 
@@ -195,14 +195,14 @@ pipx install slither-analyzer==0.11.5
 
 Dependency sources:
 
-| Dependency type | File / command |
-|---|---|
-| Node, Hardhat, TypeScript, snarkjs | `package-lock.json`, install with `npm ci` |
+| Dependency type                                 | File / command                                                                |
+| ----------------------------------------------- | ----------------------------------------------------------------------------- |
+| Node, Hardhat, TypeScript, snarkjs              | `package-lock.json`, install with `npm ci`                                    |
 | Python tooling, Slither, Word report generation | `requirements.txt`, install with `python3 -m pip install -r requirements.txt` |
-| Slither isolated install alternative | `pipx install slither-analyzer==0.11.5` |
-| Docker / Docker Compose | Install with Docker Desktop or platform package manager |
-| PostgreSQL 15 | Install with platform package manager or Docker |
-| k6 | Install from Grafana k6 packages or platform package manager |
+| Slither isolated install alternative            | `pipx install slither-analyzer==0.11.5`                                       |
+| Docker / Docker Compose                         | Install with Docker Desktop or platform package manager                       |
+| PostgreSQL 15                                   | Install with platform package manager or Docker                               |
+| k6                                              | Install from Grafana k6 packages or platform package manager                  |
 
 ## Environment Setup
 
@@ -690,16 +690,16 @@ FHIR support is fixture-based and anonymized. It is not live FHIR-server integra
 
 Supported mappings:
 
-| FHIR field | VCEM mapping |
-| --- | --- |
-| `Consent.patient` | Pseudonymous `participantId` derived off-chain |
-| `Consent.performer` / supported `provision.actor` | Authorized actor pseudonymous IDs |
-| `Consent.provision.purpose` | Canonical purpose mask |
-| `Consent.provision.data` / supported subject references | Canonical data hash |
-| `Consent.provision.period` | Scope/policy metadata where supported |
-| `Consent.dateTime` | Fixture consent timestamp metadata |
-| `Consent.status` | `active -> createConsent`, `draft -> updateConsent`, `inactive/rejected -> revokeConsent` |
-| `AccessAuthorized` | FHIR AuditEvent-shaped output |
+| FHIR field                                              | VCEM mapping                                                                              |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `Consent.patient`                                       | Pseudonymous `participantId` derived off-chain                                            |
+| `Consent.performer` / supported `provision.actor`       | Authorized actor pseudonymous IDs                                                         |
+| `Consent.provision.purpose`                             | Canonical purpose mask                                                                    |
+| `Consent.provision.data` / supported subject references | Canonical data hash                                                                       |
+| `Consent.provision.period`                              | Scope/policy metadata where supported                                                     |
+| `Consent.dateTime`                                      | Fixture consent timestamp metadata                                                        |
+| `Consent.status`                                        | `active -> createConsent`, `draft -> updateConsent`, `inactive/rejected -> revokeConsent` |
+| `AccessAuthorized`                                      | FHIR AuditEvent-shaped output                                                             |
 
 Supported nested provisions:
 
@@ -926,17 +926,23 @@ Artifacts:
 
 Benchmark reports must be treated as evidence only when metadata says `status: executed` and the corresponding k6 summary has successful checks. Do not use `failed` or `not executed` metadata as performance evidence. The baseline runner resets the PostgreSQL delivery ledger before each run by default; set `BENCHMARK_RESET_BETWEEN_RUNS=0` only when intentionally testing replay/duplicate-request behavior.
 
-Current retained benchmark interpretation:
+Current formal benchmark interpretation:
 
-| Load | PostgreSQL baseline | VCEM blockchain path | Interpretation |
-|---:|---|---|---|
-| 10 VUs | 5/5 valid runs | 5/5 valid runs | Valid direct comparison |
-| 25 VUs | 5/5 valid runs | 5/5 valid runs | Valid direct comparison |
-| 50 VUs | 5/5 valid runs | 0/5 valid runs | VCEM local single-relayer setup unstable at this load |
-| 75 VUs | 5/5 valid runs | Not cleanly executed | Baseline-only evidence |
-| 100 VUs | Partial baseline evidence | Not cleanly executed | Diagnostic only |
+|    Load | PostgreSQL authorization reference | VCEM blockchain path | Interpretation             |
+| ------: | ---------------------------------- | -------------------- | -------------------------- |
+|  10 VUs | 5/5 valid runs                     | 5/5 valid runs       | Formal evaluation          |
+|  25 VUs | 5/5 valid runs                     | 5/5 valid runs       | Formal evaluation          |
+|  50 VUs | 5/5 valid runs                     | 5/5 valid runs       | Formal evaluation          |
+|  75 VUs | 5/5 valid runs                     | 5/5 valid runs       | Formal evaluation          |
+| 100 VUs | 5/5 valid runs                     | 5/5 valid runs       | Formal evaluation          |
+| 125 VUs | 5/5 valid runs                     | 5/5 valid runs       | Formal evaluation          |
+| 150 VUs | 5/5 valid runs                     | 5/5 valid runs       | Formal evaluation          |
+| 175 VUs | 5/5 valid runs                     | 5/5 valid runs       | Formal evaluation          |
+| 200 VUs | 5/5 valid runs                     | 5/5 valid runs       | Maximum tested concurrency |
 
-Do not average failed VCEM 50-VU runs into performance claims. The correct interpretation is that the local experimental VCEM path was reproducible at 10 and 25 VUs, while the 50-VU VCEM workload exposed relay/RPC contention in this local setup.
+The finalized formal campaign used five independent repetitions at each of nine concurrency levels from 10 to 200 VUs, with a 60-second warm-up and a 300-second measurement interval for each repetition. All retained formal VCEM and PostgreSQL-reference repetitions completed with zero failed workflows. VCEM throughput increased with concurrency and approached approximately 20.1 completed authorization workflows/s at 150–200 VUs, while application latency increased as concurrency rose. Component-level instrumentation identifies the retained serialized single-signer synchronous transaction-processing path as the dominant observed high-load bottleneck. The 200-VU point is the maximum tested concurrency and is not asserted as the maximum capacity of Hyperledger Besu, IBFT 2.0, or the VCEM contracts.
+
+The PostgreSQL implementation is a minimal centralized RBAC/RLS authorization reference rather than a feature-equivalent implementation of VCEM. Its results characterize a centralized authorization path under the same formal load protocol and should not be interpreted as a direct measurement of blockchain governance overhead.
 
 ## Testing
 
@@ -1035,41 +1041,41 @@ ZKP proof-generation time is not part of baseline VCEM benchmark claims.
 
 ## Claim to Evidence Summary
 
-| Claim | Evidence |
-| --- | --- |
-| Sensitive data remain off-chain in VCEM path | `contracts/vcem/*`, `services/storage/*`, `services/encryption/*`, `test/DataProxy.ts`, `test/ApiDataProxy.ts` |
-| Consent is dynamic, versioned, and revocable | `VCEMConsent.sol`, `test/VCEM.ts`, `test/VCEMMatrix.ts` |
-| Access is bound to exact active consent state | `VCEMAudit.sol`, `test/VCEM.ts`, matrix artifacts |
-| Independent verification from chain evidence | `scripts/auditVerify.ts`, `test/AuditVerifier.ts` |
-| Authenticated one-time release | `services/auth/*`, `services/data-proxy/*`, `test/ApiDataProxy.ts` |
-| FHIR fixture lifecycle execution | `services/fhir-adapter/*`, `test/FHIRAdapter.ts` |
-| Besu reproducibility | `infrastructure/besu/*`, `npm run besu:config:validate`, deployment manifest when generated |
-| Benchmark methodology | `benchmarks/*`, benchmark raw/analysis/report artifacts when executed |
-| ZKP authorization proof | Not implemented; experimental only |
+| Claim                                         | Evidence                                                                                                       |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Sensitive data remain off-chain in VCEM path  | `contracts/vcem/*`, `services/storage/*`, `services/encryption/*`, `test/DataProxy.ts`, `test/ApiDataProxy.ts` |
+| Consent is dynamic, versioned, and revocable  | `VCEMConsent.sol`, `test/VCEM.ts`, `test/VCEMMatrix.ts`                                                        |
+| Access is bound to exact active consent state | `VCEMAudit.sol`, `test/VCEM.ts`, matrix artifacts                                                              |
+| Independent verification from chain evidence  | `scripts/auditVerify.ts`, `test/AuditVerifier.ts`                                                              |
+| Authenticated one-time release                | `services/auth/*`, `services/data-proxy/*`, `test/ApiDataProxy.ts`                                             |
+| FHIR fixture lifecycle execution              | `services/fhir-adapter/*`, `test/FHIRAdapter.ts`                                                               |
+| Besu reproducibility                          | `infrastructure/besu/*`, `npm run besu:config:validate`, deployment manifest when generated                    |
+| Benchmark methodology                         | `benchmarks/*`, benchmark raw/analysis/report artifacts when executed                                          |
+| ZKP authorization proof                       | Not implemented; experimental only                                                                             |
 
 ## Last Recorded Local Check Results
 
 Recorded on 2026-07-03:
 
-| Command | Result |
-| --- | --- |
-| `npm run secret:scan` | Pass |
-| `.env` tracking check | Pass |
-| `npm run solhint` | Pass with warnings |
-| `npm run besu:config:validate` | Pass |
-| `npm run lint` | Pass |
-| `HARDHAT_DISABLE_DOWNLOADS=true npm run compile` | Pass |
-| `npm run test:property` | Pass, 2 passing |
-| `npm run test:security:properties` | Pass, 7 passing |
-| `npm test` | Pass, 85 passing |
-| `npm run test:vcem:matrix` | Pass, 2 passing |
-| `npm run test:audit-verifier` | Pass, 17 passing |
-| `npm run test:fhir` | Pass, 6 passing |
-| `npm run test:legacy:zkp` | Pass with 4 pending skips |
-| `npm run coverage` | Pass, 87 passing / 4 pending, 77.66% statement coverage |
-| `npm run gas` | Pass |
-| `npm run security:audit` | Fail: 54 vulnerabilities |
-| `npm run slither` | Pass when Slither 0.11.5 is installed; current report has 0 High and 0 Medium findings |
+| Command                                          | Result                                                                                 |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `npm run secret:scan`                            | Pass                                                                                   |
+| `.env` tracking check                            | Pass                                                                                   |
+| `npm run solhint`                                | Pass with warnings                                                                     |
+| `npm run besu:config:validate`                   | Pass                                                                                   |
+| `npm run lint`                                   | Pass                                                                                   |
+| `HARDHAT_DISABLE_DOWNLOADS=true npm run compile` | Pass                                                                                   |
+| `npm run test:property`                          | Pass, 2 passing                                                                        |
+| `npm run test:security:properties`               | Pass, 7 passing                                                                        |
+| `npm test`                                       | Pass, 85 passing                                                                       |
+| `npm run test:vcem:matrix`                       | Pass, 2 passing                                                                        |
+| `npm run test:audit-verifier`                    | Pass, 17 passing                                                                       |
+| `npm run test:fhir`                              | Pass, 6 passing                                                                        |
+| `npm run test:legacy:zkp`                        | Pass with 4 pending skips                                                              |
+| `npm run coverage`                               | Pass, 87 passing / 4 pending, 77.66% statement coverage                                |
+| `npm run gas`                                    | Pass                                                                                   |
+| `npm run security:audit`                         | Fail: 54 vulnerabilities                                                               |
+| `npm run slither`                                | Pass when Slither 0.11.5 is installed; current report has 0 High and 0 Medium findings |
 
 ## Known Limitations
 
@@ -1138,26 +1144,26 @@ npm run benchmark:analyze
 
 The root README is the primary operating guide. The `docs/` directory contains deeper reference material:
 
-| Document | Purpose |
-|---|---|
-| `docs/architecture.md` | System architecture and VCEM component boundaries |
-| `docs/current-state-assessment.md` | Initial repository assessment before VCEM hardening |
-| `docs/vcem-migration-plan.md` | How retained, extended, and new modules map to VCEM requirements |
-| `docs/audit-verification.md` | Independent audit verifier model, commands, and limitations |
-| `docs/authentication.md` | Wallet challenge/session authentication flow |
-| `docs/data-proxy-security.md` | Secure data-proxy threat model and enforcement rules |
-| `docs/privacy-and-erasure.md` | Off-chain encryption, pseudonymization, and erasure behavior |
-| `docs/fhir-mapping.md` | Supported FHIR R4 Consent and AuditEvent mapping |
-| `docs/fhir-limitations.md` | Unsupported FHIR semantics and fixture-only limitation |
-| `docs/besu-deployment.md` | Local Besu topology and deployment commands |
-| `docs/benchmark-methodology.md` | k6/PostgreSQL/VCEM benchmark methodology |
-| `docs/claim-to-evidence.md` | Paper claim to source/test/evidence mapping |
-| `docs/paper-delta.md` | Claims that require revision or careful wording |
-| `docs/security-fixes.md` | Security hardening performed |
-| `docs/dependency-risk-register.md` | Remaining dependency-audit risks |
-| `docs/final-vcem-alignment-report.md` | Final implemented/tested/unimplemented alignment summary |
-| `docs/open-source-release-inventory.md` | Open-source release artifact inventory |
-| `docs/zkp-extension.md` | Experimental ZKP status and limitations |
+| Document                                | Purpose                                                          |
+| --------------------------------------- | ---------------------------------------------------------------- |
+| `docs/architecture.md`                  | System architecture and VCEM component boundaries                |
+| `docs/current-state-assessment.md`      | Initial repository assessment before VCEM hardening              |
+| `docs/vcem-migration-plan.md`           | How retained, extended, and new modules map to VCEM requirements |
+| `docs/audit-verification.md`            | Independent audit verifier model, commands, and limitations      |
+| `docs/authentication.md`                | Wallet challenge/session authentication flow                     |
+| `docs/data-proxy-security.md`           | Secure data-proxy threat model and enforcement rules             |
+| `docs/privacy-and-erasure.md`           | Off-chain encryption, pseudonymization, and erasure behavior     |
+| `docs/fhir-mapping.md`                  | Supported FHIR R4 Consent and AuditEvent mapping                 |
+| `docs/fhir-limitations.md`              | Unsupported FHIR semantics and fixture-only limitation           |
+| `docs/besu-deployment.md`               | Local Besu topology and deployment commands                      |
+| `docs/benchmark-methodology.md`         | k6/PostgreSQL/VCEM benchmark methodology                         |
+| `docs/claim-to-evidence.md`             | Paper claim to source/test/evidence mapping                      |
+| `docs/paper-delta.md`                   | Claims that require revision or careful wording                  |
+| `docs/security-fixes.md`                | Security hardening performed                                     |
+| `docs/dependency-risk-register.md`      | Remaining dependency-audit risks                                 |
+| `docs/final-vcem-alignment-report.md`   | Final implemented/tested/unimplemented alignment summary         |
+| `docs/open-source-release-inventory.md` | Open-source release artifact inventory                           |
+| `docs/zkp-extension.md`                 | Experimental ZKP status and limitations                          |
 
 ## Open Source Release Contents
 

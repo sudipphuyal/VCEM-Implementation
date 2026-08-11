@@ -13,12 +13,11 @@
 - FHIR fixtures execute real VCEM create/update/revoke calls and generate AuditEvent-shaped output from real access events.
 - Security controls now include ignored `.env`, placeholder `.env.example`, secret scanning, Solhint configuration, coverage, gas reporting, canonical-hash property tests, Reviewer 2 security invariant tests, dependency audit gate, Slither disposition reporting, and Besu config validation.
 - Legacy ZKP tests are isolated behind `npm run test:legacy:zkp`; they skip proof-dependent checks when local generated artifacts are absent or mismatched and are not part of baseline VCEM evidence.
+- A formal performance campaign was completed for both VCEM and the minimal PostgreSQL RBAC/RLS authorization reference at 10, 25, 50, 75, 100, 125, 150, 175, and 200 concurrent VUs, with five independent repetitions at each load level, a 60-second warm-up, and a 300-second measurement interval. All retained formal repetitions completed with zero failed workflows. VCEM throughput approached approximately 20.1 completed authorization workflows/s at 150–200 VUs, while application latency increased with concurrency. Component-level telemetry identifies the retained serialized single-signer synchronous transaction-processing path as the dominant observed high-load bottleneck. The 200-VU level is the maximum tested concurrency, not an asserted maximum platform capacity.
 
 ## Implemented but Not Experimentally Executed Here
 
 - The five-node local Besu topology is implemented under `infrastructure/besu/` with four IBFT 2.0 validators, one non-validator RPC node, persistent volumes, static peers, metrics, and deployment-manifest generation. Full runtime validation requires Docker.
-- Benchmark tooling is implemented for 10, 25, 50, 75, and 100 users, five runs per level, 60-second warm-up, 300-second measurement, deterministic fixture setup, cleanup/reset hooks, VCEM k6 workload, PostgreSQL RBAC/RLS baseline, resource sampling, raw JSON/CSV, summary statistics, confidence intervals, charts metadata, and Markdown reports.
-- Benchmark metadata can record `not executed` when prerequisites such as `k6`, PostgreSQL, Besu, or API URLs are missing. No performance claim is supported until successful raw runs exist.
 - Slither static analysis has been executed locally with Slither 0.11.5. The current report contains 0 High, 0 Medium, 48 Low, and 120 Informational findings; every remaining finding has a one-row disposition in `reports/slither/slither-disposition.csv`.
 - Coverage and gas reporting are configured; final command results should be consulted for local pass/fail status.
 
@@ -36,7 +35,7 @@
 - Replace broad compliance claims with the narrower implementation claim: independently verifiable per-access consent-state binding.
 - Treat FHIR as fixture-based R4 alignment, not live integration.
 - Treat ZKP as an experimental extension, not evidence of VCEM authorization correctness.
-- Remove production clinical deployment language unless supported by deployment, operational, privacy, and security evidence outside this prototype.
+- Remove production clinical deployment language unless supported by deployment, operational, privacy, and security evidence outside the present controlled implementation evaluation.
 - Do not report blockchain, API, proxy, Besu, baseline, or ZKP performance figures unless produced by successful benchmark runs and stored raw artifacts.
 
 ## Security and Dependency Status
@@ -70,22 +69,22 @@ npm run security:audit
 
 Run date: 2026-07-03.
 
-| Command | Result | Summary |
-| --- | --- | --- |
-| `npm run secret:scan` | Pass | No obvious committed secrets detected in tracked files. |
-| `.env` tracking check | Pass | `.env` is ignored by `.gitignore` and not tracked. |
-| `npm run solhint` | Pass with warnings | Exits 0; warnings are mostly NatSpec/gas-style findings across retained legacy and VCEM contracts. |
-| `npm run besu:config:validate` | Pass | Besu config validation passed. |
-| `npm run lint` | Pass | TypeScript typecheck passes. |
-| `HARDHAT_DISABLE_DOWNLOADS=true npm run compile` | Pass | Hardhat reports nothing to compile and no compiler download. |
-| `npm run test:property` | Pass | 2 property tests passing. |
-| `npm run test:security:properties` | Pass | 7 security invariant tests passing. |
-| `npm test` | Pass | 85 passing. |
-| `npm run test:vcem:matrix` | Pass | 2 passing; 60 cases and 120 outcomes. |
-| `npm run test:audit-verifier` | Pass | 17 passing. |
-| `npm run test:fhir` | Pass | 6 passing. |
-| `npm run test:legacy:zkp` | Pass with pending skips | 0 passing, 4 pending because local proof artifacts are stale/mismatched with the verifier. |
-| `npm run coverage` | Pass | 87 passing, 4 pending; overall statement coverage 77.66%. |
-| `npm run gas` | Pass | 6 VCEM tests passing with gas report generated. |
-| `npm run security:audit` | Fail | 54 vulnerabilities: 19 low, 21 moderate, 11 high, 3 critical. |
-| `npm run slither` | Pass | Slither 0.11.5 reports 0 High, 0 Medium, 48 Low, and 120 Informational findings. |
+| Command                                          | Result                  | Summary                                                                                            |
+| ------------------------------------------------ | ----------------------- | -------------------------------------------------------------------------------------------------- |
+| `npm run secret:scan`                            | Pass                    | No obvious committed secrets detected in tracked files.                                            |
+| `.env` tracking check                            | Pass                    | `.env` is ignored by `.gitignore` and not tracked.                                                 |
+| `npm run solhint`                                | Pass with warnings      | Exits 0; warnings are mostly NatSpec/gas-style findings across retained legacy and VCEM contracts. |
+| `npm run besu:config:validate`                   | Pass                    | Besu config validation passed.                                                                     |
+| `npm run lint`                                   | Pass                    | TypeScript typecheck passes.                                                                       |
+| `HARDHAT_DISABLE_DOWNLOADS=true npm run compile` | Pass                    | Hardhat reports nothing to compile and no compiler download.                                       |
+| `npm run test:property`                          | Pass                    | 2 property tests passing.                                                                          |
+| `npm run test:security:properties`               | Pass                    | 7 security invariant tests passing.                                                                |
+| `npm test`                                       | Pass                    | 85 passing.                                                                                        |
+| `npm run test:vcem:matrix`                       | Pass                    | 2 passing; 60 cases and 120 outcomes.                                                              |
+| `npm run test:audit-verifier`                    | Pass                    | 17 passing.                                                                                        |
+| `npm run test:fhir`                              | Pass                    | 6 passing.                                                                                         |
+| `npm run test:legacy:zkp`                        | Pass with pending skips | 0 passing, 4 pending because local proof artifacts are stale/mismatched with the verifier.         |
+| `npm run coverage`                               | Pass                    | 87 passing, 4 pending; overall statement coverage 77.66%.                                          |
+| `npm run gas`                                    | Pass                    | 6 VCEM tests passing with gas report generated.                                                    |
+| `npm run security:audit`                         | Fail                    | 54 vulnerabilities: 19 low, 21 moderate, 11 high, 3 critical.                                      |
+| `npm run slither`                                | Pass                    | Slither 0.11.5 reports 0 High, 0 Medium, 48 Low, and 120 Informational findings.                   |
